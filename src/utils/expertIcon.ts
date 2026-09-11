@@ -1,6 +1,6 @@
 /**
  * Map Octop dashboard Lucide ``icon_name`` keys → SF Symbol / Material names
- * for expo-symbols. Unknown names fall back to a generic layers glyph.
+ * for expo-symbols. Unknown names fall back to a generic sparkles glyph.
  */
 export type ExpertGlyph = { ios: string; android: string; web: string };
 

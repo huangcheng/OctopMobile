@@ -8,8 +8,8 @@ describe("expertGlyphForName", () => {
   });
 
   it("falls back for unknown / empty", () => {
-    expect(expertGlyphForName("nope").ios).toContain("stack");
-    expect(expertGlyphForName(null).ios).toContain("stack");
+    expect(expertGlyphForName("nope").ios).toBe("sparkles");
+    expect(expertGlyphForName(null).ios).toBe("sparkles");
   });
 });
 

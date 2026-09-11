@@ -72,6 +72,8 @@ export default function AutomationScreen() {
     }
   }, [agents, api, t]);
 
+  const [pulling, setPulling] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       if (agents.length > 0) {
@@ -79,6 +81,12 @@ export default function AutomationScreen() {
       }
     }, [refresh, agents.length]),
   );
+
+  async function handlePull() {
+    setPulling(true);
+    await refresh();
+    setPulling(false);
+  }
 
   async function toggleJob(row: JobRow, next: boolean) {
     if (busyId) {
@@ -147,7 +155,7 @@ export default function AutomationScreen() {
           data={rows}
           keyExtractor={(item) => item.cron_id}
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
+            <RefreshControl refreshing={pulling} onRefresh={handlePull} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
           // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.

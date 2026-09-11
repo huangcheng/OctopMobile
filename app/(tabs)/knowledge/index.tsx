@@ -67,11 +67,19 @@ export default function KnowledgeScreen() {
     }
   }, [api, t]);
 
+  const [pulling, setPulling] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       void refresh();
     }, [refresh]),
   );
+
+  async function handlePull() {
+    setPulling(true);
+    await refresh();
+    setPulling(false);
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -141,7 +149,7 @@ export default function KnowledgeScreen() {
           data={filtered}
           keyExtractor={(item) => item.id}
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
+            <RefreshControl refreshing={pulling} onRefresh={handlePull} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
           // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.

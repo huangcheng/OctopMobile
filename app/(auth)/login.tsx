@@ -55,6 +55,7 @@ export default function LoginScreen() {
     >
       <RNView style={[styles.container, { backgroundColor: C.bgLogin }]}>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scroll,
             {
