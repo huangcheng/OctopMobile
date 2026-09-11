@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, View as RNView } from "react-native";
+import { Image, StyleSheet, View as RNView } from "react-native";
 import { SymbolView } from "expo-symbols";
 
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -8,7 +8,8 @@ import { expertGlyphForName, resolveAgentIconUrl } from "@/src/utils/expertIcon"
 
 /**
  * Expert / thread identity tile (Ardot designs 03/08/10/11):
- * prefer uploaded ``icon_url`` (auth image) → Lucide ``icon_name`` glyph → letter.
+ * prefer uploaded ``icon_url`` (auth image) → Lucide ``icon_name`` glyph →
+ * generic sparkles glyph (no letter initials — they read as noise).
  * `tone="solid"` = brand-color tile + white glyph (experts/threads).
  * `tone="tint"` = 12% pastel tile + colored glyph (KB cards, prompt tiles).
  */
@@ -26,7 +27,6 @@ export function AgentTile(props: {
   const size = props.size ?? 44;
   const radius = props.radius ?? 12;
   const tone = props.tone ?? "solid";
-  const fontSize = Math.round(size * 0.4);
   const glyphSize = Math.max(12, Math.round(size * 0.48));
   const { baseUrl } = useAuth();
   const absoluteUrl = resolveAgentIconUrl(baseUrl, props.iconUrl);
@@ -83,14 +83,13 @@ export function AgentTile(props: {
           onError={() => setImageFailed(true)}
           accessibilityIgnoresInvertColors
         />
-      ) : props.iconName || !props.label ? (
+      ) : (
+        // No letter initials — a bare "D"/"E" reads as noise. Always a glyph.
         <SymbolView
           name={glyph as unknown as Parameters<typeof SymbolView>[0]["name"]}
           tintColor={fg}
           size={glyphSize}
         />
-      ) : (
-        <Text style={[styles.glyph, { fontSize, color: fg }]}>{props.label}</Text>
       )}
     </RNView>
   );
@@ -100,9 +99,5 @@ const styles = StyleSheet.create({
   tile: {
     alignItems: "center",
     justifyContent: "center",
-  },
-  glyph: {
-    color: "#FFFFFF",
-    fontWeight: "700",
   },
 });

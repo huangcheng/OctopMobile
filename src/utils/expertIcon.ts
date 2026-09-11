@@ -5,9 +5,9 @@
 export type ExpertGlyph = { ios: string; android: string; web: string };
 
 const DEFAULT_GLYPH: ExpertGlyph = {
-  ios: "square.stack.3d.up.fill",
-  android: "layers",
-  web: "layers",
+  ios: "sparkles",
+  android: "auto_awesome",
+  web: "auto_awesome",
 };
 
 const ICON_NAME_MAP: Record<string, ExpertGlyph> = {

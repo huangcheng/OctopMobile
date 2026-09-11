@@ -566,6 +566,7 @@ const styles = StyleSheet.create({
   greeting: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 12,
     marginBottom: 10,
     borderRadius: 16,
@@ -579,7 +580,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   greetingBody: {
-    flex: 1,
+    flexShrink: 1,
     gap: 2,
   },
   greetingTitle: {
