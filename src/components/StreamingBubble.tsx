@@ -4,6 +4,7 @@ import Markdown from "react-native-markdown-display";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { buildAssistantMarkdownStyles } from "@/src/components/markdownStyles";
+import { buildMarkdownRules } from "@/src/components/markdownRules";
 import { softenStreamingMarkdown } from "@/src/utils/softenStreamingMarkdown";
 
 type StreamingBubbleProps = {
@@ -16,6 +17,7 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
   const [caretOn, setCaretOn] = useState(true);
   const rendered = useMemo(() => softenStreamingMarkdown(content), [content]);
   const markdownStyles = useMemo(() => buildAssistantMarkdownStyles(C), [C]);
+  const markdownRules = useMemo(() => buildMarkdownRules(C), [C]);
 
   useEffect(() => {
     const id = setInterval(() => setCaretOn((v) => !v), 530);
@@ -35,7 +37,7 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
       ]}
     >
       {content.length > 0 ? (
-        <Markdown style={markdownStyles}>{rendered}</Markdown>
+        <Markdown style={markdownStyles} rules={markdownRules}>{rendered}</Markdown>
       ) : null}
       <Text style={[styles.caret, { color: C.brand }, content.length > 0 && styles.caretAfter, !caretOn && styles.caretOff]}>
         ▍

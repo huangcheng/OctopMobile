@@ -38,7 +38,7 @@ export function buildAssistantMarkdownStyles(C: OctopThemeTokens) {
       marginVertical: 2,
     },
     code_inline: {
-      fontFamily: "monospace",
+      fontFamily: "SpaceMono",
       backgroundColor: C.brandBg,
       color: C.brandActive,
       paddingHorizontal: 5,

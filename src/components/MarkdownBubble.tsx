@@ -4,6 +4,7 @@ import Markdown from "react-native-markdown-display";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { buildAssistantMarkdownStyles } from "@/src/components/markdownStyles";
+import { buildMarkdownRules } from "@/src/components/markdownRules";
 
 type MarkdownBubbleProps = {
   content: string;
@@ -14,6 +15,7 @@ type MarkdownBubbleProps = {
 export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
   const C = useOctopTheme();
   const markdownStyles = useMemo(() => buildAssistantMarkdownStyles(C), [C]);
+  const markdownRules = useMemo(() => buildMarkdownRules(C), [C]);
   const isUser = role === "user";
 
   if (isUser) {
@@ -42,7 +44,7 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
         },
       ]}
     >
-      <Markdown style={markdownStyles}>{content}</Markdown>
+      <Markdown style={markdownStyles} rules={markdownRules}>{content}</Markdown>
     </RNView>
   );
 }
