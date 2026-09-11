@@ -1,10 +1,12 @@
 # OctopMobile — Design Spec
 
 **Date:** 2026-09-11  
-**Status:** Draft for review  
+**Status:** Draft for review (audit fixes applied)  
 **Owner:** huangcheng (independent; not TencentCloud org)  
 **Repo (planned):** https://github.com/huangcheng/OctopMobile  
 **Related:** [TencentCloud/Octop#638](https://github.com/TencentCloud/Octop/issues/638) (mobile client wish); bonus / extension only  
+
+**v1 boundary:** Phase 1 (MVP) + Phase 2 (polish). Stretch items are Phase 3+.
 
 ---
 
@@ -16,7 +18,7 @@ The product bar is **WorkBuddy-class limited features** — chat-centric mobile 
 
 ### Success criteria (v1)
 
-- A user can point the app at their Octop base URL, sign in, pick an expert/agent, and complete a streaming chat turn on a phone.
+- A user can point the app at their Octop base URL, sign in, pick an agent, and complete a streaming chat turn on a phone.
 - The project is clearly labeled third-party / unofficial.
 - Maintenance stays low: web console features are **not** tracked 1:1.
 
@@ -27,6 +29,9 @@ The product bar is **WorkBuddy-class limited features** — chat-centric mobile 
 - Workspace dock, remote browser, remote desktop/phone control, trajectory inspector.
 - Replacing PWA or IM as the default mobile path.
 - Official TencentCloud branding or App Store listing under the org.
+- Offline-capable chat (app is online-only; show disconnected banner + retry).
+- Inbound deep links / universal links (outbound open-in-browser to PWA is enough when needed).
+- SSO / OIDC login (v1 is password login via `POST /api/auth/login` only).
 
 ---
 
@@ -55,36 +60,51 @@ The product bar is **WorkBuddy-class limited features** — chat-centric mobile 
 
 ## 4. Product scope
 
-### 4.1 Information architecture (WorkBuddy-inspired)
+### 4.1 Information architecture
 
-Bottom tabs (v1 may ship a subset):
+**Phase 1 ships exactly:**
 
-| Tab | v1 intent | Octop backend |
-|-----|-----------|---------------|
-| **任务 (Tasks)** | Thread / conversation list + chat | Agents + threads + chat WS |
-| **专家 (Experts)** | Browse / select agents (and/or published experts) | `/api/agents`, experts catalog as available |
-| **资料库 (Knowledge)** | List KBs; open doc **later** | Knowledge base list APIs |
-| **自动化 (Automation)** | Optional light cron list | Cron APIs — **post-MVP** |
+| Surface | Role | Backend |
+|---------|------|---------|
+| **Settings** (stack screen, not a bottom tab) | Base URL + login / logout; first-run entry; after login, reachable via header gear on Experts/Tasks | `POST /api/auth/login` |
+| **专家 (Experts)** tab | Browse / select agents (`/api/agents` only) | `/api/agents` |
+| **任务 (Tasks)** tab | Thread list **for the selected agent** + chat | Threads API + chat WS |
+
+Do **not** render Knowledge / Automation / Projects tabs (or disabled placeholders) in Phase 1–2.
+
+| Later surface | When | Backend |
+|---------------|------|---------|
+| **资料库 (Knowledge)** | Phase 3 | Knowledge base list APIs |
+| **自动化 (Automation)** | Phase 3 (read-only) | Cron APIs |
 | **项目 (Projects)** | Out of scope unless needed | — |
 
 **MVP (must ship first):** Settings (base URL + login) → Experts → Tasks/Chat streaming.  
-**Stretch after MVP:** Knowledge list; Automation read-only; attachments; citation chips.
+**Stretch (Phase 3+):** Knowledge list; Automation read-only; attachments; citation chips.
 
 ### 4.2 Chat MVP capabilities
 
-- List threads for the selected agent  
-- Send user message; consume **WebSocket** chat stream (`/api/agents/{id}/chat/ws`)  
-- Render assistant markdown (basic)  
-- Cancel / stop turn if API supports it  
-- Persist JWT securely on device  
+- List threads **scoped to the selected agent** (prefer server-side filter; fall back to client filter with a documented cap if the API is global-only — confirm in pre-plan spike).
+- Load historical messages for a thread via HTTP when opening it (exact endpoint confirmed in spike).
+- Send user message; consume **WebSocket** chat stream (`/api/agents/{id}/chat/ws` or the path documented for the pinned Octop version).
+- **WS auth:** document and implement the mechanism verified in the spike (query token, first-message auth, or header-capable polyfill). RN’s default `WebSocket` cannot set `Authorization` headers — treat this as a Phase 0/1 spike gate.
+- **WS resilience:** foreground chat only; on disconnect, one auto-reconnect attempt while foregrounded; on failure show a retry banner. No background reconnect. Non-text stream events (tool/status): show a minimal “working…” indicator only; no tool-card parity.
+- Render assistant markdown (**basic** = headings, emphasis, lists, inline + fenced code, links; **not** tables, math, or raw HTML).
+- **Cancel / stop turn:** include only if the spike confirms a supported API; otherwise omit the control (no dead button).
+- Persist JWT in `expo-secure-store`.
+- **Auth lifecycle:** password login only in v1. On any 401: clear stored token, route to login, **preserve last base URL**. No silent refresh in v1. Explicit logout clears the token.
 
 ### 4.3 Explicitly deferred
 
 - Tool cards parity with web (trajectory, browser dock, HITL rich UI)  
-- Knowledge rich preview (PDF/Office) — defer; deep-link to PWA or later WebView  
+- Knowledge rich preview (PDF/Office) — defer; open in system browser / PWA or later WebView  
+- Unified cross-agent inbox (Tasks stays per-selected-agent)  
 - Voice input (nice-to-have after text chat works)  
 - Push notifications  
-- Multi-account profiles (single base URL + user is enough for v1)
+- Multi-account profiles (single base URL + user is enough for v1)  
+- Offline / local message cache  
+- Inbound deep links / universal links  
+- SSO / OIDC and other non-password auth providers  
+- Telemetry / third-party analytics SDKs (none in v1)
 
 ---
 
@@ -93,16 +113,17 @@ Bottom tabs (v1 may ship a subset):
 ### 5.1 Stack
 
 - **Expo** (managed workflow) + TypeScript  
-- React Navigation (tabs + stack)  
+- **Expo Router** (file-based `app/` routes; tabs + stack) — not a separate React Navigation-only setup  
 - Secure storage for tokens (`expo-secure-store`)  
 - Config: `EXPO_PUBLIC_DEFAULT_BASE_URL` optional; user-editable base URL required for self-host  
+- i18n: device locale with **zh/en** strings from Phase 1 (strings ship early; polish empty states in Phase 2)
 
 ### 5.2 Backend contract
 
 - Consume Octop **public HTTP API** + agent chat **WebSocket** as documented in Octop `docs/api.md` / `/api/openapi.json`.  
-- Auth: `POST /api/auth/login` → Bearer JWT on subsequent calls.  
+- Auth: `POST /api/auth/login` → Bearer JWT on subsequent HTTP calls; WS auth per spike (§4.2).  
 - Do **not** depend on private forks or undocumented internals.  
-- Compatibility: target current Octop `develop` / recent release; document minimum version when known.
+- **Compatibility:** pin a **tested Octop release or commit during Phase 0** (record in README + `docs/api-contract.md`: endpoints, request/response shapes, WS event types, auth handshake, thread scoping, history endpoint, cancel support). Tracking `develop` is maintenance, not the build target. Soft-warn in-app when server identity is available and below the pinned minimum (health/`version` if present; otherwise document “no runtime version probe” for the pinned release).
 
 ### 5.3 App structure (planned)
 
@@ -110,7 +131,8 @@ Bottom tabs (v1 may ship a subset):
 OctopMobile/
   docs/superpowers/specs/   ← this document
   docs/superpowers/plans/   ← implementation plan (after spec approval)
-  app/                      ← Expo Router screens (when scaffolded)
+  docs/api-contract.md      ← pinned Octop version + endpoint/WS appendix (from spike)
+  app/                      ← Expo Router screens
   src/
     api/                    ← fetch + WS client
     features/               ← auth, agents, chat, knowledge
@@ -122,15 +144,18 @@ Web dashboard code from `TencentCloud/Octop/dashboard` is **not** imported. Shar
 
 ### 5.4 Self-hosted connectivity
 
-- User enters base URL (e.g. `https://octop.example.com`).  
+- User enters base URL (e.g. `https://octop.example.com` or `http://192.168.x.x:port` for LAN).  
 - App strips trailing slash; calls `{base}/api/...`.  
 - Clear errors for TLS failures, wrong URL, 401.  
-- HTTP cleartext: follow Expo / OS rules (dev may allow; production prefer HTTPS).
+- **HTTP cleartext:** allow `http://` with a **one-time in-app warning** (self-hosters often use LAN IPs). Enable cleartext traffic where the OS requires an explicit allowlist (iOS ATS / Android `usesCleartextTraffic`) so LAN HTTP works.  
+- **Self-signed TLS:** do **not** bypass certificate validation; show a clear error with guidance to use a trusted cert or HTTP on LAN.  
+- Online-only: when unreachable, show disconnected banner + retry (no offline queue).
 
-### 5.5 Platform
+### 5.5 Platform & testing
 
 - iOS + Android via Expo.  
-- No requirement to ship to App Store in v0; internal / TestFlight / APK is enough for a bonus project.
+- No requirement to ship to App Store in v0; internal / TestFlight / APK is enough for a bonus project.  
+- **Testing (minimum):** one contract smoke path against the pinned Octop instance — login → agent list → open/create thread → one streaming WS turn — run manually (or scripted) before each release cut. Unit-test the API/WS client parsing where cheap.
 
 ---
 
@@ -139,7 +164,8 @@ Web dashboard code from `TencentCloud/Octop/dashboard` is **not** imported. Shar
 - README and in-app About: **“Unofficial companion for self-hosted Octop”**.  
 - Do not claim TencentCloud official status.  
 - Respect Octop license when redistributing trademarks/logos; prefer original app icon/name styling for OctopMobile.  
-- Issue #638 is inspiration only; this repo does not automatically close upstream issues unless maintainers adopt it.
+- Issue #638 is inspiration only; this repo does not automatically close upstream issues unless maintainers adopt it.  
+- No analytics / third-party telemetry SDKs in v1 (JWT stays on-device except requests to the user’s Octop base URL).
 
 ---
 
@@ -147,9 +173,9 @@ Web dashboard code from `TencentCloud/Octop/dashboard` is **not** imported. Shar
 
 | Phase | Outcome |
 |-------|---------|
-| **0 — Spec + repo** | This doc; empty/local project; GitHub `huangcheng/OctopMobile` |
-| **1 — MVP** | Base URL, login, agent list, thread list, streaming chat |
-| **2 — Polish** | Markdown quality, errors/i18n (zh/en), empty states, basic settings |
+| **0 — Spec + repo + API spike** | This doc; repo; `docs/api-contract.md` for a pinned Octop version (incl. WS auth) |
+| **1 — MVP** | Base URL, password login/logout, agent list, per-agent threads, streaming chat, zh/en strings |
+| **2 — Polish** | Markdown quality, richer errors/empty states, settings polish |
 | **3 — Stretch** | Knowledge list; attachments; optional automation list |
 | **4 — Optional** | Store listing; push; WebView for heavy previews |
 
@@ -159,29 +185,27 @@ Web dashboard code from `TencentCloud/Octop/dashboard` is **not** imported. Shar
 
 | Risk | Mitigation |
 |------|------------|
-| API drift vs Octop web | Pin tested Octop version; read OpenAPI; keep client thin |
-| WS / background on iOS | Foreground chat first; document limits |
-| Scope creep toward full console | Enforce non-goals; bonus framing |
+| API drift vs Octop web | Pin tested Octop version in README + `docs/api-contract.md`; keep client thin |
+| WS auth / RN header limits | Spike before scaffold; document handshake in contract appendix |
+| WS / background on iOS | Foreground chat first; one reconnect; retry banner; document limits |
+| Scope creep toward full console | Enforce non-goals; bonus framing; no extra tabs in Phase 1–2 |
 | Dual maintenance | Ship slow; prefer cutting features over parity |
 
 ---
 
-## 9. Open questions
-
-Resolved in prior discussion unless marked:
+## 9. Decisions
 
 | Question | Decision |
 |----------|----------|
-| Wrapper vs rewrite? | Rewrite limited surface (Expo) |
+| Wrapper vs rewrite? | Rewrite limited surface (Expo + Expo Router) |
 | New repo vs inside Octop? | Separate project under personal account |
 | Official org? | No — independent bonus |
 | Name? | `OctopMobile` (`huangcheng/OctopMobile`) |
-
-Still open (can default):
-
-1. **Default language:** device locale with zh/en strings? (Recommend: yes)  
-2. **GitHub visibility:** public vs private for early work? (Recommend: public once MVP runs)  
-3. **Expert = agent list only, or also expert marketplace?** (Recommend: agent list for MVP)
+| Default language? | Device locale with zh/en strings from Phase 1 |
+| GitHub visibility? | Public once MVP runs (private OK during spike) |
+| Experts surface? | `/api/agents` list only for MVP; no marketplace |
+| Cleartext HTTP? | Allow with one-time warning; no cert-validation bypass |
+| Offline / deep links / SSO? | Deferred (§1 non-goals, §4.3) |
 
 ---
 
@@ -189,7 +213,8 @@ Still open (can default):
 
 Please review this spec. After approval:
 
-1. Implementation plan → `docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md`  
-2. Scaffold Expo app and start Phase 1  
+1. **Phase 0 spike** → pin Octop version + write `docs/api-contract.md` (HTTP + WS auth/events; cancel support yes/no; thread scoping; history endpoint).  
+2. Implementation plan → `docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md`  
+3. Scaffold Expo Router app and start Phase 1  
 
 Do **not** treat Phase 1 as “build all five WorkBuddy tabs.”
