@@ -4,6 +4,8 @@ import { Tabs } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { HeaderGear } from '@/src/components/HeaderGear';
+import { t } from '@/src/i18n';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -11,13 +13,14 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
+        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: useClientOnlyValue(false, true),
+        headerRight: () => <HeaderGear />,
       }}>
       <Tabs.Screen
         name="experts"
         options={{
-          title: 'Experts',
+          title: t('experts.title'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
@@ -34,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="tasks"
         options={{
-          title: 'Tasks',
+          title: t('tasks.title'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
