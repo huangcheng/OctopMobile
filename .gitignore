@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+.expo/
+dist/
+web-build/
+
+# Native / EAS
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+*.orig.*
+ios/
+android/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Test / coverage
+coverage/
