@@ -17,6 +17,31 @@ export function parseWsFrame(raw: string): Record<string, unknown> | null {
   }
 }
 
+export type ConnectDeduper = {
+  run<T>(fn: () => Promise<T>): Promise<T>;
+  reset: () => void;
+};
+
+export function createConnectDeduper(): ConnectDeduper {
+  let inFlight: Promise<unknown> | null = null;
+
+  return {
+    run<T>(fn: () => Promise<T>): Promise<T> {
+      if (inFlight) {
+        return inFlight as Promise<T>;
+      }
+
+      inFlight = fn().finally(() => {
+        inFlight = null;
+      });
+      return inFlight as Promise<T>;
+    },
+    reset() {
+      inFlight = null;
+    },
+  };
+}
+
 export type ChatWsClientOptions = {
   url: string;
   onFrame: (frame: Record<string, unknown>) => void;
@@ -24,6 +49,7 @@ export type ChatWsClientOptions = {
   onDisconnected?: () => void;
   isForeground: () => boolean;
   getThreadId: () => string | null;
+  WebSocketImpl?: typeof WebSocket;
 };
 
 export type ChatWsClient = {
@@ -34,29 +60,47 @@ export type ChatWsClient = {
 };
 
 export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
+  const WebSocketImpl = options.WebSocketImpl ?? WebSocket;
   let ws: WebSocket | null = null;
   let expectedClose = false;
   let autoReconnectUsed = false;
   let pendingSubscribe: string | null = null;
+  const outboundQueue: Record<string, unknown>[] = [];
+
+  function flushQueue(): void {
+    if (ws?.readyState !== WebSocketImpl.OPEN) {
+      return;
+    }
+
+    while (outboundQueue.length > 0) {
+      ws.send(JSON.stringify(outboundQueue.shift()));
+    }
+  }
 
   function send(frame: Record<string, unknown>): void {
-    if (ws?.readyState === WebSocket.OPEN) {
+    if (ws?.readyState === WebSocketImpl.OPEN) {
       ws.send(JSON.stringify(frame));
+      return;
     }
+
+    outboundQueue.push(frame);
   }
 
   function subscribe(threadId: string): void {
     pendingSubscribe = threadId;
-    send({ type: "subscribe", thread_id: threadId });
+    if (ws?.readyState === WebSocketImpl.OPEN) {
+      ws.send(JSON.stringify({ type: "subscribe", thread_id: threadId }));
+    }
   }
 
   function openSocket(): void {
-    ws = new WebSocket(options.url);
+    ws = new WebSocketImpl(options.url);
 
     ws.onopen = () => {
       options.onOpen?.();
-      if (pendingSubscribe) {
-        send({ type: "subscribe", thread_id: pendingSubscribe });
+      flushQueue();
+      if (pendingSubscribe && ws?.readyState === WebSocketImpl.OPEN) {
+        ws.send(JSON.stringify({ type: "subscribe", thread_id: pendingSubscribe }));
       }
     };
 
@@ -107,6 +151,7 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
 
   function close(): void {
     expectedClose = true;
+    outboundQueue.length = 0;
     ws?.close();
     ws = null;
   }

@@ -2,7 +2,12 @@ import { useFocusEffect } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AppState, type AppStateStatus } from "react-native";
 
-import { buildChatWsUrl, createChatWsClient, type ChatWsClient } from "../../api/chatWs";
+import {
+  buildChatWsUrl,
+  createChatWsClient,
+  createConnectDeduper,
+  type ChatWsClient,
+} from "../../api/chatWs";
 import { getThreadHistory } from "../../api/threads";
 import type { HistoryMessage, MessageContentBlock } from "../../api/types";
 import { t } from "../../i18n";
@@ -65,6 +70,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
   const [historyLoading, setHistoryLoading] = useState(true);
 
   const wsRef = useRef<ChatWsClient | null>(null);
+  const connectDeduperRef = useRef(createConnectDeduper());
   const foregroundRef = useRef(AppState.currentState === "active");
   const streamingTextRef = useRef("");
   const threadIdRef = useRef(threadId);
@@ -128,15 +134,6 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
 
   const ensureWs = useCallback(
     async (subscribe: boolean): Promise<ChatWsClient | null> => {
-      if (!agentId || !baseUrl) {
-        return null;
-      }
-
-      const token = await getToken();
-      if (!token) {
-        return null;
-      }
-
       if (wsRef.current) {
         if (subscribe) {
           wsRef.current.subscribe(threadIdRef.current);
@@ -144,21 +141,38 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
         return wsRef.current;
       }
 
-      const url = buildChatWsUrl(baseUrl, agentId, token);
-      const client = createChatWsClient({
-        url,
-        onFrame: handleFrame,
-        onOpen: () => setDisconnected(false),
-        onDisconnected: () => setDisconnected(true),
-        isForeground: () => foregroundRef.current,
-        getThreadId: () => threadIdRef.current,
+      if (!agentId || !baseUrl) {
+        return null;
+      }
+
+      const client = await connectDeduperRef.current.run(async () => {
+        if (wsRef.current) {
+          return wsRef.current;
+        }
+
+        const token = await getToken();
+        if (!token) {
+          return null;
+        }
+
+        const url = buildChatWsUrl(baseUrl, agentId, token);
+        const created = createChatWsClient({
+          url,
+          onFrame: handleFrame,
+          onOpen: () => setDisconnected(false),
+          onDisconnected: () => setDisconnected(true),
+          isForeground: () => foregroundRef.current,
+          getThreadId: () => threadIdRef.current,
+        });
+
+        wsRef.current = created;
+        return created;
       });
 
-      if (subscribe) {
+      if (client && subscribe) {
         client.subscribe(threadIdRef.current);
       }
 
-      wsRef.current = client;
       return client;
     },
     [agentId, baseUrl, handleFrame],
@@ -203,6 +217,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
       return () => {
         wsRef.current?.close();
         wsRef.current = null;
+        connectDeduperRef.current.reset();
       };
     }, [ensureWs, loadHistory]),
   );
