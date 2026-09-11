@@ -2,14 +2,18 @@ import { router } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View as RNView, ScrollView } from "react-native";
 import { SymbolView } from "expo-symbols";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as WebBrowser from "expo-web-browser";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { useI18n } from "@/src/i18n/I18nProvider";
 
 type SFSymbol = Parameters<typeof SymbolView>[0]["name"];
 
-const OSS_ROWS: Array<{ key: string; name: string; meta: string }> = [
-  { key: "octop", name: "Octop", meta: "TencentCloud" },
+type OssRow = { key: string; name: string; meta: string; url?: string };
+
+const OSS_ROWS: OssRow[] = [
+  { key: "octop", name: "Octop", meta: "TencentCloud", url: "https://github.com/TencentCloud/Octop" },
+  { key: "octop-mobile", name: "Octop Mobile", meta: "huangcheng", url: "https://github.com/huangcheng/OctopMobile" },
   { key: "expo", name: "Expo", meta: "MIT" },
   { key: "rn", name: "React Native", meta: "MIT" },
 ];
@@ -91,10 +95,23 @@ export default function AboutScreen() {
               {index > 0 ? (
                 <RNView style={[styles.divider, { backgroundColor: C.borderSecondary }]} />
               ) : null}
-              <RNView style={styles.ossRow}>
+              <Pressable
+                style={({ pressed }) => [styles.ossRow, pressed && row.url && styles.pressed]}
+                onPress={row.url ? () => void WebBrowser.openBrowserAsync(row.url as string) : undefined}
+                disabled={!row.url}
+                accessibilityRole={row.url ? "link" : "text"}
+                accessibilityLabel={row.url ? `${row.name} — ${row.url}` : row.name}
+              >
                 <Text style={[styles.ossName, { color: C.text }]}>{row.name}</Text>
                 <Text style={[styles.ossMeta, { color: C.textTertiary }]}>{row.meta}</Text>
-              </RNView>
+                {row.url ? (
+                  <SymbolView
+                    name={{ ios: "arrow.up.right", android: "north_east", web: "north_east" } as unknown as SFSymbol}
+                    tintColor={C.textTertiary}
+                    size={14}
+                  />
+                ) : null}
+              </Pressable>
             </RNView>
           ))}
         </RNView>
@@ -106,6 +123,9 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   header: {
     flexDirection: "row",
@@ -175,6 +195,7 @@ const styles = StyleSheet.create({
   ossRow: {
     flexDirection: "row",
     alignItems: "center",
+    gap: 6,
     paddingVertical: 10,
   },
   ossName: {
