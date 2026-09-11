@@ -31,3 +31,31 @@ export function getThreadHistory(
     `?limit=${limit}&offset=${offset}`;
   return api.apiRequest<HistoryResponse>(path);
 }
+
+/** PATCH /api/agents/{id}/threads/{thread_id} — rename and/or pin (contract §4, design 07). */
+export function updateThread(
+  api: Pick<ApiClient, "apiRequest">,
+  agentId: string,
+  threadId: string,
+  patch: { title?: string; pinned?: boolean },
+): Promise<ThreadSummary> {
+  return api.apiRequest<ThreadSummary>(
+    `/api/agents/${encodeURIComponent(agentId)}/threads/${encodeURIComponent(threadId)}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify(patch),
+    },
+  );
+}
+
+/** DELETE /api/agents/{id}/threads/{thread_id} — archive (contract §4, design 07). */
+export function deleteThread(
+  api: Pick<ApiClient, "apiRequest">,
+  agentId: string,
+  threadId: string,
+): Promise<void> {
+  return api.apiRequest<void>(
+    `/api/agents/${encodeURIComponent(agentId)}/threads/${encodeURIComponent(threadId)}`,
+    { method: "DELETE" },
+  );
+}

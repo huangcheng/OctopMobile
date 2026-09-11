@@ -1,74 +1,184 @@
 import { router } from "expo-router";
-import {
-  ActivityIndicator,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  View as RNView,
-} from "react-native";
+import { useMemo, useState } from "react";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
-import { Text, View } from "@/components/Themed";
+import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { EmptyState } from "@/src/components/EmptyState";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
-import { useSelectedAgent } from "@/src/features/agents/AgentContext";
-import { t } from "@/src/i18n";
+import { HeaderGear } from "@/src/components/HeaderGear";
+import { ScreenHeader } from "@/src/components/ScreenHeader";
+import { SearchField } from "@/src/components/SearchField";
+import { AgentTile } from "@/src/components/AgentTile";
+import { StatusPill } from "@/src/components/StatusPill";
 import type { Agent } from "@/src/api/types";
+import { useAuth } from "@/src/features/auth/AuthContext";
+import { useSelectedAgent } from "@/src/features/agents/AgentContext";
+import { useI18n } from "@/src/i18n/I18nProvider";
+import { tileColor, tileInitial } from "@/src/utils/color";
 
-export default function ExpertsScreen() {
-  const { agents, selectedAgentId, loading, error, selectAgent, refresh } = useSelectedAgent();
+const MBTI_RE = /\b([IE])([SN])([TF])([JP])\b/i;
 
-  async function handleSelect(agent: Agent) {
-    await selectAgent(agent.agent_id);
-    router.navigate("/(tabs)/tasks");
+function agentMbti(agent: Agent): string | null {
+  const fromName = agent.name?.toUpperCase().match(MBTI_RE)?.[0];
+  if (fromName) {
+    return fromName;
   }
+  return agent.description?.toUpperCase().match(MBTI_RE)?.[0] ?? null;
+}
 
-  if (loading && agents.length === 0) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-      </View>
+function isRunning(agent: Agent): boolean {
+  return (agent.state ?? "").toLowerCase() === "running";
+}
+
+/** Experts list (design 08): search, MY EXPERTS cards with MBTI tags + status, market row. */
+export default function ExpertsScreen() {
+  const C = useOctopTheme();
+  const { t } = useI18n();
+  const { baseUrl } = useAuth();
+  const { agents, loading, error, refresh } = useSelectedAgent();
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      return agents;
+    }
+    return agents.filter(
+      (agent) =>
+        agent.name.toLowerCase().includes(q) ||
+        (agent.description ?? "").toLowerCase().includes(q),
     );
+  }, [agents, query]);
+
+  function openConsole() {
+    if (baseUrl) {
+      void WebBrowser.openBrowserAsync(baseUrl);
+    }
   }
 
   return (
-    <View style={styles.container}>
+    <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
+      <ScreenHeader title={t("experts.title")} action={<HeaderGear />} />
+
+      <RNView style={styles.searchWrap}>
+        <SearchField
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t("experts.searchPlaceholder")}
+        />
+      </RNView>
+
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
-      <FlatList
-        data={agents}
-        keyExtractor={(item) => item.agent_id}
-        contentContainerStyle={agents.length === 0 ? styles.emptyList : undefined}
-        ListEmptyComponent={
-          !loading && !error ? (
-            <Text style={styles.emptyText}>{t("experts.empty")}</Text>
-          ) : null
-        }
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() => handleSelect(item)}
-            style={({ pressed }) => [
-              styles.row,
-              item.agent_id === selectedAgentId && styles.rowSelected,
-              pressed && styles.rowPressed,
-            ]}
-            accessibilityRole="button"
-          >
-            <RNView style={styles.rowContent}>
-              <Text style={styles.name}>{item.name}</Text>
-              {item.description ? (
-                <Text style={styles.description} numberOfLines={2}>
-                  {item.description}
-                </Text>
-              ) : null}
-            </RNView>
-            {(item.unread_count ?? 0) > 0 ? (
-              <RNView style={styles.badge}>
-                <Text style={styles.badgeText}>{item.unread_count}</Text>
+      {agents.length > 0 ? (
+        <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
+          {t("experts.mine")}
+        </Text>
+      ) : null}
+
+      {loading && agents.length === 0 ? (
+        <RNView style={styles.listWrap}>
+          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border, opacity: 0.7 }]}>
+            <RNView style={styles.cardRow}>
+              <RNView style={[styles.skeletonTile, { backgroundColor: C.bgTertiary }]} />
+              <RNView style={styles.skeletonLines}>
+                <RNView style={[styles.skeletonTitle, { backgroundColor: C.bgTertiary }]} />
+                <RNView style={[styles.skeletonDesc, { backgroundColor: C.bgTertiary }]} />
               </RNView>
-            ) : null}
-          </Pressable>
-        )}
-      />
-    </View>
+            </RNView>
+          </RNView>
+        </RNView>
+      ) : null}
+
+      {!loading && agents.length === 0 && !error ? (
+        <EmptyState
+          title={t("experts.emptyTitle")}
+          subtitle={t("experts.emptySubtitle")}
+          ctaLabel={t("experts.emptyCta")}
+          onCta={openConsole}
+        />
+      ) : null}
+
+      {filtered.length > 0 || agents.length > 0 ? (
+        <FlatList<Agent>
+          data={filtered}
+          keyExtractor={(item) => item.agent_id}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
+          }
+          contentContainerStyle={styles.list}
+          ListFooterComponent={
+            <Pressable
+              onPress={openConsole}
+              style={({ pressed }) => [
+                styles.marketRow,
+                { borderColor: C.brandBorder, backgroundColor: C.brandBg },
+                pressed && styles.pressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t("experts.market")}
+            >
+              <Text style={[styles.marketText, { color: C.brand }]}>{t("experts.market")}</Text>
+            </Pressable>
+          }
+          renderItem={({ item }) => {
+            const mbti = agentMbti(item);
+            const unread = item.unread_count ?? 0;
+
+            return (
+              <Pressable
+                onPress={() => router.push(`/expert/${item.agent_id}`)}
+                style={({ pressed }) => [
+                  styles.card,
+                  {
+                    backgroundColor: C.bgElevated,
+                    borderColor: C.border,
+                    boxShadow: `0px 1px 3px ${C.cardShadow}`,
+                  },
+                  pressed && { backgroundColor: C.bgTertiary },
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={item.name}
+              >
+                <AgentTile
+                  label={tileInitial(item.name)}
+                  color={tileColor(item.color, item.agent_id)}
+                  iconUrl={item.icon_url}
+                  iconName={item.icon_name}
+                />
+                <RNView style={styles.cardBody}>
+                  <RNView style={styles.nameRow}>
+                    <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
+                      {item.name}
+                    </Text>
+                    {mbti ? (
+                      <RNView style={[styles.mbtiChip, { backgroundColor: C.bgTertiary }]}>
+                        <Text style={[styles.mbtiText, { color: C.textSecondary }]}>{mbti}</Text>
+                      </RNView>
+                    ) : null}
+                  </RNView>
+                  {item.description ? (
+                    <Text style={[styles.desc, { color: C.textSecondary }]} numberOfLines={2}>
+                      {item.description}
+                    </Text>
+                  ) : null}
+                  <StatusPill
+                    kind={isRunning(item) ? "running" : "stopped"}
+                    label={isRunning(item) ? t("experts.running") : t("experts.stopped")}
+                  />
+                </RNView>
+                {unread > 0 ? (
+                  <RNView style={[styles.badge, { backgroundColor: C.brand }]}>
+                    <Text style={[styles.badgeText, { color: C.onBrand }]}>{unread}</Text>
+                  </RNView>
+                ) : null}
+              </Pressable>
+            );
+          }}
+        />
+      ) : null}
+    </RNView>
   );
 }
 
@@ -76,60 +186,111 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  centered: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+  pressed: {
+    transform: [{ scale: 0.98 }],
+    opacity: 0.9,
   },
-  emptyList: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 24,
+  searchWrap: {
+    paddingHorizontal: 16,
+    marginBottom: 14,
   },
-  emptyText: {
-    textAlign: "center",
-    fontSize: 16,
-    opacity: 0.6,
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1,
+    paddingHorizontal: 20,
+    marginBottom: 8,
   },
-  row: {
+  listWrap: {
+    paddingHorizontal: 16,
+  },
+  list: {
+    paddingHorizontal: 16,
+    paddingBottom: 130,
+    gap: 10,
+  },
+  card: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#ccc",
+    gap: 12,
+    borderRadius: 16,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    padding: 14,
   },
-  rowSelected: {
-    backgroundColor: "rgba(47, 149, 220, 0.08)",
+  cardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
   },
-  rowPressed: {
-    opacity: 0.7,
-  },
-  rowContent: {
+  cardBody: {
     flex: 1,
-    marginRight: 12,
+    gap: 4,
+  },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   name: {
-    fontSize: 17,
-    fontWeight: "600",
+    fontSize: 16,
+    fontWeight: "700",
+    flexShrink: 1,
   },
-  description: {
-    marginTop: 4,
-    fontSize: 14,
-    opacity: 0.6,
+  mbtiChip: {
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 7,
+  },
+  mbtiText: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+  },
+  desc: {
+    fontSize: 13,
+    lineHeight: 18,
   },
   badge: {
-    minWidth: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "#2f95dc",
+    minWidth: 22,
+    height: 22,
+    borderRadius: 11,
+    paddingHorizontal: 7,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 6,
   },
   badgeText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "700",
+  },
+  marketRow: {
+    borderRadius: 16,
+    borderCurve: "continuous",
+    borderWidth: 1.5,
+    alignItems: "center",
+    paddingVertical: 14,
+  },
+  marketText: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  skeletonTile: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+  },
+  skeletonLines: {
+    flex: 1,
+    gap: 8,
+  },
+  skeletonTitle: {
+    width: "45%",
+    height: 14,
+    borderRadius: 7,
+  },
+  skeletonDesc: {
+    width: "70%",
+    height: 11,
+    borderRadius: 6,
   },
 });

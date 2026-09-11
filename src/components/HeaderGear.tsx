@@ -1,37 +1,46 @@
 import { router } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, View as RNView } from "react-native";
 
-import Colors from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
+import { useOctopTheme } from "@/src/components/useOctopTheme";
 
 export function HeaderGear() {
-  const colorScheme = useColorScheme();
-  const tint = Colors[colorScheme ?? "light"].tint;
-
+  const C = useOctopTheme();
   return (
     <Pressable
       onPress={() => router.push("/settings")}
-      style={styles.button}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel="Settings"
     >
-      <SymbolView
-        name={{
-          ios: "gearshape",
-          android: "settings",
-          web: "settings",
-        }}
-        tintColor={tint}
-        size={22}
-      />
+      <RNView style={[styles.iconWrap, { backgroundColor: C.brand, boxShadow: `0px 2px 6px ${C.brandShadow}` }]}>
+        <SymbolView
+          name={{
+            ios: "gearshape.fill",
+            android: "settings",
+            web: "settings",
+          }}
+          tintColor={C.onBrand}
+          size={16}
+        />
+      </RNView>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    marginRight: 8,
-    padding: 4,
+    padding: 2,
+  },
+  pressed: {
+    opacity: 0.75,
+    transform: [{ scale: 0.95 }],
+  },
+  iconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

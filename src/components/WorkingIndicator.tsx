@@ -1,14 +1,21 @@
-import { ActivityIndicator, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, View as RNView } from "react-native";
 
-import { Text, View } from "@/components/Themed";
-import { t } from "@/src/i18n";
+import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { useI18n } from "@/src/i18n/I18nProvider";
 
 export function WorkingIndicator() {
+  const C = useOctopTheme();
+  const { t } = useI18n();
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="small" color="#666" />
-      <Text style={styles.label}>{t("chat.working")}</Text>
-    </View>
+    <RNView
+      style={[
+        styles.container,
+        { backgroundColor: C.brandBg, borderColor: C.brandBorder },
+      ]}
+    >
+      <ActivityIndicator size="small" color={C.brand} />
+      <Text style={[styles.label, { color: C.textSecondary }]}>{t("chat.working")}</Text>
+    </RNView>
   );
 }
 
@@ -17,13 +24,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
-    paddingHorizontal: 14,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    marginVertical: 4,
+    marginVertical: 2,
+    marginLeft: 4,
     gap: 8,
+    borderRadius: 14,
+    borderCurve: "continuous",
+    borderWidth: StyleSheet.hairlineWidth,
   },
   label: {
-    fontSize: 14,
-    opacity: 0.7,
+    fontSize: 13,
+    fontWeight: "500",
   },
 });

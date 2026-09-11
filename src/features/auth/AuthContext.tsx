@@ -9,13 +9,13 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { Alert } from "react-native";
 
 import { getMe, login, logout } from "../../api/auth";
 import type { ApiError } from "../../api/http";
 import { createApiClient, type ApiClient } from "../../api/http";
 import type { User } from "../../api/types";
 import { t } from "../../i18n";
+import { CleartextDialog } from "../../components/CleartextDialog";
 import {
   ackCleartextWarning,
   getBaseUrl,
@@ -50,20 +50,21 @@ function isApiError(error: unknown): error is ApiError {
   );
 }
 
-function showCleartextWarning(): Promise<boolean> {
-  return new Promise((resolve) => {
-    Alert.alert(t("login.cleartextWarning"), undefined, [
-      { text: "Cancel", style: "cancel", onPress: () => resolve(false) },
-      { text: "Continue", onPress: () => resolve(true) },
-    ]);
-  });
-}
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<User | null>(null);
   const [baseUrl, setBaseUrlState] = useState<string | null>(null);
   const baseUrlRef = useRef<string | null>(null);
+  const [cleartextResolve, setCleartextResolve] = useState<((accept: boolean) => void) | null>(
+    null,
+  );
+
+  /** One-time cleartext confirm rendered as the design-02 dialog (no native Alert). */
+  const showCleartextWarning = useCallback(() => {
+    return new Promise<boolean>((resolve) => {
+      setCleartextResolve(() => resolve);
+    });
+  }, []);
 
   const handleUnauthorized = useCallback(() => {
     setUser(null);
@@ -141,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await setToken(response.access_token);
       setUser(response.user);
       setStatus("authenticated");
-      router.replace("/(tabs)/experts");
+      router.replace("/(tabs)/chats");
     },
     [api],
   );
@@ -163,7 +164,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [status, user, baseUrl, api, signIn, signOut, setBaseUrl],
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+      <CleartextDialog
+        visible={cleartextResolve !== null}
+        onAnswer={(accept) => {
+          const resolve = cleartextResolve;
+          setCleartextResolve(null);
+          resolve?.(accept);
+        }}
+      />
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth(): AuthContextValue {

@@ -213,7 +213,7 @@ Shorthand: raw non-JSON text is treated as `user_turn` text (prefer JSON).
 | `error` | Show `message`; often followed by `done` |
 | `turn_status` | `{ thread_id, active }` — update UI |
 | `pong` | Heartbeat OK |
-| other (`tool_*`, status, thinking, …) | Show minimal “working…” indicator; **do not** render tool cards |
+| other (`tool_*`, status, thinking, …) | Feed process card / “working…”; **do not** dump raw tool JSON in the transcript |
 
 Harness may emit additional chunk types; treat unknown types as non-fatal “working…” signals until `done`/`error`.
 
@@ -266,3 +266,40 @@ When moving the pin forward:
 1. Diff `docs/api.md` + `src/octop/api/routers/chat/{ws,history,models}.py` + `auth.py`
 2. Re-run smoke path
 3. Update tag/commit header in this file and README
+4. Re-verify §9 paths (`knowledge-bases`, `cron`, `proactive-care`) against live routers
+
+---
+
+## 9. Knowledge, automation & proactive care (mobile redesign)
+
+Used by the Ardot redesign tabs (Knowledge / Automation) and Settings notifications. Shapes below match the mobile client (`src/api/{knowledge,cron,proactiveCare}.ts`). Prefer live Octop routers over stale docs when they disagree; re-check on re-pin.
+
+### Knowledge
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/api/knowledge-bases` | Bases visible to the current user |
+| `GET` | `/api/knowledge-bases/{kb_id}/documents` | Document rows for one base |
+
+`KnowledgeBase` (client): `id`, `name`, optional `description`, `doc_count` / `document_count`, `shared`, timestamps as provided by server.
+
+`KnowledgeDocument` (client): `id`, `title` / `name`, optional `status`, `updated_at`.
+
+### Cron / automation
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/api/agents/{agent_id}/cron` | Jobs for an owned agent |
+| `PATCH` | `/api/agents/{agent_id}/cron/{cron_id}` | Body `{ "enabled": boolean }` — design 13 toggle |
+| `GET` | `/api/cron/settings` | Server timezone for Automation footer |
+
+`CronJob` (client): `id`, `name` / `title`, `trigger` (cron / `interval:` / `date:`), `enabled`, optional `last_status`, `last_run_at`.
+
+### Proactive care (Settings)
+
+| Method | Path | Notes |
+|--------|------|--------|
+| `GET` | `/api/agents/{agent_id}/proactive-care` | Current config for selected agent |
+| `PUT` | `/api/agents/{agent_id}/proactive-care` | Save config (body = full `ProactiveCareConfig`) |
+
+MVP UI only toggles `enabled` and persists the rest of the config object returned by GET.

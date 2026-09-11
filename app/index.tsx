@@ -16,7 +16,7 @@ export default function Index() {
   }
 
   if (status === 'authenticated') {
-    return <Redirect href="/(tabs)/experts" />;
+    return <Redirect href="/(tabs)/chats" />;
   }
 
   return <Redirect href="/(auth)/login" />;

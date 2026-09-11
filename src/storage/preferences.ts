@@ -1,5 +1,9 @@
 import * as SecureStore from "expo-secure-store";
+
+import type { LocalePreference } from "../i18n";
 import { STORAGE_KEYS } from "./keys";
+
+const LOCALE_PREFERENCES = new Set<LocalePreference>(["system", "en", "zh"]);
 
 export function normalizeBaseUrl(input: string): string {
   const trimmed = input.trim().replace(/\/+$/, "");
@@ -43,4 +47,16 @@ export async function setSelectedAgentId(agentId: string): Promise<void> {
 
 export async function clearSelectedAgentId(): Promise<void> {
   await SecureStore.deleteItemAsync(STORAGE_KEYS.selectedAgentId);
+}
+
+export async function getLocalePreference(): Promise<LocalePreference> {
+  const value = await SecureStore.getItemAsync(STORAGE_KEYS.localePreference);
+  if (value && LOCALE_PREFERENCES.has(value as LocalePreference)) {
+    return value as LocalePreference;
+  }
+  return "system";
+}
+
+export async function setLocalePreference(preference: LocalePreference): Promise<void> {
+  await SecureStore.setItemAsync(STORAGE_KEYS.localePreference, preference);
 }

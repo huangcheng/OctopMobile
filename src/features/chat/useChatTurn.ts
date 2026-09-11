@@ -19,6 +19,39 @@ export type ChatDisplayMessage = {
   content: string;
 };
 
+/** Process-card data (design 15): tool calls + deep-thinking signals during a turn. */
+export type ProcessItem = {
+  id: string;
+  kind: "tool" | "thinking";
+  name: string;
+  detail: string;
+  status: "running" | "done" | "error";
+};
+
+export type ProcessState = {
+  items: ProcessItem[];
+  toolCount: number;
+  thinkingCount: number;
+};
+
+const EMPTY_PROCESS: ProcessState = { items: [], toolCount: 0, thinkingCount: 0 };
+
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function mergeProcessItem(prev: ProcessState, item: ProcessItem): ProcessState {
+  const existing = prev.items.find((candidate) => candidate.id === item.id);
+  const items = existing
+    ? prev.items.map((candidate) => (candidate.id === item.id ? item : candidate))
+    : [...prev.items, item];
+  return {
+    items,
+    toolCount: items.filter((candidate) => candidate.kind === "tool").length,
+    thinkingCount: items.filter((candidate) => candidate.kind === "thinking").length,
+  };
+}
+
 const HISTORY_RETRY_CAP = 10;
 const DEFAULT_HISTORY_RETRY_MS = 1500;
 
@@ -68,6 +101,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
   const [disconnected, setDisconnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [process, setProcess] = useState<ProcessState>(EMPTY_PROCESS);
 
   const wsRef = useRef<ChatWsClient | null>(null);
   const connectDeduperRef = useRef(createConnectDeduper());
@@ -92,19 +126,35 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
     turnActiveRef.current = false;
   }, []);
 
+  const appendStreamChunk = useCallback((chunk: string) => {
+    if (!chunk) {
+      return;
+    }
+    setStreamingText((prev) => {
+      const next = prev + chunk;
+      streamingTextRef.current = next;
+      return next;
+    });
+    setWorking(false);
+    setTurnActive(true);
+    turnActiveRef.current = true;
+  }, []);
+
   const handleFrame = useCallback(
     (frame: Record<string, unknown>) => {
       const type = typeof frame.type === "string" ? frame.type : "";
 
       switch (type) {
-        case "token": {
-          const chunk = typeof frame.content === "string" ? frame.content : "";
-          setStreamingText((prev) => {
-            const next = prev + chunk;
-            streamingTextRef.current = next;
-            return next;
-          });
-          setWorking(false);
+        case "token":
+        case "text":
+        case "delta": {
+          // Octop harness tokens use `content`; tolerate `text` / `delta` aliases.
+          const chunk =
+            (typeof frame.content === "string" && frame.content) ||
+            (typeof frame.text === "string" && frame.text) ||
+            (typeof frame.delta === "string" && frame.delta) ||
+            "";
+          appendStreamChunk(chunk);
           break;
         }
         case "done":
@@ -120,16 +170,54 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
           if (typeof frame.active === "boolean") {
             setTurnActive(frame.active);
             turnActiveRef.current = frame.active;
+            if (!frame.active && streamingTextRef.current) {
+              finalizeAssistantTurn(streamingTextRef.current);
+            }
           }
           break;
         case "pong":
           break;
-        default:
-          setWorking(true);
+        default: {
+          // Non-text stream events: tool calls feed the process card (design 15),
+          // anything else keeps the working chip alive.
+          const lower = type.toLowerCase();
+          if (lower.startsWith("tool")) {
+            const name =
+              asString(frame.tool) || asString(frame.name) || asString(frame.tool_name) || type;
+            const detail =
+              asString(frame.args) || asString(frame.input) || asString(frame.query) || "";
+            const status: ProcessItem["status"] = lower.includes("error")
+              ? "error"
+              : lower.endsWith("end") || lower.endsWith("done") || lower.endsWith("result")
+                ? "done"
+                : "running";
+            setProcess((prev) =>
+              mergeProcessItem(prev, { id: `${name}:${detail}`, kind: "tool", name, detail, status }),
+            );
+            if (!streamingTextRef.current) {
+              setWorking(true);
+            }
+          } else if (lower.includes("think")) {
+            setProcess((prev) =>
+              mergeProcessItem(prev, {
+                id: `thinking:${prev.thinkingCount + 1}`,
+                kind: "thinking",
+                name: "thinking",
+                detail: asString(frame.text) || asString(frame.content),
+                status: "done",
+              }),
+            );
+            if (!streamingTextRef.current) {
+              setWorking(true);
+            }
+          } else if (!streamingTextRef.current) {
+            setWorking(true);
+          }
           break;
+        }
       }
     },
-    [finalizeAssistantTurn],
+    [appendStreamChunk, finalizeAssistantTurn],
   );
 
   const ensureWs = useCallback(
@@ -244,6 +332,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
       setWorking(false);
       setTurnActive(true);
       turnActiveRef.current = true;
+      setProcess(EMPTY_PROCESS);
 
       const client = await ensureWs(false);
       client?.send({ type: "user_turn", text: trimmed, thread_id: threadId });
@@ -281,5 +370,6 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
     reconnect,
     error,
     historyLoading,
+    process,
   };
 }

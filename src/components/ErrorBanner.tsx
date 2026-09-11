@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View as RNView } from "react-native";
 
-import { Text, View } from "@/components/Themed";
-import { t } from "@/src/i18n";
+import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { useI18n } from "@/src/i18n/I18nProvider";
 
 type ErrorBannerProps = {
   message: string;
@@ -9,15 +9,19 @@ type ErrorBannerProps = {
 };
 
 export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
+  const C = useOctopTheme();
+  const { t } = useI18n();
   return (
-    <View style={styles.banner}>
-      <Text style={styles.message}>{message}</Text>
+    <RNView style={[styles.banner, { backgroundColor: C.dangerBg, borderBottomColor: C.dangerBg }]}>
+      <Text style={[styles.message, { color: C.dangerText }]} numberOfLines={3}>
+        {message}
+      </Text>
       {onRetry ? (
-        <Pressable onPress={onRetry} accessibilityRole="button">
-          <Text style={styles.retry}>{t("chat.retry")}</Text>
+        <Pressable onPress={onRetry} accessibilityRole="button" hitSlop={8}>
+          <Text style={[styles.retry, { color: C.brand }]}>{t("chat.retry")}</Text>
         </Pressable>
       ) : null}
-    </View>
+    </RNView>
   );
 }
 
@@ -28,17 +32,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: "#fdecea",
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   message: {
     flex: 1,
-    color: "#b00020",
     fontSize: 14,
   },
   retry: {
     marginLeft: 12,
-    color: "#2f95dc",
-    fontWeight: "600",
+    fontWeight: "700",
     fontSize: 14,
   },
 });

@@ -1,57 +1,25 @@
-import { SymbolView } from 'expo-symbols';
-import { Tabs } from 'expo-router';
+import { Tabs } from "expo-router";
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
-import { HeaderGear } from '@/src/components/HeaderGear';
-import { t } from '@/src/i18n';
+import { PillTabBar } from "@/src/components/PillTabBar";
 
+/**
+ * 4-tab layout per the design constitution (Ardot `PillTabBar`):
+ * Chats / Experts / Knowledge / Automation. Screens render their own
+ * large-title headers (designs 03/08/11/13), so headers are hidden here.
+ */
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
     <Tabs
+      tabBar={(props) => <PillTabBar {...props} />}
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: useClientOnlyValue(false, true),
-        headerRight: () => <HeaderGear />,
-      }}>
-      <Tabs.Screen
-        name="experts"
-        options={{
-          title: t('experts.title'),
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'person.2',
-                android: 'group',
-                web: 'group',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tasks"
-        options={{
-          title: t('tasks.title'),
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'checklist',
-                android: 'checklist',
-                web: 'checklist',
-              }}
-              tintColor={color}
-              size={28}
-            />
-          ),
-        }}
-      />
+        headerShown: false,
+        animation: "none",
+      }}
+    >
+      <Tabs.Screen name="chats" />
+      <Tabs.Screen name="experts" />
+      <Tabs.Screen name="knowledge" />
+      <Tabs.Screen name="automation" />
     </Tabs>
   );
 }

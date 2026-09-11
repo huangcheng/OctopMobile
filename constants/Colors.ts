@@ -1,19 +1,24 @@
-const tintColorLight = '#2f95dc';
-const tintColorDark = '#fff';
+import { Octop, OctopDark } from "./OctopTheme";
 
 export default {
   light: {
-    text: '#000',
-    background: '#fff',
-    tint: tintColorLight,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorLight,
+    text: Octop.text,
+    background: Octop.bgLayout,
+    tint: Octop.brand,
+    tabIconDefault: Octop.textTertiary,
+    tabIconSelected: Octop.brand,
+    layout: Octop.bgLayout,
+    border: Octop.border,
+    card: Octop.bg,
   },
   dark: {
-    text: '#fff',
-    background: '#000',
-    tint: tintColorDark,
-    tabIconDefault: '#ccc',
-    tabIconSelected: tintColorDark,
+    text: OctopDark.text,
+    background: OctopDark.bgLayout,
+    tint: OctopDark.brand,
+    tabIconDefault: OctopDark.textTertiary,
+    tabIconSelected: OctopDark.brand,
+    layout: OctopDark.bgLayout,
+    border: OctopDark.border,
+    card: OctopDark.bg,
   },
 };

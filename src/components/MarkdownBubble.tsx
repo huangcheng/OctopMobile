@@ -1,95 +1,67 @@
-import { StyleSheet } from "react-native";
+import { useMemo } from "react";
+import { StyleSheet, Text, View as RNView } from "react-native";
 import Markdown from "react-native-markdown-display";
 
-import { Text, View } from "@/components/Themed";
+import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { buildAssistantMarkdownStyles } from "@/src/components/markdownStyles";
 
 type MarkdownBubbleProps = {
   content: string;
   role: "user" | "assistant";
 };
 
-const markdownStyles = StyleSheet.create({
-  body: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  heading1: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 8,
-  },
-  heading2: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 6,
-  },
-  heading3: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  bullet_list: {
-    marginVertical: 4,
-  },
-  ordered_list: {
-    marginVertical: 4,
-  },
-  code_inline: {
-    fontFamily: "monospace",
-    backgroundColor: "rgba(0,0,0,0.06)",
-    paddingHorizontal: 4,
-    borderRadius: 4,
-  },
-  fence: {
-    fontFamily: "monospace",
-    backgroundColor: "rgba(0,0,0,0.06)",
-    padding: 8,
-    borderRadius: 6,
-    marginVertical: 6,
-  },
-  link: {
-    color: "#2f95dc",
-    textDecorationLine: "underline",
-  },
-});
-
+/** Design 15: user = solid brand bubble (right); assistant = surface card (left). */
 export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
+  const C = useOctopTheme();
+  const markdownStyles = useMemo(() => buildAssistantMarkdownStyles(C), [C]);
   const isUser = role === "user";
 
   if (isUser) {
     return (
-      <View style={[styles.bubble, styles.userBubble]}>
-        <Text style={styles.userText}>{content}</Text>
-      </View>
+      <RNView style={[styles.bubble, styles.userBubble, { backgroundColor: C.brand }]}>
+        <Text style={[styles.userText, { color: C.onBrand }]}>{content}</Text>
+      </RNView>
     );
   }
 
   return (
-    <View style={[styles.bubble, styles.assistantBubble]}>
+    <RNView
+      style={[
+        styles.bubble,
+        styles.assistantBubble,
+        { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
+      ]}
+    >
       <Markdown style={markdownStyles}>{content}</Markdown>
-    </View>
+    </RNView>
   );
 }
 
 const styles = StyleSheet.create({
   bubble: {
-    maxWidth: "85%",
+    maxWidth: "92%",
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 16,
-    marginVertical: 4,
+    paddingVertical: 11,
   },
   userBubble: {
     alignSelf: "flex-end",
-    backgroundColor: "#2f95dc",
+    borderTopLeftRadius: 18,
+    borderTopRightRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderBottomRightRadius: 6,
+    borderCurve: "continuous",
   },
   assistantBubble: {
     alignSelf: "flex-start",
-    backgroundColor: "rgba(0,0,0,0.06)",
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 18,
+    borderBottomRightRadius: 18,
+    borderBottomLeftRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: StyleSheet.hairlineWidth,
   },
   userText: {
-    color: "#fff",
     fontSize: 16,
-    lineHeight: 22,
+    lineHeight: 23,
   },
 });
