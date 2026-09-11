@@ -1,9 +1,8 @@
-import { Pressable, StyleSheet, Text, View as RNView } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View as RNView } from "react-native";
 import {
   initialWindowMetrics,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { SymbolView } from "expo-symbols";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { useI18n } from "@/src/i18n/I18nProvider";
@@ -30,7 +29,7 @@ type PillTabBarProps = {
   insets?: { top: number; right: number; bottom: number; left: number };
 };
 
-type TabIcon = { ios: string; android: string; web: string };
+type TabIcon = { active: number; idle: number };
 
 /**
  * Ardot component `PillTabBar` (node 4:312):
@@ -38,30 +37,40 @@ type TabIcon = { ios: string; android: string; web: string };
  * - Tabs: vertical stack (icon 18 + gap 3 + 10pt caps label), radius 26
  * - Active: brand fill + white glyph/label; idle: white fill + #9CA3AF
  * - Screen chrome `Bottom Bar`: pad H 21 / top 12 / bottom 21
- * Icons: ic/chat, ic/bot, ic/book, ic/alarm (SF/Material stand-ins).
+ * Icons: exact Ardot vectors `ic/chat|bot|book|alarm` (white = active, gray = idle).
  */
 const TABS: Array<{ name: string; labelKey: MessageKey; icon: TabIcon }> = [
   {
     name: "chats",
     labelKey: "tabs.chats",
-    icon: { ios: "message", android: "chat_bubble_outline", web: "chat_bubble_outline" },
+    icon: {
+      active: require("@/assets/icons/tab-chat-w.png"),
+      idle: require("@/assets/icons/tab-chat-g.png"),
+    },
   },
   {
     name: "experts",
     labelKey: "tabs.experts",
-    // Design uses robot head (ic/bot); SF has no robot — cpu/desktop is closest.
-    icon: { ios: "desktopcomputer", android: "smart_toy", web: "smart_toy" },
+    icon: {
+      active: require("@/assets/icons/tab-bot-w.png"),
+      idle: require("@/assets/icons/tab-bot-g.png"),
+    },
   },
   {
     name: "knowledge",
     labelKey: "tabs.knowledge",
-    icon: { ios: "book", android: "menu_book", web: "menu_book" },
+    icon: {
+      active: require("@/assets/icons/tab-book-w.png"),
+      idle: require("@/assets/icons/tab-book-g.png"),
+    },
   },
   {
     name: "automation",
     labelKey: "tabs.automation",
-    // Was `clock.alarm.fill` (invalid SF Symbol → missing glyph).
-    icon: { ios: "alarm", android: "alarm", web: "alarm" },
+    icon: {
+      active: require("@/assets/icons/tab-alarm-w.png"),
+      idle: require("@/assets/icons/tab-alarm-g.png"),
+    },
   },
 ];
 
@@ -129,10 +138,11 @@ export function PillTabBar({ state, navigation, insets: navInsets }: PillTabBarP
               accessibilityState={{ selected: active }}
               accessibilityLabel={t(tab.labelKey)}
             >
-              <SymbolView
-                name={tab.icon as unknown as Parameters<typeof SymbolView>[0]["name"]}
-                tintColor={fg}
-                size={18}
+              <Image
+                source={active ? tab.icon.active : tab.icon.idle}
+                style={styles.icon}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
               />
               <Text style={[styles.label, { color: fg }]} numberOfLines={1}>
                 {t(tab.labelKey)}
@@ -176,6 +186,10 @@ const styles = StyleSheet.create({
     gap: 3,
     borderRadius: 26,
     borderCurve: "continuous",
+  },
+  icon: {
+    width: 18,
+    height: 18,
   },
   label: {
     fontSize: 10,

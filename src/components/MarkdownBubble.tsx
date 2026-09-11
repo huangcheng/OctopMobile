@@ -49,19 +49,19 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
 
 const styles = StyleSheet.create({
   bubble: {
-    maxWidth: 288,
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
   userBubble: {
     alignSelf: "flex-end",
-    maxWidth: 280,
+    maxWidth: "85%",
     paddingVertical: 11,
     borderRadius: 18,
     borderCurve: "continuous",
   },
+  // Small screens: assistant card spans the full content width (reference apps).
   assistantBubble: {
-    alignSelf: "flex-start",
+    alignSelf: "stretch",
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,

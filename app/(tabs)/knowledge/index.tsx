@@ -7,6 +7,7 @@ import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { Fab } from "@/src/components/Fab";
+import { HeaderGear } from "@/src/components/HeaderGear";
 import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SearchField } from "@/src/components/SearchField";
 import { SkeletonList } from "@/src/components/SkeletonList";
@@ -92,7 +93,7 @@ export default function KnowledgeScreen() {
 
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-      <ScreenHeader title={t("knowledge.title")} />
+      <ScreenHeader title={t("knowledge.title")} action={<HeaderGear />} />
 
       {rows.length > 0 ? (
         <RNView style={styles.searchWrap}>
@@ -135,6 +136,7 @@ export default function KnowledgeScreen() {
 
       {filtered.length > 0 ? (
         <FlatList<KnowledgeRow>
+          showsVerticalScrollIndicator={false}
           data={filtered}
           keyExtractor={(item) => item.id}
           refreshControl={
@@ -211,7 +213,7 @@ const styles = StyleSheet.create({
   },
   searchWrap: {
     paddingHorizontal: 16,
-    marginBottom: 14,
+    marginBottom: 10,
   },
   skeletonWrap: {
     marginTop: 4,
@@ -230,9 +232,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: "600",
     paddingHorizontal: 20,
     marginBottom: 10,
   },

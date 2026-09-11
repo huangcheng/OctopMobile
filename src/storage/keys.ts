@@ -4,4 +4,5 @@ export const STORAGE_KEYS = {
   cleartextAck: "octop.cleartext_ack",
   selectedAgentId: "octop.selected_agent_id",
   localePreference: "octop.locale_preference",
+  palette: "octop.palette",
 } as const;

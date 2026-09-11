@@ -113,19 +113,24 @@ export default function ExpertDetailScreen() {
 
   const navHeader = (
     <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
-      <Pressable
-        onPress={() => router.back()}
-        hitSlop={12}
-        accessibilityLabel="Back"
-        accessibilityRole="button"
-      >
-        <SymbolView
-          name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
-          tintColor={C.brand}
-          size={20}
-        />
-      </Pressable>
-      <Text style={[styles.headerTitle, { color: C.text }]}>{t("expert.title")}</Text>
+      <RNView style={styles.headerSide}>
+        <Pressable
+          onPress={() => router.back()}
+          hitSlop={12}
+          accessibilityLabel="Back"
+          accessibilityRole="button"
+        >
+          <SymbolView
+            name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
+            tintColor={C.brand}
+            size={20}
+          />
+        </Pressable>
+      </RNView>
+      <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
+        {t("expert.title")}
+      </Text>
+      <RNView style={styles.headerSide} />
     </RNView>
   );
 
@@ -142,7 +147,10 @@ export default function ExpertDetailScreen() {
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       {navHeader}
 
-      <ScrollView contentContainerStyle={styles.scroll}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scroll}
+      >
         {error ? <ErrorBanner message={error} /> : null}
 
         <RNView style={styles.hero}>
@@ -308,14 +316,20 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
     paddingHorizontal: 12,
-    paddingRight: 16,
     paddingBottom: 10,
   },
+  // Equal side slots optically center the title (design 10).
+  headerSide: {
+    width: 28,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
   headerTitle: {
+    flex: 1,
     fontSize: 16,
     fontWeight: "600",
+    textAlign: "center",
   },
   scroll: {
     paddingHorizontal: 16,
@@ -354,9 +368,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: "600",
   },
   card: {
     borderRadius: 16,

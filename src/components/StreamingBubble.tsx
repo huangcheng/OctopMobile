@@ -46,12 +46,11 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
 
 const styles = StyleSheet.create({
   bubble: {
-    maxWidth: 288,
     paddingHorizontal: 14,
     paddingVertical: 12,
   },
   assistantBubble: {
-    alignSelf: "flex-start",
+    alignSelf: "stretch",
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,

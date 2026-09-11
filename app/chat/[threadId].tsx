@@ -180,12 +180,13 @@ export default function ThreadChatScreen() {
           },
         ]}
       >
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          accessibilityLabel="Back"
-          accessibilityRole="button"
-        >
+        <RNView style={styles.headerSide}>
+          <Pressable
+            onPress={() => router.back()}
+            hitSlop={12}
+            accessibilityLabel="Back"
+            accessibilityRole="button"
+          >
           <SymbolView
             name={
               { ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<
@@ -195,7 +196,9 @@ export default function ThreadChatScreen() {
             tintColor={C.brand}
             size={20}
           />
-        </Pressable>
+          </Pressable>
+        </RNView>
+        <RNView style={styles.headerCenter}>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
@@ -225,6 +228,8 @@ export default function ThreadChatScreen() {
             </Text>
           </RNView>
         </RNView>
+        </RNView>
+        <RNView style={styles.headerSide} />
       </RNView>
 
       {disconnected ? <ErrorBanner message={t("chat.disconnected")} onRetry={reconnect} /> : null}
@@ -233,6 +238,7 @@ export default function ThreadChatScreen() {
       <FlatList
         ref={listRef}
         inverted
+        showsVerticalScrollIndicator={false}
         data={listData}
         extraData={{ streamingText, working, turnActive, process }}
         keyExtractor={(item, index) =>
@@ -377,13 +383,24 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
     paddingHorizontal: 12,
-    paddingRight: 16,
     paddingBottom: 10,
   },
-  headerBody: {
+  // Equal side slots optically center the title group (design 15).
+  headerSide: {
+    width: 28,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  headerCenter: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  headerBody: {
+    flexShrink: 1,
     gap: 2,
   },
   headerTitle: {

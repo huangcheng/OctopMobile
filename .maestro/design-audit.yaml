@@ -1,36 +1,62 @@
-# Design-constitution audit: walks every main screen and screenshots it.
+# Design-constitution audit: cold-starts the app and screenshots every main screen.
 # Compare captures against docs/design/screens/*.png (Ardot is the source of truth).
 # Requires: Metro on :8081 (`npx expo start`), iOS Simulator booted, app logged in.
+# NOTE: each segment stopApp+openLink cold-starts (Expo Go resumes the last route,
+# and pushed screens like New Chat have no tab bar), so avoid relying on `back`.
 appId: host.exp.Exponent
 ---
+# 03 Conversation + 17 New chat
+- stopApp: host.exp.Exponent
 - openLink: "exp://localhost:8081"
-- waitForAnimationToEnd:
-    timeout: 40000
+- waitForAnimationToEnd: { timeout: 40000 }
+- tapOn: "对话"
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "03-chats"
 - tapOn: "新对话"
-- waitForAnimationToEnd:
-    timeout: 8000
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "17-new-chat"
-- tapOn: "Back"
-- waitForAnimationToEnd:
-    timeout: 8000
+
+# 15 Chat
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 40000 }
+- tapOn: "对话"
+- waitForAnimationToEnd: { timeout: 8000 }
+- tapOn: "OPC 的概念是什么"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "15-chat"
+
+# 08 Experts + 10 Expert detail
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 40000 }
 - tapOn: "专家"
-- waitForAnimationToEnd:
-    timeout: 8000
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "08-experts"
-- tapOn: "Back"
+- tapOn: "AI 编程实战导师"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "10-expert-detail"
+
+# 19 Settings (+ language sheet)
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 40000 }
+- tapOn: "专家"
+- waitForAnimationToEnd: { timeout: 8000 }
 - tapOn: "Settings"
-- waitForAnimationToEnd:
-    timeout: 8000
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "19-settings"
-- tapOn: "Back"
-- waitForAnimationToEnd:
-    timeout: 8000
+- tapOn: "语言"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "19b-language-sheet"
+
+# 11 Knowledge + 13 Automation
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 40000 }
 - tapOn: "知识"
-- waitForAnimationToEnd:
-    timeout: 8000
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "11-knowledge"
 - tapOn: "自动化"
-- waitForAnimationToEnd:
-    timeout: 8000
+- waitForAnimationToEnd: { timeout: 8000 }
 - takeScreenshot: "13-automation"

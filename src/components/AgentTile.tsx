@@ -31,12 +31,14 @@ export function AgentTile(props: {
   const { baseUrl } = useAuth();
   const absoluteUrl = resolveAgentIconUrl(baseUrl, props.iconUrl);
   const [authHeaders, setAuthHeaders] = useState<Record<string, string> | undefined>();
+  const [headersReady, setHeadersReady] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     setImageFailed(false);
     if (!absoluteUrl) {
       setAuthHeaders(undefined);
+      setHeadersReady(false);
       return;
     }
     let cancelled = false;
@@ -44,6 +46,7 @@ export function AgentTile(props: {
       const token = await getToken();
       if (!cancelled) {
         setAuthHeaders(token ? { Authorization: `Bearer ${token}` } : undefined);
+        setHeadersReady(true);
       }
     })();
     return () => {
@@ -51,7 +54,9 @@ export function AgentTile(props: {
     };
   }, [absoluteUrl]);
 
-  const showImage = Boolean(absoluteUrl) && !imageFailed;
+  // Render the image only once auth headers are attached — fetching early
+  // without them 401s the avatar endpoint and sticks the tile on the glyph.
+  const showImage = Boolean(absoluteUrl) && !imageFailed && headersReady;
   const glyph = expertGlyphForName(props.iconName);
   const tintBg = `${props.color}1F`; // 12% alpha — Ardot KB tile pattern
   const fg = tone === "tint" ? props.color : "#FFFFFF";

@@ -17,6 +17,7 @@ import { SymbolView } from "expo-symbols";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
+import { HeaderGear } from "@/src/components/HeaderGear";
 import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { AgentTile } from "@/src/components/AgentTile";
@@ -64,6 +65,9 @@ export default function ChatsScreen() {
   const [sheetRow, setSheetRow] = useState<ThreadRow | null>(null);
   const [renameRow, setRenameRow] = useState<ThreadRow | null>(null);
   const [renameText, setRenameText] = useState("");
+  // Only user-initiated pull-to-refresh drives `refreshing`; silent focus
+  // refreshes must not (iOS parks a ~70pt offset for the spinner otherwise).
+  const [pulling, setPulling] = useState(false);
   const refreshGen = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -107,6 +111,12 @@ export default function ChatsScreen() {
       }
     }
   }, [agents, api, refreshAgents, t]);
+
+  async function handlePull() {
+    setPulling(true);
+    await refresh();
+    setPulling(false);
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -245,18 +255,21 @@ export default function ChatsScreen() {
       <ScreenHeader
         title={t("chats.title")}
         action={
-          <Pressable
-            onPress={handleNew}
-            style={({ pressed }) => [
-              styles.newPill,
-              { backgroundColor: C.brand },
-              pressed && styles.pressed,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={t("chats.new")}
-          >
-            <Text style={[styles.newPillText, { color: C.onBrand }]}>{t("chats.new")}</Text>
-          </Pressable>
+          <RNView style={styles.headerActions}>
+            <HeaderGear />
+            <Pressable
+              onPress={handleNew}
+              style={({ pressed }) => [
+                styles.newPill,
+                { backgroundColor: C.brand },
+                pressed && styles.pressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t("chats.new")}
+            >
+              <Text style={[styles.newPillText, { color: C.onBrand }]}>{t("chats.new")}</Text>
+            </Pressable>
+          </RNView>
         }
       />
 
@@ -302,6 +315,36 @@ export default function ChatsScreen() {
         </ScrollView>
       ) : null}
 
+      {hasData ? (
+        <RNView style={styles.greetingWrap}>
+          <RNView
+            style={[
+              styles.greeting,
+              {
+                backgroundColor: C.bgElevated,
+                borderColor: C.border,
+                boxShadow: `0px 1px 3px ${C.cardShadow}`,
+              },
+            ]}
+          >
+            <Image
+              source={require("@/assets/images/octop-mascot-tasks.png")}
+              style={styles.greetingMascot}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
+            <RNView style={styles.greetingBody}>
+              <Text style={[styles.greetingTitle, { color: C.text }]}>
+                {t(greetingKey, { name: userName })}
+              </Text>
+              <Text style={[styles.greetingMeta, { color: C.textTertiary }]}>
+                {t("chats.stats", { running: runningCount, unread: unreadTotal })}
+              </Text>
+            </RNView>
+          </RNView>
+        </RNView>
+      ) : null}
+
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
       {loading && rows.length === 0 && hasData ? (
@@ -338,36 +381,10 @@ export default function ChatsScreen() {
               : `${item.row.agent.agent_id}:${item.row.thread.thread_id}`
           }
           refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
+            <RefreshControl refreshing={pulling} onRefresh={handlePull} tintColor={C.brand} />
           }
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.list}
-          ListHeaderComponent={
-            <RNView
-              style={[
-                styles.greeting,
-                {
-                  backgroundColor: C.bgElevated,
-                  borderColor: C.border,
-                  boxShadow: `0px 1px 3px ${C.cardShadow}`,
-                },
-              ]}
-            >
-              <Image
-                source={require("@/assets/images/octop-mascot-peek.png")}
-                style={styles.greetingMascot}
-                resizeMode="contain"
-                accessibilityIgnoresInvertColors
-              />
-              <RNView style={styles.greetingBody}>
-                <Text style={[styles.greetingTitle, { color: C.text }]}>
-                  {t(greetingKey, { name: userName })}
-                </Text>
-                <Text style={[styles.greetingMeta, { color: C.textTertiary }]}>
-                  {t("chats.stats", { running: runningCount, unread: unreadTotal })}
-                </Text>
-              </RNView>
-            </RNView>
-          }
           // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.
           ItemSeparatorComponent={() => <RNView style={styles.separator} />}
           renderItem={({ item }) => {
@@ -538,6 +555,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  greetingWrap: {
+    paddingHorizontal: 16,
+  },
   greeting: {
     flexDirection: "row",
     alignItems: "center",
@@ -595,17 +620,14 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 16,
     paddingBottom: 130,
-    paddingTop: 2,
+    paddingTop: 4,
   },
   separator: {
     height: 10,
   },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
-    marginTop: 10,
-    marginBottom: 2,
+    fontSize: 12,
+    fontWeight: "600",
   },
   card: {
     flexDirection: "row",
@@ -618,7 +640,7 @@ const styles = StyleSheet.create({
   },
   cardBody: {
     flex: 1,
-    gap: 3,
+    gap: 2,
   },
   titleRow: {
     flexDirection: "row",

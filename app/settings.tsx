@@ -13,7 +13,10 @@ import { SymbolView } from "expo-symbols";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { PALETTE_KEYS } from "@/constants/OctopTheme";
+import { ActionSheet } from "@/src/components/ActionSheet";
 import { Toggle } from "@/src/components/Toggle";
+import { selectPalette, usePalette } from "@/src/features/theme/paletteStore";
 import { useToast } from "@/src/components/Toast";
 import { getProactiveCare, putProactiveCare } from "@/src/api/proactiveCare";
 import type { ProactiveCareConfig } from "@/src/api/types";
@@ -40,6 +43,9 @@ export default function SettingsScreen() {
   const [loggingOut, setLoggingOut] = useState(false);
   const [care, setCare] = useState<ProactiveCareConfig | null>(null);
   const [careBusy, setCareBusy] = useState(false);
+  const [langSheet, setLangSheet] = useState(false);
+  const [paletteSheet, setPaletteSheet] = useState(false);
+  const palette = usePalette();
 
   useEffect(() => {
     setBaseUrlInput(baseUrl ?? "");
@@ -128,6 +134,7 @@ export default function SettingsScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scroll,
             { paddingTop: insets.top + 10, paddingBottom: Math.max(30, insets.bottom + 20) },
@@ -191,41 +198,32 @@ export default function SettingsScreen() {
             {t("settings.app")}
           </Text>
           <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
-            <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.language")}</Text>
-            <RNView style={styles.segmentRow}>
-              {LANGUAGE_OPTIONS.map((option) => {
-                const selected = preference === option;
-                return (
-                  <Pressable
-                    key={option}
-                    style={[
-                      styles.segment,
-                      {
-                        borderColor: selected ? C.brand : C.border,
-                        backgroundColor: selected ? C.brand : C.bgSecondary,
-                      },
-                    ]}
-                    onPress={() => void setPreference(option)}
-                    accessibilityRole="button"
-                    accessibilityState={{ selected }}
-                  >
-                    <Text style={[styles.segmentText, { color: selected ? C.onBrand : C.textSecondary }]}>
-                      {languageLabel(option)}
-                    </Text>
-                  </Pressable>
-                );
-              })}
-            </RNView>
+            <Pressable
+              onPress={() => setLangSheet(true)}
+              style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}
+              accessibilityRole="button"
+              accessibilityLabel={t("settings.language")}
+            >
+              <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.language")}</Text>
+              <Text style={[styles.valueText, { color: C.textSecondary }]}>
+                {languageLabel(preference)}
+              </Text>
+            </Pressable>
 
-            <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
+            <Pressable
+              onPress={() => setPaletteSheet(true)}
+              style={[styles.valueRow, styles.valueRowLast]}
+              accessibilityRole="button"
+              accessibilityLabel={t("settings.theme")}
+            >
               <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.theme")}</Text>
               <RNView style={styles.themeValue}>
                 <RNView style={[styles.themeDot, { backgroundColor: C.brand }]} />
                 <Text style={[styles.valueText, { color: C.textSecondary }]}>
-                  {t("settings.themeValue")}
+                  {t(`palette.${palette}`)}
                 </Text>
               </RNView>
-            </RNView>
+            </Pressable>
           </RNView>
 
           <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
@@ -262,7 +260,7 @@ export default function SettingsScreen() {
                     {t("settings.mainChat")}
                   </Text>
                 </RNView>
-                <RNView style={styles.valueRow}>
+                <RNView style={[styles.valueRow, styles.valueRowLast]}>
                   <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.dnd")}</Text>
                   <Text style={[styles.valueText, { color: C.textSecondary }]}>
                     {care ? `${care.active_hours_end} – ${care.active_hours_start}` : "—"}
@@ -279,14 +277,24 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.about")}
           </Text>
-          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
-            <Text style={[styles.aboutBody, { color: C.textSecondary }]}>
-              {t("settings.aboutBody")}
-            </Text>
-            <Text style={[styles.aboutMeta, { color: C.textTertiary }]}>
-              {t("settings.version")}
-            </Text>
-          </RNView>
+          <Pressable
+            style={({ pressed }) => [
+              styles.card,
+              styles.serverRow,
+              { backgroundColor: C.bgElevated, borderColor: C.border },
+              pressed && styles.pressed,
+            ]}
+            onPress={() => router.push("/about")}
+            accessibilityRole="button"
+            accessibilityLabel={t("about.title")}
+          >
+            <Text style={[styles.rowLabel, { color: C.text }]}>{t("about.title")}</Text>
+            <SymbolView
+              name={{ ios: "chevron.right", android: "chevron_right", web: "chevron_right" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
+              tintColor={C.textTertiary}
+              size={16}
+            />
+          </Pressable>
 
           <Pressable
             style={({ pressed }) => [
@@ -303,6 +311,36 @@ export default function SettingsScreen() {
             <Text style={[styles.logoutText, { color: C.danger }]}>{t("settings.logout")}</Text>
           </Pressable>
         </ScrollView>
+
+        <ActionSheet
+          visible={langSheet}
+          title={t("settings.language")}
+          onDismiss={() => setLangSheet(false)}
+          actions={LANGUAGE_OPTIONS.map((option) => ({
+            key: option,
+            label: languageLabel(option),
+            icon: { ios: "globe", android: "language", web: "language" },
+            onPress: () => {
+              void setPreference(option);
+              setLangSheet(false);
+            },
+          }))}
+        />
+
+        <ActionSheet
+          visible={paletteSheet}
+          title={t("settings.theme")}
+          onDismiss={() => setPaletteSheet(false)}
+          actions={PALETTE_KEYS.map((key) => ({
+            key,
+            label: t(`palette.${key}`),
+            icon: { ios: "paintpalette", android: "palette", web: "palette" },
+            onPress: () => {
+              void selectPalette(key);
+              setPaletteSheet(false);
+            },
+          }))}
+        />
 
         <Modal
           transparent
@@ -491,21 +529,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
   },
-  segmentRow: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  segment: {
-    flex: 1,
-    borderRadius: 12,
-    borderCurve: "continuous",
-    paddingVertical: 9,
-    alignItems: "center",
-    borderWidth: 1,
-  },
-  segmentText: {
-    fontSize: 13,
-    fontWeight: "600",
+  valueRowLast: {
+    borderBottomWidth: 0,
+    paddingBottom: 0,
   },
   valueRow: {
     flexDirection: "row",

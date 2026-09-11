@@ -102,6 +102,7 @@ export default function ExpertsScreen() {
 
       {filtered.length > 0 || agents.length > 0 ? (
         <FlatList<Agent>
+          showsVerticalScrollIndicator={false}
           data={filtered}
           keyExtractor={(item) => item.agent_id}
           refreshControl={
@@ -190,14 +191,13 @@ const styles = StyleSheet.create({
   },
   searchWrap: {
     paddingHorizontal: 16,
-    marginBottom: 14,
+    marginBottom: 12,
   },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
+    fontSize: 12,
+    fontWeight: "600",
     paddingHorizontal: 20,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   listWrap: {
     paddingHorizontal: 16,
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: 16,
     paddingBottom: 130,
-    gap: 10,
+    gap: 12,
   },
   card: {
     flexDirection: "row",
@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
+    borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
   },

@@ -124,12 +124,13 @@ export default function NewChatScreen() {
           },
         ]}
       >
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          accessibilityLabel="Back"
-          accessibilityRole="button"
-        >
+        <RNView style={styles.headerSide}>
+          <Pressable
+            onPress={() => router.back()}
+            hitSlop={12}
+            accessibilityLabel="Back"
+            accessibilityRole="button"
+          >
           <SymbolView
             name={
               { ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<
@@ -139,7 +140,9 @@ export default function NewChatScreen() {
             tintColor={C.brand}
             size={20}
           />
-        </Pressable>
+          </Pressable>
+        </RNView>
+        <RNView style={styles.headerCenter}>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
@@ -158,9 +161,12 @@ export default function NewChatScreen() {
             {t("newChat.subtitle")}
           </Text>
         </RNView>
+        </RNView>
+        <RNView style={styles.headerSide} />
       </RNView>
 
       <ScrollView
+        showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="interactive"
@@ -184,9 +190,6 @@ export default function NewChatScreen() {
           </RNView>
         ) : null}
 
-        <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
-          {t("newChat.tryAsking")}
-        </Text>
         {(
           [
             {
@@ -342,13 +345,24 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
     paddingHorizontal: 12,
-    paddingRight: 16,
     paddingBottom: 10,
   },
-  headerBody: {
+  // Equal side slots optically center the title group (design 17).
+  headerSide: {
+    width: 28,
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  headerCenter: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  headerBody: {
+    flexShrink: 1,
     gap: 2,
   },
   headerName: {

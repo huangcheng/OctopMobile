@@ -7,6 +7,7 @@ import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { Fab } from "@/src/components/Fab";
+import { HeaderGear } from "@/src/components/HeaderGear";
 import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { StatusPill } from "@/src/components/StatusPill";
@@ -111,7 +112,7 @@ export default function AutomationScreen() {
 
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-      <ScreenHeader title={t("automation.title")} />
+      <ScreenHeader title={t("automation.title")} action={<HeaderGear />} />
 
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
@@ -141,6 +142,7 @@ export default function AutomationScreen() {
 
       {rows.length > 0 ? (
         <FlatList<JobRow>
+          showsVerticalScrollIndicator={false}
           data={rows}
           keyExtractor={(item) => item.cron_id}
           refreshControl={
@@ -236,10 +238,8 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
-    marginBottom: 2,
+    fontSize: 12,
+    fontWeight: "600",
   },
   card: {
     borderRadius: 16,

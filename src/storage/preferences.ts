@@ -1,9 +1,11 @@
 import * as SecureStore from "expo-secure-store";
 
+import { PALETTE_KEYS, type PaletteKey } from "../../constants/OctopTheme";
 import type { LocalePreference } from "../i18n";
 import { STORAGE_KEYS } from "./keys";
 
 const LOCALE_PREFERENCES = new Set<LocalePreference>(["system", "en", "zh"]);
+const PALETTE_PREFERENCES = new Set<string>(PALETTE_KEYS);
 
 export function normalizeBaseUrl(input: string): string {
   const trimmed = input.trim().replace(/\/+$/, "");
@@ -79,4 +81,17 @@ export async function getLocalePreference(): Promise<LocalePreference> {
 
 export async function setLocalePreference(preference: LocalePreference): Promise<void> {
   await SecureStore.setItemAsync(STORAGE_KEYS.localePreference, preference);
+}
+
+/** Brand palette (Octop dashboard `themePalettes`); defaults to the rose constitution. */
+export async function getPalettePreference(): Promise<PaletteKey> {
+  const value = await SecureStore.getItemAsync(STORAGE_KEYS.palette);
+  if (value && PALETTE_PREFERENCES.has(value)) {
+    return value as PaletteKey;
+  }
+  return "rose";
+}
+
+export async function setPalettePreference(palette: PaletteKey): Promise<void> {
+  await SecureStore.setItemAsync(STORAGE_KEYS.palette, palette);
 }

@@ -16,6 +16,7 @@ import { Octop, OctopDark } from '@/constants/OctopTheme';
 import { ToastProvider } from '@/src/components/Toast';
 import { AgentProvider } from '@/src/features/agents/AgentContext';
 import { AuthProvider } from '@/src/features/auth/AuthContext';
+import { initPalette } from '@/src/features/theme/paletteStore';
 import { I18nProvider } from '@/src/i18n/I18nProvider';
 
 export {
@@ -65,6 +66,10 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
+    void initPalette();
+  }, []);
+
+  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
@@ -95,6 +100,7 @@ function RootLayoutNav() {
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
                 <Stack.Screen name="settings" />
+                <Stack.Screen name="about" />
                 <Stack.Screen name="expert/[agentId]" />
                 <Stack.Screen name="chat/[threadId]" />
                 <Stack.Screen name="chat/new" />

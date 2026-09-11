@@ -153,3 +153,98 @@ export const OctopDark: OctopThemeTokens = {
 };
 
 export type OctopColor = (typeof Octop)[keyof typeof Octop];
+
+/**
+ * Brand palettes — orthogonal to light/dark, mirroring the Octop dashboard
+ * (`dashboard/src/styles/themePalettes.ts`, pin v0.9.32): 8 curated primaries.
+ * `rose` is the Ardot constitution default; the rest derive the brand family
+ * from the dashboard's light/dark `colorPrimary` so Settings can offer them all.
+ */
+export type PaletteKey =
+  | "rose"
+  | "tech"
+  | "indigo"
+  | "teal"
+  | "violet"
+  | "emerald"
+  | "amber"
+  | "slate";
+
+export const PALETTE_KEYS: PaletteKey[] = [
+  "rose",
+  "tech",
+  "indigo",
+  "teal",
+  "violet",
+  "emerald",
+  "amber",
+  "slate",
+];
+
+/** Dashboard `ANTD_BRAND_TOKENS[palette].{light,dark}.colorPrimary`. */
+export const PALETTE_PRIMARY: Record<PaletteKey, { light: string; dark: string }> = {
+  rose: { light: "#E85D75", dark: "#F08B9A" },
+  tech: { light: "#3A5FE0", dark: "#3A5FE0" },
+  indigo: { light: "#4F46E5", dark: "#4F46E5" },
+  teal: { light: "#0F766E", dark: "#0F766E" },
+  violet: { light: "#7C3AED", dark: "#7C3AED" },
+  emerald: { light: "#047857", dark: "#047857" },
+  amber: { light: "#B45309", dark: "#B45309" },
+  slate: { light: "#475569", dark: "#475569" },
+};
+
+function hexToRgb(hex: string): [number, number, number] {
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+}
+
+function toHex(n: number): string {
+  return Math.round(Math.min(255, Math.max(0, n))).toString(16).padStart(2, "0");
+}
+
+/** Mix `hex` toward `target` by weight t (0..1). */
+function mix(hex: string, target: string, t: number): string {
+  const a = hexToRgb(hex);
+  const b = hexToRgb(target);
+  return `#${a.map((v, i) => toHex(v + (b[i] - v) * t)).join("")}`;
+}
+
+function rgba(hex: string, alpha: number): string {
+  const [r, g, b] = hexToRgb(hex);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+/**
+ * Overlay a palette's brand family onto the scheme base tokens. `rose` returns
+ * the base untouched so the Ardot constitution values stay exact.
+ */
+export function applyPalette(
+  base: OctopThemeTokens,
+  palette: PaletteKey,
+  dark: boolean,
+): OctopThemeTokens {
+  if (palette === "rose") {
+    return base;
+  }
+  const primary = dark ? PALETTE_PRIMARY[palette].dark : PALETTE_PRIMARY[palette].light;
+  const lightPrimary = PALETTE_PRIMARY[palette].light;
+  const brand = {
+    brand: primary,
+    brandHover: dark ? mix(primary, "#FFFFFF", 0.35) : mix(primary, "#000000", 0.08),
+    brandActive: dark ? mix(primary, "#000000", 0.12) : mix(primary, "#000000", 0.18),
+    brandSoft: dark ? rgba(lightPrimary, 0.16) : mix(primary, "#FFFFFF", 0.88),
+    brandBg: rgba(lightPrimary, dark ? 0.1 : 0.06),
+    brandBgStrong: rgba(lightPrimary, dark ? 0.18 : 0.12),
+    brandBorder: rgba(dark ? primary : lightPrimary, dark ? 0.32 : 0.22),
+    brandShadow: rgba(primary, dark ? 0.25 : 0.28),
+    onBrand: "#FFFFFF",
+    logo: primary,
+    assistantBubble: dark ? base.assistantBubble : mix(primary, "#FFFFFF", 0.96),
+    assistantBorder: rgba(lightPrimary, dark ? 0.08 : 0.14),
+  };
+  return { ...base, ...brand };
+}
