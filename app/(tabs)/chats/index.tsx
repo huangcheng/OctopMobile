@@ -256,7 +256,6 @@ export default function ChatsScreen() {
         title={t("chats.title")}
         action={
           <RNView style={styles.headerActions}>
-            <HeaderGear />
             <Pressable
               onPress={handleNew}
               style={({ pressed }) => [
@@ -269,6 +268,7 @@ export default function ChatsScreen() {
             >
               <Text style={[styles.newPillText, { color: C.onBrand }]}>{t("chats.new")}</Text>
             </Pressable>
+            <HeaderGear />
           </RNView>
         }
       />
