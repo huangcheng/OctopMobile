@@ -35,10 +35,17 @@ export function createApiClient(deps: ApiClientDeps) {
     }
 
     let res: Response;
+    // 15s ceiling — an unreachable server must fail fast into error states,
+    // never hold cold-start (or a screen) hostage for the TCP timeout.
+    // (AbortSignal.timeout is missing on some Hermes builds; drive it manually.)
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
     try {
-      res = await fetchImpl(`${base}${path}`, { ...init, headers });
+      res = await fetchImpl(`${base}${path}`, { ...init, headers, signal: controller.signal });
     } catch {
       throw { code: "NETWORK", message: "network error" } satisfies ApiError;
+    } finally {
+      clearTimeout(timer);
     }
 
     const renewed = res.headers.get("X-Octop-Access-Token");

@@ -10,6 +10,16 @@ export function normalizeBaseUrl(input: string): string {
   if (!/^https?:\/\//i.test(trimmed)) {
     throw new Error("BASE_URL_INVALID");
   }
+  // Reject malformed URLs (bad ports, missing host) — a malformed base URL
+  // wedges every API call (RN parses it as file:// and never settles).
+  try {
+    const url = new URL(trimmed);
+    if (!url.hostname) {
+      throw new Error("BASE_URL_INVALID");
+    }
+  } catch {
+    throw new Error("BASE_URL_INVALID");
+  }
   return trimmed;
 }
 
@@ -20,7 +30,17 @@ export function toWsBase(baseUrl: string): string {
 }
 
 export async function getBaseUrl(): Promise<string | null> {
-  return SecureStore.getItemAsync(STORAGE_KEYS.baseUrl);
+  const raw = await SecureStore.getItemAsync(STORAGE_KEYS.baseUrl);
+  if (!raw) {
+    return null;
+  }
+  // A stored value that fails validation is treated as absent so the app
+  // falls back to login instead of wedging every request on a broken URL.
+  try {
+    return normalizeBaseUrl(raw);
+  } catch {
+    return null;
+  }
 }
 
 export async function setBaseUrl(input: string): Promise<void> {

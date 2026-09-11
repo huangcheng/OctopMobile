@@ -94,6 +94,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       baseUrlRef.current = storedUrl;
       setBaseUrlState(storedUrl);
 
+      if (!storedUrl) {
+        // No (valid) server configured — a session without one is meaningless.
+        await clearToken();
+        if (!cancelled) {
+          setUser(null);
+          setStatus("unauthenticated");
+        }
+        return;
+      }
+
       const token = await getToken();
       if (!token) {
         setStatus("unauthenticated");
