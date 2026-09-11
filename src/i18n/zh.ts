@@ -136,7 +136,7 @@ export const zh: Record<keyof typeof en, string> = {
   "settings.version": "版本 0.1.0 · Octop v0.9.32",
   "about.title": "关于 Octop",
   "about.legal": "法律信息",
-  "about.copyright": "© 2026 huangcheng",
+  "about.copyright": "© 2026 HUANG Cheng",
   "about.disclaimer": "自托管 Octop 的非官方伴侣应用，与 TencentCloud 无关。",
   "about.oss": "开源组件",
   "settings.baseUrlHint": "更改服务器地址后需要重新登录。",

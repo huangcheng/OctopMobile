@@ -135,7 +135,7 @@ export const en = {
   "settings.version": "Version 0.1.0 · Octop v0.9.32",
   "about.title": "About Octop",
   "about.legal": "LEGAL",
-  "about.copyright": "© 2026 huangcheng",
+  "about.copyright": "© 2026 HUANG Cheng",
   "about.disclaimer": "Unofficial companion for self-hosted Octop. Not affiliated with TencentCloud.",
   "about.oss": "OPEN SOURCE",
   "settings.baseUrlHint": "Changing the server URL signs you out and requires signing in again.",
