@@ -9,6 +9,7 @@ export type ApiClientDeps = {
   getToken: () => Promise<string | null>;
   setToken: (token: string) => Promise<void>;
   clearToken: () => Promise<void>;
+  onUnauthorized?: () => void | Promise<void>;
   fetchImpl?: typeof fetch;
 };
 
@@ -47,6 +48,7 @@ export function createApiClient(deps: ApiClientDeps) {
 
     if (res.status === 401) {
       await deps.clearToken();
+      await deps.onUnauthorized?.();
       throw { code: "UNAUTHORIZED", status: 401, message: "unauthorized" } satisfies ApiError;
     }
 

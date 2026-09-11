@@ -62,6 +62,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [baseUrl, setBaseUrlState] = useState<string | null>(null);
   const baseUrlRef = useRef<string | null>(null);
 
+  const handleUnauthorized = useCallback(() => {
+    setUser(null);
+    setStatus("unauthenticated");
+    router.replace("/(auth)/login");
+  }, []);
+
   const api = useMemo(
     () =>
       createApiClient({
@@ -69,8 +75,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         getToken,
         setToken,
         clearToken,
+        onUnauthorized: handleUnauthorized,
       }),
-    [],
+    [handleUnauthorized],
   );
 
   useEffect(() => {

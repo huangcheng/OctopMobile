@@ -37,4 +37,20 @@ describe("createApiClient", () => {
     await expect(client.apiRequest("/api/agents")).rejects.toMatchObject({ code: "UNAUTHORIZED" });
     expect(cleared).toBe(true);
   });
+
+  test("invokes onUnauthorized after clearing token on 401", async () => {
+    let unauthorized = false;
+    const client = createApiClient({
+      getBaseUrl: async () => "https://octop.example",
+      getToken: async () => "x",
+      setToken: async () => {},
+      clearToken: async () => {},
+      onUnauthorized: async () => {
+        unauthorized = true;
+      },
+      fetchImpl: async () => new Response("{}", { status: 401 }),
+    });
+    await expect(client.apiRequest("/api/agents")).rejects.toMatchObject({ code: "UNAUTHORIZED" });
+    expect(unauthorized).toBe(true);
+  });
 });
