@@ -32,3 +32,15 @@ export async function getCleartextWarningAck(): Promise<boolean> {
 export async function ackCleartextWarning(): Promise<void> {
   await SecureStore.setItemAsync(STORAGE_KEYS.cleartextAck, "1");
 }
+
+export async function getSelectedAgentId(): Promise<string | null> {
+  return SecureStore.getItemAsync(STORAGE_KEYS.selectedAgentId);
+}
+
+export async function setSelectedAgentId(agentId: string): Promise<void> {
+  await SecureStore.setItemAsync(STORAGE_KEYS.selectedAgentId, agentId);
+}
+
+export async function clearSelectedAgentId(): Promise<void> {
+  await SecureStore.deleteItemAsync(STORAGE_KEYS.selectedAgentId);
+}

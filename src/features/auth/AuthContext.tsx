@@ -13,7 +13,7 @@ import { Alert } from "react-native";
 
 import { getMe, login, logout } from "../../api/auth";
 import type { ApiError } from "../../api/http";
-import { createApiClient } from "../../api/http";
+import { createApiClient, type ApiClient } from "../../api/http";
 import type { User } from "../../api/types";
 import { t } from "../../i18n";
 import {
@@ -31,6 +31,7 @@ type AuthContextValue = {
   status: AuthStatus;
   user: User | null;
   baseUrl: string | null;
+  api: ApiClient;
   signIn: (baseUrl: string, username: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   setBaseUrl: (input: string) => Promise<void>;
@@ -163,8 +164,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [api]);
 
   const value = useMemo(
-    () => ({ status, user, baseUrl, signIn, signOut, setBaseUrl }),
-    [status, user, baseUrl, signIn, signOut, setBaseUrl],
+    () => ({ status, user, baseUrl, api, signIn, signOut, setBaseUrl }),
+    [status, user, baseUrl, api, signIn, signOut, setBaseUrl],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

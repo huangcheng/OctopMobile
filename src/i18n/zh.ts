@@ -6,6 +6,7 @@ export const zh = {
   "login.submit": "登录",
   "login.cleartextWarning": "此连接使用未加密的 HTTP，请仅在可信网络中使用。",
   "experts.title": "专家",
+  "experts.empty": "暂无专家 — 请在 Octop 网页端创建。",
   "tasks.title": "任务",
   "tasks.new": "新对话",
   "chat.stop": "停止",

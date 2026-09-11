@@ -7,6 +7,7 @@ export const en = {
   "login.cleartextWarning":
     "This connection uses unencrypted HTTP. Only use on trusted networks.",
   "experts.title": "Experts",
+  "experts.empty": "No agents — create one in the Octop web UI.",
   "tasks.title": "Tasks",
   "tasks.new": "New chat",
   "chat.stop": "Stop",
