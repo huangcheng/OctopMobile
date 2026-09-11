@@ -8,9 +8,27 @@ Inspired by WorkBuddy-style **limited** mobile surfaces (tasks / experts / light
 
 ## Status
 
-Spec drafted — see [docs/superpowers/specs/2026-09-11-octop-mobile-design.md](docs/superpowers/specs/2026-09-11-octop-mobile-design.md).
+- Spec: [docs/superpowers/specs/2026-09-11-octop-mobile-design.md](docs/superpowers/specs/2026-09-11-octop-mobile-design.md)
+- API contract (Phase 0): [docs/api-contract.md](docs/api-contract.md) — pinned Octop **`v0.9.32`** (`deb7ac81e89b8779fec59378684582efcde70d43`)
+- MVP plan: [docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md](docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md)
+- Phase 1 scaffold: Expo Router app with **Experts** + **Tasks** tab stubs (`npx expo start`)
 
-Expo app not scaffolded yet (waiting on spec approval → implementation plan → MVP).
+## Development
+
+```bash
+npm install
+npx expo start
+```
+
+Open in Expo Go (LAN) or a simulator. Expect two empty tabs: Experts and Tasks.
+
+### Self-hosted HTTP (LAN)
+
+`app.json` enables Android cleartext traffic and iOS ATS arbitrary loads **intentionally** so the app can reach self-hosted Octop over plain HTTP on a local network. Use HTTPS in production when possible.
+
+## Smoke path
+
+Release gate (manual): [docs/api-contract.md §6](docs/api-contract.md#6-smoke-path-release-gate) — health → login → agents → thread → WS turn → history.
 
 ## Related
 
@@ -19,4 +37,4 @@ Expo app not scaffolded yet (waiting on spec approval → implementation plan �
 
 ## License
 
-TBD when the app is scaffolded (prefer a permissive license compatible with depending on Octop’s public API only).
+See [LICENSE](LICENSE).
