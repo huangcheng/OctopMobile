@@ -27,7 +27,11 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
       style={[
         styles.bubble,
         styles.assistantBubble,
-        { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
+        {
+          backgroundColor: C.bgElevated,
+          borderColor: C.border,
+          boxShadow: `0px 1px 3px ${C.cardShadow}`,
+        },
       ]}
     >
       {content.length > 0 ? (
@@ -42,18 +46,15 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
 
 const styles = StyleSheet.create({
   bubble: {
-    maxWidth: "92%",
+    maxWidth: 288,
     paddingHorizontal: 14,
-    paddingVertical: 11,
+    paddingVertical: 12,
   },
   assistantBubble: {
     alignSelf: "flex-start",
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 18,
-    borderBottomLeftRadius: 18,
+    borderRadius: 16,
     borderCurve: "continuous",
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
   caret: {
     fontSize: 16,

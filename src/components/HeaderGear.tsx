@@ -21,7 +21,7 @@ export function HeaderGear() {
             web: "settings",
           }}
           tintColor={C.onBrand}
-          size={16}
+          size={18}
         />
       </RNView>
     </Pressable>
@@ -37,9 +37,9 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.95 }],
   },
   iconWrap: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
   },

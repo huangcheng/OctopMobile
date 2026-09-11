@@ -2,6 +2,7 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import {
   FlatList,
+  Image,
   Modal,
   Pressable,
   RefreshControl,
@@ -20,6 +21,7 @@ import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { AgentTile } from "@/src/components/AgentTile";
 import { ActionSheet } from "@/src/components/ActionSheet";
+import { useToast } from "@/src/components/Toast";
 import { listThreads, updateThread, deleteThread } from "@/src/api/threads";
 import type { Agent, ThreadSummary } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -53,6 +55,7 @@ export default function ChatsScreen() {
   const { t, locale } = useI18n();
   const { api, user } = useAuth();
   const { agents, selectedAgentId, selectAgent, refresh: refreshAgents } = useSelectedAgent();
+  const toast = useToast();
 
   const [rows, setRows] = useState<ThreadRow[]>([]);
   const [loading, setLoading] = useState(false);
@@ -181,19 +184,24 @@ export default function ChatsScreen() {
   }
 
   async function togglePin(row: ThreadRow) {
+    const nextPinned = !row.thread.pinned;
     try {
       await updateThread(api, row.agent.agent_id, row.thread.thread_id, {
-        pinned: !row.thread.pinned,
+        pinned: nextPinned,
       });
       setRows((prev) =>
         prev.map((r) =>
           r.thread.thread_id === row.thread.thread_id
-            ? { ...r, thread: { ...r.thread, pinned: !r.thread.pinned } }
+            ? { ...r, thread: { ...r.thread, pinned: nextPinned } }
             : r,
         ),
       );
+      toast.show({
+        kind: "success",
+        message: nextPinned ? t("feedback.pinned") : t("feedback.unpinned"),
+      });
     } catch {
-      setError(t("errors.actionFailed"));
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
     }
   }
 
@@ -201,8 +209,9 @@ export default function ChatsScreen() {
     try {
       await deleteThread(api, row.agent.agent_id, row.thread.thread_id);
       setRows((prev) => prev.filter((r) => r.thread.thread_id !== row.thread.thread_id));
+      toast.show({ kind: "success", message: t("feedback.threadDeleted") });
     } catch {
-      setError(t("errors.actionFailed"));
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
     }
   }
 
@@ -223,8 +232,9 @@ export default function ChatsScreen() {
             : r,
         ),
       );
+      toast.show({ kind: "success", message: t("feedback.renamed") });
     } catch {
-      setError(t("errors.actionFailed"));
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
     }
   }
 
@@ -251,19 +261,6 @@ export default function ChatsScreen() {
       />
 
       {hasData ? (
-        <RNView
-          style={[styles.greeting, { backgroundColor: C.brandSoft, borderColor: C.brandBorder }]}
-        >
-          <Text style={[styles.greetingTitle, { color: C.text }]}>
-            {t(greetingKey, { name: userName })}
-          </Text>
-          <Text style={[styles.greetingMeta, { color: C.textSecondary }]}>
-            {t("chats.stats", { running: runningCount, unread: unreadTotal })}
-          </Text>
-        </RNView>
-      ) : null}
-
-      {hasData ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -280,10 +277,7 @@ export default function ChatsScreen() {
                   onPress={() => setFilterAgent(value)}
                   style={({ pressed }) => [
                     styles.chip,
-                    {
-                      backgroundColor: selected ? C.brand : C.bgElevated,
-                      borderColor: selected ? C.brand : C.border,
-                    },
+                    { backgroundColor: selected ? C.brandSoft : C.bgTertiary },
                     pressed && styles.pressed,
                   ]}
                   accessibilityRole="button"
@@ -292,7 +286,10 @@ export default function ChatsScreen() {
                   <Text
                     style={[
                       styles.chipText,
-                      { color: selected ? C.onBrand : C.textSecondary },
+                      {
+                        color: selected ? C.brand : C.textSecondary,
+                        fontWeight: selected ? "600" : "500",
+                      },
                     ]}
                     numberOfLines={1}
                   >
@@ -344,6 +341,33 @@ export default function ChatsScreen() {
             <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
+          ListHeaderComponent={
+            <RNView
+              style={[
+                styles.greeting,
+                {
+                  backgroundColor: C.bgElevated,
+                  borderColor: C.border,
+                  boxShadow: `0px 1px 3px ${C.cardShadow}`,
+                },
+              ]}
+            >
+              <Image
+                source={require("@/assets/images/octop-mascot-peek.png")}
+                style={styles.greetingMascot}
+                resizeMode="contain"
+                accessibilityIgnoresInvertColors
+              />
+              <RNView style={styles.greetingBody}>
+                <Text style={[styles.greetingTitle, { color: C.text }]}>
+                  {t(greetingKey, { name: userName })}
+                </Text>
+                <Text style={[styles.greetingMeta, { color: C.textTertiary }]}>
+                  {t("chats.stats", { running: runningCount, unread: unreadTotal })}
+                </Text>
+              </RNView>
+            </RNView>
+          }
           // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.
           ItemSeparatorComponent={() => <RNView style={styles.separator} />}
           renderItem={({ item }) => {
@@ -387,6 +411,9 @@ export default function ChatsScreen() {
                 />
                 <RNView style={styles.cardBody}>
                   <RNView style={styles.titleRow}>
+                    <Text style={[styles.cardTitle, { color: C.text }]} numberOfLines={1}>
+                      {threadTitle(item2.thread, untitled)}
+                    </Text>
                     {item2.thread.pinned ? (
                       <SymbolView
                         name={
@@ -396,13 +423,10 @@ export default function ChatsScreen() {
                             web: "push_pin",
                           } as unknown as Parameters<typeof SymbolView>[0]["name"]
                         }
-                        tintColor={C.brand}
-                        size={13}
+                        tintColor={C.textTertiary}
+                        size={12}
                       />
                     ) : null}
-                    <Text style={[styles.cardTitle, { color: C.text }]} numberOfLines={1}>
-                      {threadTitle(item2.thread, untitled)}
-                    </Text>
                   </RNView>
                   <Text style={[styles.cardMeta, { color: C.textTertiary }]} numberOfLines={1}>
                     {meta}
@@ -503,57 +527,64 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   newPill: {
-    paddingHorizontal: 18,
-    paddingVertical: 9,
-    borderRadius: 20,
+    height: 36,
+    paddingHorizontal: 14,
+    borderRadius: 18,
     borderCurve: "continuous",
-    boxShadow: "0px 3px 8px rgba(232, 93, 117, 0.28)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   newPillText: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 14,
+    fontWeight: "600",
   },
   greeting: {
-    marginHorizontal: 16,
-    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 10,
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    gap: 3,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  greetingMascot: {
+    width: 48,
+    height: 48,
+  },
+  greetingBody: {
+    flex: 1,
+    gap: 2,
   },
   greetingTitle: {
-    fontSize: 16,
-    fontWeight: "700",
+    fontSize: 15,
+    fontWeight: "600",
   },
   greetingMeta: {
-    fontSize: 13,
+    fontSize: 12,
   },
   chipsScroll: {
     flexGrow: 0,
     flexShrink: 0,
-    maxHeight: 44,
-    marginBottom: 4,
+    maxHeight: 40,
   },
   chips: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     gap: 8,
     paddingBottom: 8,
     alignItems: "center",
   },
   chip: {
-    height: 32,
-    paddingHorizontal: 14,
-    borderRadius: 16,
+    height: 28,
+    paddingHorizontal: 12,
+    borderRadius: 14,
     borderCurve: "continuous",
-    borderWidth: 1,
     justifyContent: "center",
     maxWidth: 160,
   },
   chipText: {
-    fontSize: 13,
-    fontWeight: "600",
+    fontSize: 12,
   },
   skeletonWrap: {
     marginTop: 4,
@@ -592,7 +623,7 @@ const styles = StyleSheet.create({
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 4,
   },
   cardTitle: {
     fontSize: 16,
@@ -600,19 +631,19 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   cardMeta: {
-    fontSize: 13,
+    fontSize: 12,
   },
   badge: {
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
-    paddingHorizontal: 7,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 6,
     alignItems: "center",
     justifyContent: "center",
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
+    fontSize: 11,
+    fontWeight: "600",
   },
   dialogScrim: {
     flex: 1,

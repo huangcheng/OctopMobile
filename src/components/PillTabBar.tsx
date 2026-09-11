@@ -81,7 +81,9 @@ export function PillTabBar({ state, navigation, insets: navInsets }: PillTabBarP
   return (
     <RNView
       pointerEvents="box-none"
-      style={[styles.chrome, { paddingBottom: padBottom }]}
+      // Ardot `Bottom Bar` is a solid screen-bg strip: cards scrolling underneath
+      // must not peek through the transparent padding below the pill.
+      style={[styles.chrome, { paddingBottom: padBottom, backgroundColor: C.bgLayout }]}
     >
       <RNView
         style={[

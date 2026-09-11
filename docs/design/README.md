@@ -24,8 +24,8 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 ## Design system in the Ardot file
 
 - **Variables** — `Octop Tokens` set: bg/text/border/brand/semantic colors × Light/Dark + radius. Bind with `$:Octop Tokens:<name>`; flip theme per screen via `variableModes`.
-- **Components** — `PillTabBar`, `cp/EmptyState`, `cp/toggle-on|off`, `ic/*` icons.
-- **Patterns** — cards 16px radius + border + soft shadow; section labels 11–12px caps; expert tiles; status pills; FAB 56 rose.
+- **Components** — `PillTabBar`, `cp/EmptyState`, `cp/toggle-on|off`, `cp/toast-success|error|info` (spec: `components-toast.png`), `ic/*` icons.
+- **Patterns** — cards 16px radius + border + soft shadow; section labels 11–12px caps; expert tiles; status pills; FAB 56 rose; toasts 14px floating card + tinted icon disc + optional rose action, auto-dismiss 2.8s (`src/components/Toast.tsx`, `useToast()`).
 - **Type** — Inter (en), system CJK fallback (zh). Titles 28/20/17 SemiBold, body 16/15/14, meta 13/12/11, tab labels 10 caps.
 - **Assets** — `assets/images/pwa-512.png`, mascots under `assets/images/`.
 

@@ -11,6 +11,7 @@ import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { StatusPill } from "@/src/components/StatusPill";
 import { Toggle } from "@/src/components/Toggle";
+import { useToast } from "@/src/components/Toast";
 import { getCronSettings, listCronJobs, setCronEnabled } from "@/src/api/cron";
 import type { CronJob } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -26,6 +27,7 @@ export default function AutomationScreen() {
   const { t, locale } = useI18n();
   const { api, baseUrl } = useAuth();
   const { agents, loading: agentsLoading } = useSelectedAgent();
+  const toast = useToast();
 
   const [rows, setRows] = useState<JobRow[]>([]);
   const [timezone, setTimezone] = useState<string | null>(null);
@@ -87,8 +89,12 @@ export default function AutomationScreen() {
       setRows((prev) =>
         prev.map((r) => (r.cron_id === row.cron_id ? { ...r, enabled: next } : r)),
       );
+      toast.show({
+        kind: "success",
+        message: next ? t("feedback.jobEnabled") : t("feedback.jobDisabled"),
+      });
     } catch {
-      setError(t("errors.actionFailed"));
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
     } finally {
       setBusyId(null);
     }

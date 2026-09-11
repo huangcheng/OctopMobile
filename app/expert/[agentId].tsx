@@ -4,6 +4,7 @@ import {
   ActivityIndicator,
   Pressable,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   View as RNView,
@@ -15,6 +16,7 @@ import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { AgentTile } from "@/src/components/AgentTile";
 import { StatusPill } from "@/src/components/StatusPill";
+import { useToast } from "@/src/components/Toast";
 import { listThreads } from "@/src/api/threads";
 import { startAgent, stopAgent } from "@/src/api/agents";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -24,7 +26,9 @@ import { tileColor, tileInitial } from "@/src/utils/color";
 
 const MBTI_RE = /\b([IE])([SN])([TF])([JP])\b/i;
 
-/** Expert detail (design 10): hero, ABOUT, TRY ASKING, stop/start agent, Start chat bar. */
+type SFSymbol = Parameters<typeof SymbolView>[0]["name"];
+
+/** Expert detail (design 10): centered hero, ABOUT, TRY ASKING, stop link, Share + Start chat CTA. */
 export default function ExpertDetailScreen() {
   const C = useOctopTheme();
   const { t } = useI18n();
@@ -32,6 +36,7 @@ export default function ExpertDetailScreen() {
   const { api } = useAuth();
   const { agents, refresh } = useSelectedAgent();
   const { agentId } = useLocalSearchParams<{ agentId: string }>();
+  const toast = useToast();
 
   const [threadCount, setThreadCount] = useState<number | null>(null);
   const [actionBusy, setActionBusy] = useState(false);
@@ -40,6 +45,7 @@ export default function ExpertDetailScreen() {
   const agent = agents.find((a) => a.agent_id === agentId);
   const running = (agent?.state ?? "").toLowerCase() === "running";
   const mbti = agent?.name.toUpperCase().match(MBTI_RE)?.[0] ?? null;
+  const agentColor = agent ? tileColor(agent.color, agent.agent_id) : C.brand;
 
   useFocusEffect(
     useCallback(() => {
@@ -76,8 +82,12 @@ export default function ExpertDetailScreen() {
         await startAgent(api, agentId);
       }
       await refresh();
+      toast.show({
+        kind: "success",
+        message: running ? t("feedback.agentStopped") : t("feedback.agentStarted"),
+      });
     } catch {
-      setError(t("errors.actionFailed"));
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
     } finally {
       setActionBusy(false);
     }
@@ -93,19 +103,36 @@ export default function ExpertDetailScreen() {
     });
   }
 
+  function shareExpert() {
+    if (!agent) {
+      return;
+    }
+    const blurb = agent.description ? `\n${agent.description}` : "";
+    void Share.share({ message: `${agent.name} — Octop${blurb}` });
+  }
+
+  const navHeader = (
+    <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
+      <Pressable
+        onPress={() => router.back()}
+        hitSlop={12}
+        accessibilityLabel="Back"
+        accessibilityRole="button"
+      >
+        <SymbolView
+          name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
+          tintColor={C.brand}
+          size={20}
+        />
+      </Pressable>
+      <Text style={[styles.headerTitle, { color: C.text }]}>{t("expert.title")}</Text>
+    </RNView>
+  );
+
   if (!agent) {
     return (
       <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-        <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
-          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Back">
-            <SymbolView
-              name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
-              tintColor={C.text}
-              size={22}
-            />
-          </Pressable>
-          <Text style={[styles.headerTitle, { color: C.text }]}>{t("expert.title")}</Text>
-        </RNView>
+        {navHeader}
         <ErrorBanner message={t("errors.actionFailed")} onRetry={() => router.back()} />
       </RNView>
     );
@@ -113,61 +140,39 @@ export default function ExpertDetailScreen() {
 
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-      <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <Pressable
-          onPress={() => router.back()}
-          hitSlop={12}
-          accessibilityLabel="Back"
-          accessibilityRole="button"
-        >
-          <SymbolView
-            name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
-            tintColor={C.text}
-            size={22}
-          />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: C.text }]}>{t("expert.title")}</Text>
-      </RNView>
+      {navHeader}
 
       <ScrollView contentContainerStyle={styles.scroll}>
         {error ? <ErrorBanner message={error} /> : null}
 
-        <RNView
-          style={[
-            styles.heroCard,
-            { backgroundColor: C.bgElevated, borderColor: C.border, boxShadow: `0px 1px 3px ${C.cardShadow}` },
-          ]}
-        >
-          <RNView style={styles.heroTop}>
-            <AgentTile
-              label={tileInitial(agent.name)}
-              color={tileColor(agent.color, agent.agent_id)}
-              size={56}
-              radius={14}
-              iconUrl={agent.icon_url}
-              iconName={agent.icon_name}
-            />
-            <RNView style={styles.heroBody}>
-              <Text style={[styles.heroName, { color: C.text }]} numberOfLines={1}>
-                {agent.name}
-              </Text>
-              <RNView style={styles.chipRow}>
-                {mbti ? (
-                  <RNView style={[styles.mbtiChip, { backgroundColor: C.bgTertiary }]}>
-                    <Text style={[styles.mbtiText, { color: C.textSecondary }]}>{mbti}</Text>
-                  </RNView>
-                ) : null}
-                <StatusPill
-                  kind={running ? "running" : "stopped"}
-                  label={running ? t("experts.running") : t("experts.stopped")}
-                />
+        <RNView style={styles.hero}>
+          <AgentTile
+            label={tileInitial(agent.name)}
+            color={agentColor}
+            size={88}
+            radius={24}
+            iconUrl={agent.icon_url}
+            iconName={agent.icon_name}
+            glow
+          />
+          <Text style={[styles.heroName, { color: C.text }]} numberOfLines={1}>
+            {agent.name}
+          </Text>
+          <RNView style={styles.heroMeta}>
+            {mbti ? (
+              <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
+                <Text style={[styles.mbtiText, { color: C.brand }]}>{mbti}</Text>
               </RNView>
-              {threadCount !== null ? (
-                <Text style={[styles.heroMeta, { color: C.textTertiary }]}>
-                  {t("experts.conversations", { count: threadCount })}
-                </Text>
-              ) : null}
-            </RNView>
+            ) : null}
+            <StatusPill
+              kind={running ? "running" : "stopped"}
+              label={running ? t("experts.running") : t("experts.stopped")}
+            />
+            {threadCount !== null ? (
+              <Text style={[styles.heroCount, { color: C.textTertiary }]}>
+                {t("experts.conversations", { count: threadCount })}
+              </Text>
+            ) : null}
           </RNView>
         </RNView>
 
@@ -177,7 +182,14 @@ export default function ExpertDetailScreen() {
               {t("expert.about")}
             </Text>
             <RNView
-              style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}
+              style={[
+                styles.card,
+                {
+                  backgroundColor: C.bgElevated,
+                  borderColor: C.border,
+                  boxShadow: `0px 1px 3px ${C.cardShadow}`,
+                },
+              ]}
             >
               <Text style={[styles.aboutText, { color: C.textSecondary }]}>
                 {agent.description}
@@ -191,8 +203,8 @@ export default function ExpertDetailScreen() {
         </Text>
         {(
           [
-            { key: "1", title: t("expert.quickPrompt1Title"), prompt: t("expert.quickPrompt1") },
-            { key: "2", title: t("expert.quickPrompt2Title"), prompt: t("expert.quickPrompt2") },
+            { key: "1", prompt: t("expert.quickPrompt1") },
+            { key: "2", prompt: t("expert.quickPrompt2") },
           ] as const
         ).map((qp) => (
           <Pressable
@@ -201,30 +213,34 @@ export default function ExpertDetailScreen() {
             style={({ pressed }) => [
               styles.card,
               styles.promptCard,
-              { backgroundColor: C.bgElevated, borderColor: C.border },
+              {
+                backgroundColor: C.bgElevated,
+                borderColor: C.border,
+                boxShadow: `0px 1px 3px ${C.cardShadow}`,
+              },
               pressed && { backgroundColor: C.bgTertiary },
             ]}
             accessibilityRole="button"
             accessibilityLabel={qp.prompt}
           >
-            <Text style={[styles.promptTitle, { color: C.text }]}>{qp.title}</Text>
             <Text style={[styles.promptQuote, { color: C.textSecondary }]}>"{qp.prompt}"</Text>
+            <SymbolView
+              name={{ ios: "arrow.up.right", android: "north_east", web: "north_east" } as unknown as SFSymbol}
+              tintColor={C.textTertiary}
+              size={16}
+            />
           </Pressable>
         ))}
 
         <Pressable
           onPress={toggleAgent}
           disabled={actionBusy}
-          style={({ pressed }) => [
-            styles.stopButton,
-            { borderColor: running ? C.danger : C.success },
-            pressed && styles.pressed,
-          ]}
+          style={({ pressed }) => [styles.stopLink, pressed && styles.pressed]}
           accessibilityRole="button"
           accessibilityLabel={running ? t("expert.stopAgent") : t("expert.startAgent")}
         >
           {actionBusy ? (
-            <ActivityIndicator color={running ? C.danger : C.success} />
+            <ActivityIndicator color={running ? C.danger : C.success} size="small" />
           ) : (
             <Text style={[styles.stopText, { color: running ? C.danger : C.success }]}>
               {running ? t("expert.stopAgent") : t("expert.startAgent")}
@@ -235,25 +251,45 @@ export default function ExpertDetailScreen() {
 
       <RNView
         style={[
-          styles.bottomBar,
-          { backgroundColor: C.bgElevated, borderTopColor: C.border, paddingBottom: insets.bottom + 10 },
+          styles.ctaBar,
+          {
+            backgroundColor: C.bgElevated,
+            borderTopColor: C.border,
+            paddingBottom: Math.max(28, insets.bottom + 10),
+          },
         ]}
       >
-        <RNView style={[styles.composerFake, { borderColor: C.border, backgroundColor: C.bgSecondary }]}>
-          <Text style={[styles.composerFakeText, { color: C.textPlaceholder }]} numberOfLines={1}>
-            {t("chat.messageName", { name: agent.name })}
-          </Text>
-        </RNView>
+        <Pressable
+          onPress={shareExpert}
+          style={({ pressed }) => [
+            styles.shareButton,
+            { backgroundColor: C.bgElevated, borderColor: C.border },
+            pressed && styles.pressed,
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel={t("expert.share")}
+        >
+          <SymbolView
+            name={{ ios: "square.and.arrow.up", android: "share", web: "share" } as unknown as SFSymbol}
+            tintColor={C.text}
+            size={20}
+          />
+        </Pressable>
         <Pressable
           onPress={() => startChat()}
           style={({ pressed }) => [
             styles.startChatButton,
-            { backgroundColor: C.brand },
+            { backgroundColor: C.brand, boxShadow: `0px 4px 12px ${C.brandShadow}` },
             pressed && styles.pressed,
           ]}
           accessibilityRole="button"
           accessibilityLabel={t("expert.startChat")}
         >
+          <SymbolView
+            name={{ ios: "message", android: "chat_bubble_outline", web: "chat_bubble_outline" } as unknown as SFSymbol}
+            tintColor={C.onBrand}
+            size={18}
+          />
           <Text style={[styles.startChatText, { color: C.onBrand }]}>{t("expert.startChat")}</Text>
         </Pressable>
       </RNView>
@@ -273,123 +309,112 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
+    paddingRight: 16,
     paddingBottom: 10,
   },
   headerTitle: {
-    fontSize: 17,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
   },
   scroll: {
     paddingHorizontal: 16,
+    paddingTop: 8,
     paddingBottom: 24,
-    gap: 10,
+    gap: 12,
   },
-  heroCard: {
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1,
-    padding: 16,
-  },
-  heroTop: {
-    flexDirection: "row",
+  hero: {
     alignItems: "center",
-    gap: 14,
-  },
-  heroBody: {
-    flex: 1,
-    gap: 5,
+    gap: 10,
+    paddingVertical: 8,
   },
   heroName: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 20,
+    fontWeight: "600",
   },
-  chipRow: {
+  heroMeta: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
   mbtiChip: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 7,
+    height: 18,
+    paddingHorizontal: 6,
+    borderRadius: 9,
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   mbtiText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
     letterSpacing: 0.4,
   },
-  heroMeta: {
+  heroCount: {
     fontSize: 12,
   },
   sectionLabel: {
     fontSize: 11,
     fontWeight: "700",
     letterSpacing: 1,
-    marginTop: 6,
-    marginBottom: 2,
   },
   card: {
     borderRadius: 16,
     borderCurve: "continuous",
     borderWidth: 1,
-    padding: 16,
+    padding: 14,
   },
   aboutText: {
     fontSize: 14,
     lineHeight: 21,
   },
   promptCard: {
-    gap: 6,
-  },
-  promptTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  promptQuote: {
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  stopButton: {
-    marginTop: 8,
-    borderRadius: 14,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    alignItems: "center",
-    paddingVertical: 13,
-  },
-  stopText: {
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  bottomBar: {
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  promptQuote: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  stopLink: {
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  stopText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  ctaBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingTop: 10,
   },
-  composerFake: {
-    flex: 1,
+  shareButton: {
+    width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: 12,
+    borderCurve: "continuous",
     borderWidth: 1,
-    justifyContent: "center",
-    paddingHorizontal: 16,
-  },
-  composerFakeText: {
-    fontSize: 14,
-  },
-  startChatButton: {
-    borderRadius: 22,
-    paddingHorizontal: 20,
-    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
+  startChatButton: {
+    flex: 1,
+    height: 44,
+    borderRadius: 12,
+    borderCurve: "continuous",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
   startChatText: {
     fontSize: 15,
-    fontWeight: "700",
+    fontWeight: "600",
   },
 });

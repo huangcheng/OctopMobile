@@ -1,0 +1,36 @@
+# Design-constitution audit: walks every main screen and screenshots it.
+# Compare captures against docs/design/screens/*.png (Ardot is the source of truth).
+# Requires: Metro on :8081 (`npx expo start`), iOS Simulator booted, app logged in.
+appId: host.exp.Exponent
+---
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- takeScreenshot: "03-chats"
+- tapOn: "新对话"
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: "17-new-chat"
+- tapOn: "Back"
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn: "专家"
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: "08-experts"
+- tapOn: "Back"
+- tapOn: "Settings"
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: "19-settings"
+- tapOn: "Back"
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn: "知识"
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: "11-knowledge"
+- tapOn: "自动化"
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: "13-automation"

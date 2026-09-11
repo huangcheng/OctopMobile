@@ -1,0 +1,22 @@
+# Cold login flow (zh locale): fills server URL + credentials and submits.
+# Override with: maestro test -e OCTOP_URL=http://192.168.x.x:9000 -e OCTOP_USER=admin -e OCTOP_PASS=secret .maestro/login.yaml
+appId: host.exp.Exponent
+---
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- tapOn:
+    id: "login-base-url"
+- eraseText: 80
+- inputText: ${OCTOP_URL}
+- tapOn:
+    id: "login-username"
+- inputText: ${OCTOP_USER}
+- tapOn:
+    id: "login-password"
+- inputText: ${OCTOP_PASS}
+- hideKeyboard
+- tapOn: "登录"
+- waitForAnimationToEnd:
+    timeout: 20000
+- takeScreenshot: "after-login"

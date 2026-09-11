@@ -35,7 +35,7 @@ export function ProcessCard(props: { process: ProcessState }) {
           thinking: props.process.thinkingCount,
         })}
       >
-        <Text style={[styles.headerText, { color: C.textSecondary }]} numberOfLines={1}>
+        <Text style={[styles.headerText, { color: C.text }]} numberOfLines={1}>
           {t("chat.processSummary", {
             tools: props.process.toolCount,
             thinking: props.process.thinkingCount,
@@ -52,53 +52,53 @@ export function ProcessCard(props: { process: ProcessState }) {
         />
       </Pressable>
 
+      {open ? <RNView style={[styles.divider, { backgroundColor: C.borderSecondary }]} /> : null}
+
       {open
-        ? props.process.items.map((item) => (
-            <RNView key={item.id} style={styles.row}>
-              <SymbolView
-                name={
-                  item.kind === "thinking"
-                    ? ({ ios: "brain", android: "psychology", web: "psychology" } as unknown as Parameters<typeof SymbolView>[0]["name"])
-                    : ({ ios: "wrench.and.screwdriver", android: "build", web: "build" } as unknown as Parameters<typeof SymbolView>[0]["name"])
-                }
-                tintColor={C.textTertiary}
-                size={16}
-              />
-              <RNView style={styles.rowBody}>
-                <Text style={[styles.toolName, { color: C.textSecondary }]} numberOfLines={1}>
-                  {item.kind === "thinking" ? t("chat.thinking") : item.name}
-                </Text>
-                {item.detail ? (
-                  <Text style={[styles.toolDetail, { color: C.textTertiary }]} numberOfLines={1}>
-                    {item.detail}
+        ? props.process.items.map((item) =>
+            item.kind === "thinking" ? (
+              <Text
+                key={item.id}
+                style={[styles.thinkingText, { color: C.textTertiary }]}
+                numberOfLines={2}
+              >
+                {item.detail ?? t("chat.thinking")}
+              </Text>
+            ) : (
+              <RNView key={item.id} style={styles.row}>
+                <RNView style={[styles.toolIcon, { backgroundColor: C.bgTertiary }]}>
+                  <SymbolView
+                    name={
+                      { ios: "wrench.and.screwdriver", android: "build", web: "build" } as unknown as Parameters<typeof SymbolView>[0]["name"]
+                    }
+                    tintColor={C.textTertiary}
+                    size={13}
+                  />
+                </RNView>
+                <RNView style={styles.rowBody}>
+                  <Text style={[styles.toolName, { color: C.text }]} numberOfLines={1}>
+                    {item.name}
                   </Text>
-                ) : null}
-              </RNView>
-              {item.kind === "tool" ? (
-                <RNView
+                  {item.detail ? (
+                    <Text style={[styles.toolDetail, { color: C.textTertiary }]} numberOfLines={1}>
+                      {item.detail}
+                    </Text>
+                  ) : null}
+                </RNView>
+                <Text
                   style={[
-                    styles.statusChip,
+                    styles.statusText,
                     {
-                      backgroundColor:
-                        item.status === "error" ? C.dangerBg : item.status === "done" ? C.successBg : C.bgTertiary,
+                      color:
+                        item.status === "error" ? C.danger : item.status === "done" ? C.success : C.textTertiary,
                     },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.statusText,
-                      {
-                        color:
-                          item.status === "error" ? C.danger : item.status === "done" ? C.success : C.textTertiary,
-                      },
-                    ]}
-                  >
-                    {item.status === "error" ? t("automation.error") : t("chat.processDone")}
-                  </Text>
-                </RNView>
-              ) : null}
-            </RNView>
-          ))
+                  {item.status === "error" ? t("automation.error") : t("chat.processDone")}
+                </Text>
+              </RNView>
+            ),
+          )
         : null}
     </RNView>
   );
@@ -107,12 +107,14 @@ export function ProcessCard(props: { process: ProcessState }) {
 const styles = StyleSheet.create({
   card: {
     alignSelf: "flex-start",
+    width: 320,
     maxWidth: "100%",
-    borderRadius: 16,
+    borderRadius: 12,
     borderCurve: "continuous",
     borderWidth: 1,
-    padding: 12,
-    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
   },
   header: {
     flexDirection: "row",
@@ -125,11 +127,25 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flexShrink: 1,
   },
+  divider: {
+    height: 1,
+  },
+  thinkingText: {
+    fontSize: 12,
+    lineHeight: 18,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    paddingTop: 4,
+  },
+  toolIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 6,
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   rowBody: {
     flex: 1,
@@ -142,13 +158,8 @@ const styles = StyleSheet.create({
   toolDetail: {
     fontSize: 11,
   },
-  statusChip: {
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
   statusText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
   },
 });

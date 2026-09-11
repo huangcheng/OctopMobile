@@ -4,13 +4,13 @@ import { useOctopTheme } from "@/src/components/useOctopTheme";
 
 export type StatusKind = "running" | "stopped" | "ok" | "error";
 
-/** Status pill (Ardot pattern: semantic bg + text, radius 999, 11–12px SemiBold). */
+/** Status pill (Ardot `Status Running/Stopped`, designs 08/10): h20, radius 10, 10pt SemiBold. */
 export function StatusPill(props: { kind: StatusKind; label: string }) {
   const C = useOctopTheme();
   const palette = {
     running: { bg: C.successBg, fg: C.success },
     ok: { bg: C.successBg, fg: C.success },
-    stopped: { bg: C.bgTertiary, fg: C.textSecondary },
+    stopped: { bg: C.bgTertiary, fg: C.textTertiary },
     error: { bg: C.dangerBg, fg: C.danger },
   }[props.kind];
 
@@ -29,9 +29,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
+    height: 20,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    borderCurve: "continuous",
     alignSelf: "flex-start",
   },
   dot: {
@@ -40,8 +41,8 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   label: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
     letterSpacing: 0.2,
   },
 });

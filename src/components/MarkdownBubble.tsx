@@ -10,7 +10,7 @@ type MarkdownBubbleProps = {
   role: "user" | "assistant";
 };
 
-/** Design 15: user = solid brand bubble (right); assistant = surface card (left). */
+/** Design 15: user = solid brand bubble (right, rose shadow); assistant = white card + border (left). */
 export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
   const C = useOctopTheme();
   const markdownStyles = useMemo(() => buildAssistantMarkdownStyles(C), [C]);
@@ -18,7 +18,13 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
 
   if (isUser) {
     return (
-      <RNView style={[styles.bubble, styles.userBubble, { backgroundColor: C.brand }]}>
+      <RNView
+        style={[
+          styles.bubble,
+          styles.userBubble,
+          { backgroundColor: C.brand, boxShadow: "0px 4px 14px rgba(232, 93, 117, 0.18)" },
+        ]}
+      >
         <Text style={[styles.userText, { color: C.onBrand }]}>{content}</Text>
       </RNView>
     );
@@ -29,7 +35,11 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
       style={[
         styles.bubble,
         styles.assistantBubble,
-        { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
+        {
+          backgroundColor: C.bgElevated,
+          borderColor: C.border,
+          boxShadow: `0px 1px 3px ${C.cardShadow}`,
+        },
       ]}
     >
       <Markdown style={markdownStyles}>{content}</Markdown>
@@ -39,26 +49,22 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
 
 const styles = StyleSheet.create({
   bubble: {
-    maxWidth: "92%",
+    maxWidth: 288,
     paddingHorizontal: 14,
-    paddingVertical: 11,
+    paddingVertical: 12,
   },
   userBubble: {
     alignSelf: "flex-end",
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
-    borderBottomLeftRadius: 18,
-    borderBottomRightRadius: 6,
+    maxWidth: 280,
+    paddingVertical: 11,
+    borderRadius: 18,
     borderCurve: "continuous",
   },
   assistantBubble: {
     alignSelf: "flex-start",
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 18,
-    borderBottomRightRadius: 18,
-    borderBottomLeftRadius: 18,
+    borderRadius: 16,
     borderCurve: "continuous",
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
   userText: {
     fontSize: 16,

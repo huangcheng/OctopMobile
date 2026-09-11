@@ -20,6 +20,8 @@ import {
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { AgentTile } from "@/src/components/AgentTile";
+import { ActionSheet } from "@/src/components/ActionSheet";
+import * as WebBrowser from "expo-web-browser";
 import { createThread } from "@/src/api/threads";
 import { useAuth } from "@/src/features/auth/AuthContext";
 import { useSelectedAgent } from "@/src/features/agents/AgentContext";
@@ -32,7 +34,7 @@ export default function NewChatScreen() {
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, initialWindowMetrics?.insets.bottom ?? 0);
-  const { api } = useAuth();
+  const { api, baseUrl } = useAuth();
   const { agents, selectedAgentId, selectAgent } = useSelectedAgent();
   const { agentId: agentIdParam, name, prefill } = useLocalSearchParams<{
     agentId?: string;
@@ -48,6 +50,13 @@ export default function NewChatScreen() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [attachOpen, setAttachOpen] = useState(false);
+
+  function openConsole() {
+    if (baseUrl) {
+      void WebBrowser.openBrowserAsync(baseUrl);
+    }
+  }
 
   useEffect(() => {
     if (prefill) {
@@ -112,8 +121,6 @@ export default function NewChatScreen() {
           styles.header,
           {
             paddingTop: Math.max(insets.top, initialWindowMetrics?.insets.top ?? 0) + 8,
-            backgroundColor: C.bgElevated,
-            borderBottomColor: C.border,
           },
         ]}
       >
@@ -129,15 +136,15 @@ export default function NewChatScreen() {
                 typeof SymbolView
               >[0]["name"]
             }
-            tintColor={C.text}
-            size={22}
+            tintColor={C.brand}
+            size={20}
           />
         </Pressable>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
             color={tileColor(agent.color, agent.agent_id)}
-            size={30}
+            size={32}
             radius={9}
             iconUrl={agent.icon_url}
             iconName={agent.icon_name}
@@ -164,7 +171,11 @@ export default function NewChatScreen() {
           <RNView
             style={[
               styles.welcome,
-              { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
+              {
+                backgroundColor: C.bgElevated,
+                borderColor: C.border,
+                boxShadow: `0px 1px 3px ${C.cardShadow}`,
+              },
             ]}
           >
             <Text style={[styles.welcomeText, { color: C.text }]}>
@@ -210,10 +221,15 @@ export default function NewChatScreen() {
             accessibilityRole="button"
             accessibilityLabel={qp.title}
           >
-            <RNView style={[styles.promptIcon, { backgroundColor: C.brandSoft }]}>
+            <RNView
+              style={[
+                styles.promptIcon,
+                { backgroundColor: `${tileColor(null, `prompt-${qp.key}`)}1F` },
+              ]}
+            >
               <SymbolView
                 name={qp.icon as unknown as Parameters<typeof SymbolView>[0]["name"]}
-                tintColor={C.brand}
+                tintColor={tileColor(null, `prompt-${qp.key}`)}
                 size={20}
               />
             </RNView>
@@ -223,17 +239,6 @@ export default function NewChatScreen() {
                 {qp.desc}
               </Text>
             </RNView>
-            <SymbolView
-              name={
-                {
-                  ios: "chevron.right",
-                  android: "chevron_right",
-                  web: "chevron_right",
-                } as unknown as Parameters<typeof SymbolView>[0]["name"]
-              }
-              tintColor={C.textTertiary}
-              size={16}
-            />
           </Pressable>
         ))}
       </ScrollView>
@@ -242,17 +247,33 @@ export default function NewChatScreen() {
         style={[
           styles.composerShell,
           {
-            backgroundColor: C.bgElevated,
-            borderTopColor: C.border,
             paddingBottom: composerPadBottom,
           },
         ]}
       >
         <RNView style={styles.composerRow}>
+          <Pressable
+            onPress={() => setAttachOpen(true)}
+            style={({ pressed }) => [
+              styles.attachButton,
+              { backgroundColor: C.bgElevated, borderColor: C.border },
+              pressed && styles.pressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("chat.attach")}
+          >
+            <SymbolView
+              name={{ ios: "plus", android: "add", web: "add" } as unknown as Parameters<
+                typeof SymbolView
+              >[0]["name"]}
+              tintColor={C.textTertiary}
+              size={18}
+            />
+          </Pressable>
           <TextInput
             style={[
               styles.input,
-              { borderColor: C.border, backgroundColor: C.bgSecondary, color: C.text },
+              { borderColor: C.border, backgroundColor: C.bgElevated, color: C.text },
             ]}
             value={draft}
             onChangeText={setDraft}
@@ -281,18 +302,31 @@ export default function NewChatScreen() {
               <SymbolView
                 name={
                   {
-                    ios: "arrow.up.circle.fill",
-                    android: "send",
-                    web: "send",
+                    ios: "arrow.up",
+                    android: "arrow_upward",
+                    web: "arrow_upward",
                   } as unknown as Parameters<typeof SymbolView>[0]["name"]
                 }
                 tintColor={C.onBrand}
-                size={26}
+                size={18}
               />
             )}
           </Pressable>
         </RNView>
       </RNView>
+
+      <ActionSheet
+        visible={attachOpen}
+        onDismiss={() => setAttachOpen(false)}
+        actions={[
+          {
+            key: "kb",
+            label: t("chat.attachKb"),
+            icon: { ios: "book", android: "menu_book", web: "menu_book" },
+            onPress: openConsole,
+          },
+        ]}
+      />
     </RNView>
   );
 }
@@ -308,10 +342,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingRight: 16,
     paddingBottom: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerBody: {
     flex: 1,
@@ -319,7 +353,7 @@ const styles = StyleSheet.create({
   },
   headerName: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
   },
   headerSub: {
     fontSize: 12,
@@ -331,12 +365,11 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   welcome: {
-    borderRadius: 18,
+    borderRadius: 16,
     borderCurve: "continuous",
-    borderTopLeftRadius: 6,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     alignSelf: "flex-start",
     maxWidth: "92%",
   },
@@ -361,9 +394,10 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   promptIcon: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: 12,
+    borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -372,15 +406,15 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   promptTitle: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
   },
   promptDesc: {
     fontSize: 13,
     lineHeight: 18,
   },
   composerShell: {
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 0,
   },
   composerRow: {
     flexDirection: "row",
@@ -389,6 +423,16 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     gap: 8,
   },
+  attachButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
   input: {
     flex: 1,
     minHeight: 44,
@@ -396,9 +440,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 22,
     borderCurve: "continuous",
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 11,
-    fontSize: 16,
+    fontSize: 15,
   },
   sendButton: {
     width: 44,
@@ -406,7 +450,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0px 3px 8px rgba(232, 93, 117, 0.28)",
+    boxShadow: "0px 4px 12px rgba(232, 93, 117, 0.28)",
   },
   sendDisabled: {
     opacity: 0.45,

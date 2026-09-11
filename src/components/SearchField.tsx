@@ -3,7 +3,7 @@ import { SymbolView } from "expo-symbols";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 
-/** Search field (designs 08/11): rounded 12, secondary bg, 16px search glyph. */
+/** Search field (designs 08/11): 40pt pill, white + border, 16px search glyph. */
 export function SearchField(props: {
   value: string;
   onChangeText: (text: string) => void;
@@ -40,15 +40,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    height: 42,
-    borderRadius: 12,
+    height: 40,
+    borderRadius: 20,
     borderCurve: "continuous",
     borderWidth: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
   },
   input: {
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     paddingVertical: 0,
   },
 });

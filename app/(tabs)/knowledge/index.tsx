@@ -1,8 +1,7 @@
 import { useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
 import * as WebBrowser from "expo-web-browser";
-import { SymbolView } from "expo-symbols";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
@@ -11,6 +10,7 @@ import { Fab } from "@/src/components/Fab";
 import { ScreenHeader } from "@/src/components/ScreenHeader";
 import { SearchField } from "@/src/components/SearchField";
 import { SkeletonList } from "@/src/components/SkeletonList";
+import { AgentTile } from "@/src/components/AgentTile";
 import { listKnowledgeBases, listKnowledgeDocuments } from "@/src/api/knowledge";
 import type { KnowledgeBase } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -106,6 +106,10 @@ export default function KnowledgeScreen() {
 
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
+      {filtered.length > 0 ? (
+        <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>{t("knowledge.mine")}</Text>
+      ) : null}
+
       {loading && rows.length === 0 ? (
         <RNView style={styles.skeletonWrap}>
           <SkeletonList rows={3} />
@@ -159,48 +163,37 @@ export default function KnowledgeScreen() {
                 ]}
               >
                 <RNView style={styles.cardRow}>
-                  <RNView
-                    style={[
-                      styles.tile,
-                      { backgroundColor: tileColor(null, KB_TILE_KEY + item.id) },
-                    ]}
-                  >
-                    <SymbolView
-                      name={{ ios: "text.book.closed.fill", android: "menu_book", web: "menu_book" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
-                      tintColor="#FFFFFF"
-                      size={20}
-                    />
-                  </RNView>
+                  <AgentTile
+                    label=""
+                    color={tileColor(null, KB_TILE_KEY + item.id)}
+                    iconName="book-open"
+                    tone="tint"
+                  />
                   <RNView style={styles.cardBody}>
-                    <RNView style={styles.nameRow}>
-                      <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
-                        {item.name}
-                      </Text>
-                      {item.shared ? (
-                        <RNView style={[styles.sharedBadge, { backgroundColor: C.infoBg }]}>
-                          <Text style={[styles.sharedText, { color: C.info }]}>
-                            {t("knowledge.shared")}
-                          </Text>
-                        </RNView>
-                      ) : null}
-                    </RNView>
+                    <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
+                      {item.name}
+                    </Text>
                     {metaParts.length > 0 ? (
                       <Text style={[styles.meta, { color: C.textTertiary }]} numberOfLines={1}>
                         {metaParts.join(" · ")}
                       </Text>
                     ) : null}
-                    {item.description ? (
-                      <Text style={[styles.desc, { color: C.textSecondary }]} numberOfLines={2}>
-                        {item.description}
-                      </Text>
-                    ) : null}
                   </RNView>
+                  {item.shared ? (
+                    <RNView style={[styles.sharedBadge, { backgroundColor: C.infoBg }]}>
+                      <Text style={[styles.sharedText, { color: C.info }]}>
+                        {t("knowledge.shared")}
+                      </Text>
+                    </RNView>
+                  ) : null}
                 </RNView>
               </RNView>
             );
           }}
           ListFooterComponent={
-            <Text style={[styles.tip, { color: C.textTertiary }]}>{t("knowledge.tip")}</Text>
+            <RNView style={[styles.tipCard, { backgroundColor: C.brandSoft }]}>
+              <Text style={[styles.tip, { color: C.brandActive }]}>{t("knowledge.tip")}</Text>
+            </RNView>
           }
         />
       ) : null}
@@ -236,6 +229,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
+  sectionLabel: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
   list: {
     paddingHorizontal: 16,
     paddingBottom: 140,
@@ -249,52 +249,41 @@ const styles = StyleSheet.create({
   },
   cardRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    gap: 12,
-  },
-  tile: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
     alignItems: "center",
-    justifyContent: "center",
+    gap: 12,
   },
   cardBody: {
     flex: 1,
-    gap: 3,
-  },
-  nameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    gap: 2,
   },
   name: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
     flexShrink: 1,
   },
   sharedBadge: {
+    height: 20,
     paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
+    borderRadius: 10,
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   sharedText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
   },
   meta: {
     fontSize: 12,
   },
-  desc: {
-    fontSize: 13,
-    lineHeight: 18,
-    marginTop: 2,
+  tipCard: {
+    borderRadius: 16,
+    borderCurve: "continuous",
+    paddingHorizontal: 14,
+    paddingVertical: 14,
   },
   tip: {
-    fontSize: 12,
+    fontSize: 13,
     lineHeight: 18,
-    textAlign: "center",
-    marginTop: 6,
-    paddingHorizontal: 8,
   },
 });

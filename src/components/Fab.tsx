@@ -30,7 +30,7 @@ export function Fab(props: {
         {
           bottom,
           backgroundColor: C.brand,
-          boxShadow: `0px 6px 14px ${C.brandShadow}`,
+          boxShadow: `0px 6px 16px rgba(232, 93, 117, 0.35)`,
           opacity: pressed ? 0.88 : 1,
         },
       ]}
@@ -43,7 +43,7 @@ export function Fab(props: {
         <SymbolView
           name={icon as unknown as Parameters<typeof SymbolView>[0]["name"]}
           tintColor={C.onBrand}
-          size={24}
+          size={22}
         />
       )}
     </Pressable>
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     right: 20,
     width: 56,
     height: 56,
-    borderRadius: 18,
+    borderRadius: 28,
     borderCurve: "continuous",
     alignItems: "center",
     justifyContent: "center",

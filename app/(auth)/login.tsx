@@ -82,6 +82,7 @@ export default function LoginScreen() {
           <RNView style={[styles.formCard, { backgroundColor: C.bgElevated, borderColor: C.border, boxShadow: `0px 1px 3px ${C.cardShadow}` }]}>
             <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.baseUrl")}</Text>
             <TextInput
+              testID="login-base-url"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={baseUrl}
               onChangeText={setBaseUrlInput}
@@ -95,18 +96,20 @@ export default function LoginScreen() {
 
             <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.username")}</Text>
             <TextInput
+              testID="login-username"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
               autoCorrect={false}
-              placeholder="huangcheng"
+              placeholder={t("login.usernamePlaceholder")}
               placeholderTextColor={C.textPlaceholder}
               editable={!pending}
             />
 
             <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.password")}</Text>
             <TextInput
+              testID="login-password"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={password}
               onChangeText={setPassword}

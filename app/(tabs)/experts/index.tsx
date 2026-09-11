@@ -113,7 +113,11 @@ export default function ExpertsScreen() {
               onPress={openConsole}
               style={({ pressed }) => [
                 styles.marketRow,
-                { borderColor: C.brandBorder, backgroundColor: C.brandBg },
+                {
+                  backgroundColor: C.bgElevated,
+                  borderColor: C.border,
+                  boxShadow: `0px 1px 3px ${C.cardShadow}`,
+                },
                 pressed && styles.pressed,
               ]}
               accessibilityRole="button"
@@ -124,7 +128,6 @@ export default function ExpertsScreen() {
           }
           renderItem={({ item }) => {
             const mbti = agentMbti(item);
-            const unread = item.unread_count ?? 0;
 
             return (
               <Pressable
@@ -153,8 +156,8 @@ export default function ExpertsScreen() {
                       {item.name}
                     </Text>
                     {mbti ? (
-                      <RNView style={[styles.mbtiChip, { backgroundColor: C.bgTertiary }]}>
-                        <Text style={[styles.mbtiText, { color: C.textSecondary }]}>{mbti}</Text>
+                      <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
+                        <Text style={[styles.mbtiText, { color: C.brand }]}>{mbti}</Text>
                       </RNView>
                     ) : null}
                   </RNView>
@@ -163,16 +166,11 @@ export default function ExpertsScreen() {
                       {item.description}
                     </Text>
                   ) : null}
-                  <StatusPill
-                    kind={isRunning(item) ? "running" : "stopped"}
-                    label={isRunning(item) ? t("experts.running") : t("experts.stopped")}
-                  />
                 </RNView>
-                {unread > 0 ? (
-                  <RNView style={[styles.badge, { backgroundColor: C.brand }]}>
-                    <Text style={[styles.badgeText, { color: C.onBrand }]}>{unread}</Text>
-                  </RNView>
-                ) : null}
+                <StatusPill
+                  kind={isRunning(item) ? "running" : "stopped"}
+                  label={isRunning(item) ? t("experts.running") : t("experts.stopped")}
+                />
               </Pressable>
             );
           }}
@@ -238,41 +236,33 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   mbtiChip: {
-    paddingHorizontal: 7,
-    paddingVertical: 2,
-    borderRadius: 7,
+    height: 18,
+    paddingHorizontal: 6,
+    borderRadius: 9,
+    borderCurve: "continuous",
+    alignItems: "center",
+    justifyContent: "center",
   },
   mbtiText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: 10,
+    fontWeight: "600",
     letterSpacing: 0.4,
   },
   desc: {
     fontSize: 13,
     lineHeight: 18,
   },
-  badge: {
-    minWidth: 22,
-    height: 22,
-    borderRadius: 11,
-    paddingHorizontal: 7,
+  marketRow: {
+    height: 44,
+    borderRadius: 16,
+    borderCurve: "continuous",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  badgeText: {
-    fontSize: 12,
-    fontWeight: "700",
-  },
-  marketRow: {
-    borderRadius: 16,
-    borderCurve: "continuous",
-    borderWidth: 1.5,
-    alignItems: "center",
-    paddingVertical: 14,
-  },
   marketText: {
-    fontSize: 15,
-    fontWeight: "700",
+    fontSize: 13,
+    fontWeight: "600",
   },
   skeletonTile: {
     width: 44,

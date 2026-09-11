@@ -24,6 +24,9 @@ import { StreamingBubble } from "@/src/components/StreamingBubble";
 import { WorkingIndicator } from "@/src/components/WorkingIndicator";
 import { ProcessCard } from "@/src/components/ProcessCard";
 import { AgentTile } from "@/src/components/AgentTile";
+import { ActionSheet } from "@/src/components/ActionSheet";
+import * as WebBrowser from "expo-web-browser";
+import { useAuth } from "@/src/features/auth/AuthContext";
 import { useSelectedAgent } from "@/src/features/agents/AgentContext";
 import { useChatTurn, type ChatDisplayMessage } from "@/src/features/chat/useChatTurn";
 import { useI18n } from "@/src/i18n/I18nProvider";
@@ -45,6 +48,7 @@ export default function ThreadChatScreen() {
     pendingMessage?: string;
   }>();
   const { agents, selectedAgentId, selectAgent } = useSelectedAgent();
+  const { baseUrl } = useAuth();
 
   const effectiveAgentId = agentIdParam ?? selectedAgentId;
   const agent = agents.find((a) => a.agent_id === effectiveAgentId);
@@ -53,8 +57,15 @@ export default function ThreadChatScreen() {
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
+  const [attachOpen, setAttachOpen] = useState(false);
   const pendingSentRef = useRef(false);
   const listRef = useRef<FlatList<ListItem>>(null);
+
+  function openConsole() {
+    if (baseUrl) {
+      void WebBrowser.openBrowserAsync(baseUrl);
+    }
+  }
 
   const {
     messages,
@@ -166,8 +177,6 @@ export default function ThreadChatScreen() {
           styles.header,
           {
             paddingTop: Math.max(insets.top, initialWindowMetrics?.insets.top ?? 0) + 8,
-            borderBottomColor: C.border,
-            backgroundColor: C.bgElevated,
           },
         ]}
       >
@@ -183,15 +192,15 @@ export default function ThreadChatScreen() {
                 typeof SymbolView
               >[0]["name"]
             }
-            tintColor={C.text}
-            size={22}
+            tintColor={C.brand}
+            size={20}
           />
         </Pressable>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
             color={tileColor(agent.color, agent.agent_id)}
-            size={30}
+            size={32}
             radius={9}
             iconUrl={agent.icon_url}
             iconName={agent.icon_name}
@@ -258,17 +267,33 @@ export default function ThreadChatScreen() {
         style={[
           styles.composerShell,
             {
-              backgroundColor: C.bgElevated,
-              borderTopColor: C.border,
               paddingBottom: composerPadBottom,
             },
           ]}
         >
         <RNView style={styles.composerRow}>
+          <Pressable
+            onPress={() => setAttachOpen(true)}
+            style={({ pressed }) => [
+              styles.attachButton,
+              { backgroundColor: C.bgElevated, borderColor: C.border },
+              pressed && styles.pressed,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={t("chat.attach")}
+          >
+            <SymbolView
+              name={{ ios: "plus", android: "add", web: "add" } as unknown as Parameters<
+                typeof SymbolView
+              >[0]["name"]}
+              tintColor={C.textTertiary}
+              size={18}
+            />
+          </Pressable>
           <TextInput
             style={[
               styles.input,
-              { borderColor: C.border, backgroundColor: C.bgSecondary, color: C.text },
+              { borderColor: C.border, backgroundColor: C.bgElevated, color: C.text },
             ]}
             value={draft}
             onChangeText={setDraft}
@@ -278,59 +303,59 @@ export default function ThreadChatScreen() {
             editable={!turnActive && !sending}
           />
 
-          {turnActive ? (
-            <Pressable
-              onPress={stop}
-              style={({ pressed }) => [
-                styles.stopButton,
-                { borderColor: C.danger, backgroundColor: C.dangerBg },
-                pressed && styles.pressed,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={t("chat.stop")}
-            >
+          <Pressable
+            onPress={turnActive ? stop : handleSend}
+            disabled={!turnActive && (!draft.trim() || sending)}
+            style={({ pressed }) => [
+              styles.sendButton,
+              { backgroundColor: C.brand },
+              pressed && styles.pressed,
+              !turnActive && (!draft.trim() || sending) && styles.sendDisabled,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={turnActive ? t("chat.stop") : t("chat.send")}
+          >
+            {sending && !turnActive ? (
+              <ActivityIndicator size="small" color={C.onBrand} />
+            ) : turnActive ? (
               <SymbolView
                 name={
                   { ios: "stop.fill", android: "stop", web: "stop" } as unknown as Parameters<
                     typeof SymbolView
                   >[0]["name"]
                 }
-                tintColor={C.danger}
+                tintColor={C.onBrand}
+                size={16}
+              />
+            ) : (
+              <SymbolView
+                name={
+                  {
+                    ios: "arrow.up",
+                    android: "arrow_upward",
+                    web: "arrow_upward",
+                  } as unknown as Parameters<typeof SymbolView>[0]["name"]
+                }
+                tintColor={C.onBrand}
                 size={18}
               />
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={handleSend}
-              disabled={!draft.trim() || sending}
-              style={({ pressed }) => [
-                styles.sendButton,
-                { backgroundColor: C.brand },
-                pressed && styles.pressed,
-                (!draft.trim() || sending) && styles.sendDisabled,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel={t("chat.send")}
-            >
-              {sending ? (
-                <ActivityIndicator size="small" color={C.onBrand} />
-              ) : (
-                <SymbolView
-                  name={
-                    {
-                      ios: "arrow.up.circle.fill",
-                      android: "send",
-                      web: "send",
-                    } as unknown as Parameters<typeof SymbolView>[0]["name"]
-                  }
-                  tintColor={C.onBrand}
-                  size={26}
-                />
-              )}
-            </Pressable>
-          )}
+            )}
+          </Pressable>
         </RNView>
       </RNView>
+
+      <ActionSheet
+        visible={attachOpen}
+        onDismiss={() => setAttachOpen(false)}
+        actions={[
+          {
+            key: "kb",
+            label: t("chat.attachKb"),
+            icon: { ios: "book", android: "menu_book", web: "menu_book" },
+            onPress: openConsole,
+          },
+        ]}
+      />
     </RNView>
   );
 }
@@ -352,10 +377,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 14,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingRight: 16,
     paddingBottom: 10,
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   headerBody: {
     flex: 1,
@@ -371,9 +396,9 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   statusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   statusText: {
     fontSize: 12,
@@ -392,15 +417,13 @@ const styles = StyleSheet.create({
   },
   daySeparator: {
     fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
-    textTransform: "uppercase",
+    fontWeight: "500",
     alignSelf: "center",
     // Inverted list: footer renders at the visual top.
     marginVertical: 8,
   },
   composerShell: {
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 0,
   },
   composerRow: {
     flexDirection: "row",
@@ -409,6 +432,16 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     gap: 8,
   },
+  attachButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
   input: {
     flex: 1,
     minHeight: 44,
@@ -416,9 +449,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 22,
     borderCurve: "continuous",
-    paddingHorizontal: 16,
+    paddingHorizontal: 14,
     paddingVertical: 11,
-    fontSize: 16,
+    fontSize: 15,
   },
   sendButton: {
     width: 44,
@@ -426,18 +459,10 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0px 3px 8px rgba(232, 93, 117, 0.28)",
+    boxShadow: "0px 4px 12px rgba(232, 93, 117, 0.28)",
   },
   sendDisabled: {
     opacity: 0.45,
-  },
-  stopButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1.5,
-    alignItems: "center",
-    justifyContent: "center",
   },
   pressed: {
     transform: [{ scale: 0.95 }],

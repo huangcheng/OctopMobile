@@ -1,6 +1,7 @@
 import { router, Stack } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
 import {
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { Toggle } from "@/src/components/Toggle";
+import { useToast } from "@/src/components/Toast";
 import { getProactiveCare, putProactiveCare } from "@/src/api/proactiveCare";
 import type { ProactiveCareConfig } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -31,7 +33,10 @@ export default function SettingsScreen() {
   const { t, preference, setPreference } = useI18n();
   const { user, baseUrl, api, signOut, setBaseUrl } = useAuth();
   const { selectedAgentId } = useSelectedAgent();
+  const toast = useToast();
   const [baseUrlInput, setBaseUrlInput] = useState(baseUrl ?? "");
+  const [editingUrl, setEditingUrl] = useState(false);
+  const [urlError, setUrlError] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const [care, setCare] = useState<ProactiveCareConfig | null>(null);
   const [careBusy, setCareBusy] = useState(false);
@@ -76,17 +81,28 @@ export default function SettingsScreen() {
         setCare(saved);
       } catch {
         setCare(previous);
+        toast.show({ kind: "error", message: t("errors.actionFailed") });
       } finally {
         setCareBusy(false);
       }
     },
-    [api, care, careBusy, selectedAgentId],
+    [api, care, careBusy, selectedAgentId, t, toast],
   );
 
   async function handleSaveBaseUrl() {
     if (baseUrlInput.trim() === (baseUrl ?? "")) return;
     await setBaseUrl(baseUrlInput);
     await signOut();
+  }
+
+  async function saveAndClose() {
+    try {
+      await handleSaveBaseUrl();
+      setUrlError(null);
+      setEditingUrl(false);
+    } catch {
+      setUrlError(t("settings.baseUrlInvalid"));
+    }
   }
 
   async function handleLogout() {
@@ -126,8 +142,8 @@ export default function SettingsScreen() {
             >
               <SymbolView
                 name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
-                tintColor={C.text}
-                size={22}
+                tintColor={C.brand}
+                size={20}
               />
             </Pressable>
             <Text style={[styles.title, { color: C.text }]}>{t("settings.title")}</Text>
@@ -143,8 +159,8 @@ export default function SettingsScreen() {
               },
             ]}
           >
-            <RNView style={[styles.avatar, { backgroundColor: C.brand }]}>
-              <Text style={[styles.avatarText, { color: C.onBrand }]}>
+            <RNView style={[styles.avatar, { backgroundColor: C.brandSoft }]}>
+              <Text style={[styles.avatarText, { color: C.brand }]}>
                 {tileInitial(displayName)}
               </Text>
             </RNView>
@@ -159,20 +175,17 @@ export default function SettingsScreen() {
           <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.server")}
           </Text>
-          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
+          <Pressable
+            style={[styles.card, styles.serverRow, { backgroundColor: C.bgElevated, borderColor: C.border }]}
+            onPress={() => setEditingUrl(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t("login.baseUrl")}
+          >
             <Text style={[styles.rowLabel, { color: C.text }]}>{t("login.baseUrl")}</Text>
-            <TextInput
-              style={[styles.inlineValue, { color: C.textSecondary, borderColor: C.borderInput, backgroundColor: C.bgSecondary }]}
-              value={baseUrlInput}
-              onChangeText={setBaseUrlInput}
-              onEndEditing={handleSaveBaseUrl}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="url"
-              placeholderTextColor={C.textPlaceholder}
-            />
-            <Text style={[styles.hint, { color: C.textTertiary }]}>{t("settings.baseUrlHint")}</Text>
-          </RNView>
+            <Text style={[styles.valueText, { color: C.textSecondary }]} numberOfLines={1}>
+              {hostOfBaseUrl(baseUrl)}
+            </Text>
+          </Pressable>
 
           <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.app")}
@@ -278,7 +291,7 @@ export default function SettingsScreen() {
           <Pressable
             style={({ pressed }) => [
               styles.logoutButton,
-              { backgroundColor: C.bgElevated, borderColor: C.dangerBg, borderWidth: 1 },
+              { backgroundColor: C.bgElevated, borderColor: C.border, borderWidth: 1 },
               loggingOut && styles.buttonDisabled,
               pressed && styles.pressed,
             ]}
@@ -290,6 +303,59 @@ export default function SettingsScreen() {
             <Text style={[styles.logoutText, { color: C.danger }]}>{t("settings.logout")}</Text>
           </Pressable>
         </ScrollView>
+
+        <Modal
+          transparent
+          visible={editingUrl}
+          animationType="fade"
+          onRequestClose={() => setEditingUrl(false)}
+        >
+          <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
+            <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
+              <Text style={[styles.dialogTitle, { color: C.text }]}>{t("login.baseUrl")}</Text>
+              <TextInput
+                style={[styles.dialogInput, { borderColor: C.borderInput, color: C.text }]}
+                value={baseUrlInput}
+                onChangeText={setBaseUrlInput}
+                autoFocus
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="url"
+                returnKeyType="done"
+                onSubmitEditing={() => void saveAndClose()}
+                placeholderTextColor={C.textPlaceholder}
+              />
+              <Text style={[styles.hint, { color: C.textTertiary }]}>
+                {t("settings.baseUrlHint")}
+              </Text>
+              {urlError ? (
+                <Text style={[styles.hint, { color: C.danger }]}>{urlError}</Text>
+              ) : null}
+              <RNView style={styles.dialogRow}>
+                <Pressable
+                  onPress={() => setEditingUrl(false)}
+                  style={({ pressed }) => [styles.dialogButton, pressed && styles.pressed]}
+                >
+                  <Text style={[styles.dialogCancel, { color: C.textSecondary }]}>
+                    {t("chats.cancel")}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => void saveAndClose()}
+                  style={({ pressed }) => [
+                    styles.dialogButton,
+                    { backgroundColor: C.brand },
+                    pressed && styles.pressed,
+                  ]}
+                >
+                  <Text style={[styles.dialogSave, { color: C.onBrand }]}>
+                    {t("chats.renameSave")}
+                  </Text>
+                </Pressable>
+              </RNView>
+            </RNView>
+          </RNView>
+        </Modal>
       </RNView>
     </>
   );
@@ -366,6 +432,12 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 4,
   },
+  serverRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
   rowLabel: {
     fontSize: 15,
     fontWeight: "600",
@@ -375,13 +447,49 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
   },
-  inlineValue: {
+  dialogScrim: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+  },
+  dialog: {
+    width: "100%",
+    borderRadius: 20,
+    borderCurve: "continuous",
+    padding: 20,
+    gap: 14,
+  },
+  dialogTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+  },
+  dialogInput: {
     borderWidth: 1,
     borderRadius: 12,
     borderCurve: "continuous",
     paddingHorizontal: 14,
     paddingVertical: 10,
+    fontSize: 16,
+  },
+  dialogRow: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 8,
+  },
+  dialogButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: 14,
+    borderCurve: "continuous",
+  },
+  dialogCancel: {
     fontSize: 15,
+    fontWeight: "600",
+  },
+  dialogSave: {
+    fontSize: 15,
+    fontWeight: "700",
   },
   segmentRow: {
     flexDirection: "row",
@@ -429,7 +537,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginTop: 14,
-    borderRadius: 14,
+    borderRadius: 16,
     borderCurve: "continuous",
     paddingVertical: 14,
     alignItems: "center",

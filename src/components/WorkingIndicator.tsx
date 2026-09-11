@@ -1,8 +1,9 @@
-import { ActivityIndicator, StyleSheet, Text, View as RNView } from "react-native";
+import { StyleSheet, Text, View as RNView } from "react-native";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { useI18n } from "@/src/i18n/I18nProvider";
 
+/** Design 15 `Working`: blush pill, 14% rose border, brandActive 13pt Medium label. */
 export function WorkingIndicator() {
   const C = useOctopTheme();
   const { t } = useI18n();
@@ -10,11 +11,10 @@ export function WorkingIndicator() {
     <RNView
       style={[
         styles.container,
-        { backgroundColor: C.brandBg, borderColor: C.brandBorder },
+        { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
       ]}
     >
-      <ActivityIndicator size="small" color={C.brand} />
-      <Text style={[styles.label, { color: C.textSecondary }]}>{t("chat.working")}</Text>
+      <Text style={[styles.label, { color: C.brandActive }]}>{t("chat.working")}</Text>
     </RNView>
   );
 }
@@ -24,14 +24,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "flex-start",
+    height: 32,
     paddingHorizontal: 12,
-    paddingVertical: 8,
     marginVertical: 2,
-    marginLeft: 4,
     gap: 8,
-    borderRadius: 14,
+    borderRadius: 16,
     borderCurve: "continuous",
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
   },
   label: {
     fontSize: 13,

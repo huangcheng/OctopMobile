@@ -13,6 +13,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { Octop, OctopDark } from '@/constants/OctopTheme';
+import { ToastProvider } from '@/src/components/Toast';
 import { AgentProvider } from '@/src/features/agents/AgentContext';
 import { AuthProvider } from '@/src/features/auth/AuthContext';
 import { I18nProvider } from '@/src/i18n/I18nProvider';
@@ -87,17 +88,19 @@ function RootLayoutNav() {
     <I18nProvider>
       <AuthProvider>
         <AgentProvider>
-          <ThemeProvider value={theme}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="settings" />
-              <Stack.Screen name="expert/[agentId]" />
-              <Stack.Screen name="chat/[threadId]" />
-              <Stack.Screen name="chat/new" />
-            </Stack>
-          </ThemeProvider>
+          <ToastProvider>
+            <ThemeProvider value={theme}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="settings" />
+                <Stack.Screen name="expert/[agentId]" />
+                <Stack.Screen name="chat/[threadId]" />
+                <Stack.Screen name="chat/new" />
+              </Stack>
+            </ThemeProvider>
+          </ToastProvider>
         </AgentProvider>
       </AuthProvider>
     </I18nProvider>

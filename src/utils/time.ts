@@ -85,7 +85,7 @@ export function formatClock(date: Date, locale: AppLocale): string {
     .replace(/\s?([AP])M/i, (_m, p1: string) => ` ${p1.toUpperCase()}M`);
 }
 
-/** Design 03 greeting card: "Good morning, huangcheng". */
+/** Design 03 greeting card: "Good morning, {name}". */
 export function greetingKeyFor(now: Date = new Date()): "morning" | "afternoon" | "evening" {
   const hour = now.getHours();
   if (hour < 12) return "morning";
