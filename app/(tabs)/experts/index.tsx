@@ -102,6 +102,7 @@ export default function ExpertsScreen() {
 
       {filtered.length > 0 || agents.length > 0 ? (
         <FlatList<Agent>
+          style={styles.listFlex}
           showsVerticalScrollIndicator={false}
           data={filtered}
           keyExtractor={(item) => item.agent_id}
@@ -109,6 +110,8 @@ export default function ExpertsScreen() {
             <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
+          // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.
+          ItemSeparatorComponent={() => <RNView style={styles.separator} />}
           ListFooterComponent={
             <Pressable
               onPress={openConsole}
@@ -202,10 +205,15 @@ const styles = StyleSheet.create({
   listWrap: {
     paddingHorizontal: 16,
   },
+  listFlex: {
+    flex: 1,
+  },
   list: {
     paddingHorizontal: 16,
     paddingBottom: 130,
-    gap: 12,
+  },
+  separator: {
+    height: 12,
   },
   card: {
     flexDirection: "row",

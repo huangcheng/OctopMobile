@@ -136,6 +136,7 @@ export default function KnowledgeScreen() {
 
       {filtered.length > 0 ? (
         <FlatList<KnowledgeRow>
+          style={styles.listFlex}
           showsVerticalScrollIndicator={false}
           data={filtered}
           keyExtractor={(item) => item.id}
@@ -143,6 +144,8 @@ export default function KnowledgeScreen() {
             <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
+          // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.
+          ItemSeparatorComponent={() => <RNView style={styles.separator} />}
           renderItem={({ item }) => {
             const updated = item.updated_at ?? item.created_at ?? null;
             const metaParts: string[] = [];
@@ -237,10 +240,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginBottom: 10,
   },
+  listFlex: {
+    flex: 1,
+  },
   list: {
     paddingHorizontal: 16,
     paddingBottom: 140,
-    gap: 10,
+  },
+  separator: {
+    height: 10,
   },
   card: {
     borderRadius: 16,

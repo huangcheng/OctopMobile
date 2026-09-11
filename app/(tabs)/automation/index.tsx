@@ -142,6 +142,7 @@ export default function AutomationScreen() {
 
       {rows.length > 0 ? (
         <FlatList<JobRow>
+          style={styles.listFlex}
           showsVerticalScrollIndicator={false}
           data={rows}
           keyExtractor={(item) => item.cron_id}
@@ -149,6 +150,8 @@ export default function AutomationScreen() {
             <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={C.brand} />
           }
           contentContainerStyle={styles.list}
+          // Avoid contentContainerStyle `gap` — FlatList remount/focus can stack rows.
+          ItemSeparatorComponent={() => <RNView style={styles.separator} />}
           ListHeaderComponent={
             <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
               {t("automation.jobs")}
@@ -232,10 +235,15 @@ const styles = StyleSheet.create({
   skeletonWrap: {
     marginTop: 4,
   },
+  listFlex: {
+    flex: 1,
+  },
   list: {
     paddingHorizontal: 16,
     paddingBottom: 140,
-    gap: 10,
+  },
+  separator: {
+    height: 10,
   },
   sectionLabel: {
     fontSize: 12,
