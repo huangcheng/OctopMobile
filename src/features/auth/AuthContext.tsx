@@ -25,6 +25,8 @@ import {
 } from "../../storage/preferences";
 import { clearToken, getToken, setToken } from "../../storage/secure";
 
+import { resolveColdStartSession } from "./coldStart";
+
 export type AuthStatus = "loading" | "authenticated" | "unauthenticated";
 
 type AuthContextValue = {
@@ -97,17 +99,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      try {
-        const me = await getMe(api);
-        if (cancelled) return;
-        setUser(me);
-        setStatus("authenticated");
-      } catch {
-        await clearToken();
-        if (cancelled) return;
-        setUser(null);
-        setStatus("unauthenticated");
-      }
+      const session = await resolveColdStartSession(getMe(api), clearToken);
+      if (cancelled) return;
+      setUser(session.user);
+      setStatus(session.status);
     })();
 
     return () => {

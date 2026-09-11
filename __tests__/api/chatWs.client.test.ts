@@ -143,6 +143,33 @@ describe("createChatWsClient", () => {
 
     client.close();
   });
+
+  test("reconnect while open leaves exactly one live socket", () => {
+    const { MockWebSocket, instances } = createMockWebSocketClass();
+    const client = createChatWsClient({
+      url: "ws://example.test/ws",
+      onFrame: () => {},
+      isForeground: () => true,
+      getThreadId: () => "thread-1",
+      WebSocketImpl: MockWebSocket as unknown as typeof WebSocket,
+    });
+
+    instances[0]?.simulateOpen();
+    expect(instances).toHaveLength(1);
+
+    client.reconnect();
+    expect(instances).toHaveLength(2);
+
+    instances[1]?.simulateOpen();
+    client.send({ type: "user_turn", text: "retry", thread_id: "thread-1" });
+
+    expect(instances[1]?.sent).toContain(
+      JSON.stringify({ type: "user_turn", text: "retry", thread_id: "thread-1" }),
+    );
+    expect(instances[0]?.sent.filter((payload) => payload.includes("retry"))).toHaveLength(0);
+
+    client.close();
+  });
 });
 
 describe("createConnectDeduper", () => {

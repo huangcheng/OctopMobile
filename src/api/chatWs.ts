@@ -94,9 +94,13 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
   }
 
   function openSocket(): void {
-    ws = new WebSocketImpl(options.url);
+    const socket = new WebSocketImpl(options.url);
+    ws = socket;
 
-    ws.onopen = () => {
+    socket.onopen = () => {
+      if (ws !== socket) {
+        return;
+      }
       options.onOpen?.();
       flushQueue();
       if (pendingSubscribe && ws?.readyState === WebSocketImpl.OPEN) {
@@ -104,14 +108,20 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
       }
     };
 
-    ws.onmessage = (event) => {
+    socket.onmessage = (event) => {
+      if (ws !== socket) {
+        return;
+      }
       const frame = parseWsFrame(String(event.data));
       if (frame) {
         options.onFrame(frame);
       }
     };
 
-    ws.onclose = () => {
+    socket.onclose = () => {
+      if (ws !== socket) {
+        return;
+      }
       ws = null;
       if (expectedClose) {
         return;
@@ -130,22 +140,22 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
       options.onDisconnected?.();
     };
 
-    ws.onerror = () => {
+    socket.onerror = () => {
       // Close handler performs reconnect / disconnected signaling.
     };
   }
 
   function reconnect(): void {
-    expectedClose = false;
     autoReconnectUsed = false;
     const threadId = options.getThreadId();
     if (threadId) {
       pendingSubscribe = threadId;
     }
     if (ws) {
+      expectedClose = true;
       ws.close();
-      ws = null;
     }
+    expectedClose = false;
     openSocket();
   }
 
