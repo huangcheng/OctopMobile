@@ -38,6 +38,7 @@ export default function TabLayout() {
         name="tasks"
         options={{
           title: t('tasks.title'),
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
