@@ -1,0 +1,21 @@
+export const en = {
+  "login.title": "Sign in",
+  "login.baseUrl": "Server URL",
+  "login.username": "Username",
+  "login.password": "Password",
+  "login.submit": "Sign in",
+  "login.cleartextWarning":
+    "This connection uses unencrypted HTTP. Only use on trusted networks.",
+  "experts.title": "Experts",
+  "tasks.title": "Tasks",
+  "tasks.new": "New chat",
+  "chat.stop": "Stop",
+  "chat.working": "Working…",
+  "chat.disconnected": "Disconnected",
+  "chat.retry": "Retry",
+  "settings.title": "Settings",
+  "settings.logout": "Log out",
+  "errors.unauthorized": "Session expired. Please sign in again.",
+  "errors.network": "Network error. Check your connection and server URL.",
+  "about.unofficial": "Unofficial companion app — not affiliated with Octop.",
+} as const;
