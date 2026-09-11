@@ -328,7 +328,7 @@ export default function ChatsScreen() {
             ]}
           >
             <Image
-              source={require("@/assets/images/octop-mascot-tasks.png")}
+              source={require("@/assets/images/octop-mascot-tasks-trim.png")}
               style={styles.greetingMascot}
               resizeMode="contain"
               accessibilityIgnoresInvertColors
@@ -566,7 +566,6 @@ const styles = StyleSheet.create({
   greeting: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
     gap: 12,
     marginBottom: 10,
     borderRadius: 16,
@@ -580,7 +579,7 @@ const styles = StyleSheet.create({
     height: 48,
   },
   greetingBody: {
-    flexShrink: 1,
+    flex: 1,
     gap: 2,
   },
   greetingTitle: {
