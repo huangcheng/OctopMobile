@@ -14,6 +14,7 @@ export const zh = {
   "tasks.empty": "暂无对话，开始新对话吧。",
   "tasks.chatTitle": "对话",
   "tasks.chatStub": "对话界面将在后续版本实现。",
+  "chat.send": "发送",
   "chat.stop": "停止",
   "chat.working": "处理中…",
   "chat.disconnected": "已断开连接",
@@ -22,5 +23,5 @@ export const zh = {
   "settings.logout": "退出登录",
   "errors.unauthorized": "会话已过期，请重新登录。",
   "errors.network": "网络错误，请检查连接和服务器地址。",
-  "about.unofficial": "非官方配套应用，与 Octop 无关联。",
+  "about.unofficial": "自托管 Octop 的非官方配套应用",
 } as const;

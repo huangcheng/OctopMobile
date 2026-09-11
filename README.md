@@ -8,10 +8,12 @@ Inspired by WorkBuddy-style **limited** mobile surfaces (tasks / experts / light
 
 ## Status
 
+**Phase 1 MVP — in progress**
+
 - Spec: [docs/superpowers/specs/2026-09-11-octop-mobile-design.md](docs/superpowers/specs/2026-09-11-octop-mobile-design.md)
 - API contract (Phase 0): [docs/api-contract.md](docs/api-contract.md) — pinned Octop **`v0.9.32`** (`deb7ac81e89b8779fec59378684582efcde70d43`)
 - MVP plan: [docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md](docs/superpowers/plans/2026-09-11-octop-mobile-mvp.md)
-- Phase 1 scaffold: Expo Router app with **Experts** + **Tasks** tab stubs (`npx expo start`)
+- Expo Router app: **Experts** + **Tasks** tabs, auth, per-agent threads, WS chat streaming (`npx expo start`)
 
 ## Development
 
@@ -28,7 +30,17 @@ Open in Expo Go (LAN) or a simulator. Expect two empty tabs: Experts and Tasks.
 
 ## Smoke path
 
-Release gate (manual): [docs/api-contract.md §6](docs/api-contract.md#6-smoke-path-release-gate) — health → login → agents → thread → WS turn → history.
+Release gate (manual): [docs/api-contract.md §6](docs/api-contract.md#6-smoke-path-release-gate). Checklist: [scripts/smoke-checklist.md](scripts/smoke-checklist.md).
+
+1. `GET /api/health` → `ok: true`
+2. `POST /api/auth/login` → store `access_token`
+3. `GET /api/agents` → pick `agent_id`
+4. `POST /api/agents/{id}/threads` → `thread_id`
+5. Open WS with `?token=`
+6. Send `user_turn` with `text` + `thread_id`
+7. Receive ≥1 `token` then `done`
+8. `GET .../threads/{thread_id}/history` → messages include the turn
+9. (Optional) second turn + `cancel` while streaming
 
 ## Related
 

@@ -15,6 +15,7 @@ export const en = {
   "tasks.empty": "No conversations yet. Start a new chat.",
   "tasks.chatTitle": "Chat",
   "tasks.chatStub": "Chat UI will be implemented in the next release.",
+  "chat.send": "Send",
   "chat.stop": "Stop",
   "chat.working": "Working…",
   "chat.disconnected": "Disconnected",
@@ -23,5 +24,5 @@ export const en = {
   "settings.logout": "Log out",
   "errors.unauthorized": "Session expired. Please sign in again.",
   "errors.network": "Network error. Check your connection and server URL.",
-  "about.unofficial": "Unofficial companion app — not affiliated with Octop.",
+  "about.unofficial": "Unofficial companion for self-hosted Octop",
 } as const;
