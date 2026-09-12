@@ -1,0 +1,112 @@
+# Release live-check: appearance switcher (dark->light live) + smoke §6 steps
+# 4-8 (thread -> stream -> history) as smoke-e2e.
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 15000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "对话"
+    timeout: 90000
+- takeScreenshot: "lc-1-chats-dark"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+
+# --- Appearance switcher ---
+- tapOn: "设置"
+- extendedWaitUntil:
+    visible: "外观"
+    timeout: 30000
+- takeScreenshot: "lc-2-settings-dark"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- tapOn: "外观"
+- extendedWaitUntil:
+    visible: "浅色"
+    timeout: 10000
+- tapOn: "浅色"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "lc-3-settings-light"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- tapOn: "外观"
+- extendedWaitUntil:
+    visible: "跟随系统"
+    timeout: 10000
+- tapOn: "跟随系统"
+- waitForAnimationToEnd: { timeout: 5000 }
+
+# --- Smoke §6: thread -> stream -> history ---
+- back
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 20000
+- takeScreenshot: "lc-4-threadlist"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- tapOn: "新对话"
+- extendedWaitUntil:
+    visible: "发送"
+    timeout: 30000
+- takeScreenshot: "lc-5-newthread"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- tapOn:
+    id: "chat-composer"
+- inputText: "请只回复：pong"
+- tapOn: "发送"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 120000
+- takeScreenshot: "lc-6-streamed"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- back
+- extendedWaitUntil:
+    visible: "请只回复"
+    timeout: 30000
+- tapOn: "请只回复.*"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 60000
+- takeScreenshot: "lc-7-history"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }

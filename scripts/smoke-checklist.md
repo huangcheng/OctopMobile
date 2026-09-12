@@ -7,11 +7,11 @@ Source: [api-contract §6](../docs/api-contract.md#6-smoke-path-release-gate).
 - [x] 1. `GET /api/health` → `ok: true` — verified 2026-09-12: `{"ok":true,"db":true,"users_loaded":3}` against `192.168.31.200:9000`
 - [x] 2. `POST /api/auth/login` → store `access_token` — verified 2026-09-12 in-app on iPhone 17 Pro (iOS 26.4) as `smoke-e2e`; server-side also verified via direct POST
 - [x] 3. `GET /api/agents` → pick `agent_id` — verified 2026-09-12: Experts list shows `Smoke Tester` (DGCNG3), greeting “1 位专家运行中”
-- [ ] 4. `POST /api/agents/{id}/threads` → `thread_id` — pending a calm device (see notes)
-- [ ] 5. Open WS `{wsBase}/api/agents/{agent_id}/chat/ws?token={jwt}`
-- [ ] 6. Send `user_turn` with `text` + `thread_id`
-- [ ] 7. Receive ≥1 `token` frame, then `done`
-- [ ] 8. `GET /api/agents/{id}/threads/{thread_id}/history` → messages include the turn — pending a calm device (see notes)
+- [x] 4. `POST /api/agents/{id}/threads` → `thread_id` — verified 2026-09-12 in-app (smoke-turn.yaml a2-step4)
+- [x] 5. Open WS `{wsBase}/api/agents/{agent_id}/chat/ws?token={jwt}`
+- [x] 6. Send `user_turn` with `text` + `thread_id`
+- [x] 7. Receive ≥1 `token` frame, then `done` — verified 2026-09-12: reply "pong" streamed in-app (a2-step7); server-side also via `octop chats send`
+- [x] 8. history includes the turn — verified 2026-09-12: reopened thread renders user turn + reply (今天 section)
 - [ ] 9. (Optional) second turn + `cancel` while streaming
 
 **In-app path:** Settings → set base URL → login → Experts → pick agent → Tasks → new chat → send message → verify streaming reply and history.
@@ -24,6 +24,16 @@ maestro test -e OCTOP_URL=http://192.168.x.x:9000 -e OCTOP_USER=admin -e OCTOP_P
 
 `suite.yaml` runs `00` → `07` in order (folder runs are unordered); `04` expects a running expert and sends a real turn (cleaned up by `05`). Requires Expo Go on a booted simulator with Metro on :8081.
 
+
+## Run log — 2026-09-12 (second pass)
+
+- Steps 4–8 completed in-app on iPhone 17 Pro as `smoke-e2e` against the local
+  v0.9.33 server: thread → WS stream ("pong") → reopen shows both turns.
+  Test data: agents Smoke Tester / News Reporter / AI 安全合规卫士 (CLI-created).
+- Appearance switcher (Settings ▸ 外观) verified live: bg token flips
+  `#0E0E0E` → `#F5F6F8` (pixel-sampled screenshots lc-2/lc-3).
+- Dev-menu note: Expo Go's dev menu intermittently opens on cold start under
+  Maestro and blocks flows — close it (`tapOn: "Close"`) or run warm.
 
 ## Run log — 2026-09-12
 

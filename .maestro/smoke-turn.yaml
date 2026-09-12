@@ -2,8 +2,12 @@
 # Requires the app logged in (run smoke-login.yaml first).
 appId: host.exp.Exponent
 ---
-- stopApp: host.exp.Exponent
 - openLink: "exp://localhost:8081"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
 - runFlow:
     when:
       visible: "Open"
