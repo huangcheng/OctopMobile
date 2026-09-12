@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Keyboard,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -11,6 +10,7 @@ import {
   TextInput,
   View as RNView,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SymbolView } from "expo-symbols";
 import {
   initialWindowMetrics,
@@ -49,7 +49,6 @@ export default function NewChatScreen() {
   const [draft, setDraft] = useState("");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [attachOpen, setAttachOpen] = useState(false);
 
   function openConsole() {
@@ -70,22 +69,6 @@ export default function NewChatScreen() {
       void selectAgent(effectiveAgentId);
     }
   }, [effectiveAgentId, selectedAgentId, selectAgent]);
-
-  useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    const onShow = Keyboard.addListener(showEvent, (e) => {
-      if (Platform.OS === "android") {
-        return;
-      }
-      setKeyboardHeight(e.endCoordinates.height);
-    });
-    const onHide = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
-    return () => {
-      onShow.remove();
-      onHide.remove();
-    };
-  }, []);
 
   async function handleSend(text?: string) {
     const message = (text ?? draft).trim();
@@ -113,11 +96,13 @@ export default function NewChatScreen() {
     }
   }
 
-  const composerPadBottom = keyboardHeight > 0 ? keyboardHeight + 8 : Math.max(bottomInset, 8);
+  const composerPadBottom = Math.max(bottomInset, 8);
 
   return (
-    <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-      <RNView
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: C.bgLayout }]}
+      behavior="padding"
+    >      <RNView
         style={[
           styles.header,
           {
@@ -330,7 +315,7 @@ export default function NewChatScreen() {
           },
         ]}
       />
-    </RNView>
+    </KeyboardAvoidingView>
   );
 }
 

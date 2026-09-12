@@ -13,6 +13,7 @@ import {
   TextInput,
   View as RNView,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SymbolView } from "expo-symbols";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
@@ -539,6 +540,7 @@ export default function ChatsScreen() {
       />
 
       <Modal transparent visible={renameRow !== null} animationType="fade" onRequestClose={() => setRenameRow(null)}>
+        <KeyboardAvoidingView behavior="padding" style={styles.dialogKav}>
         <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
           <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
             <Text style={[styles.dialogTitle, { color: C.text }]}>{t("chats.renameTitle")}</Text>
@@ -574,6 +576,7 @@ export default function ChatsScreen() {
             </RNView>
           </RNView>
         </RNView>
+        </KeyboardAvoidingView>
       </Modal>
     </RNView>
   );
@@ -714,6 +717,9 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: "600",
+  },
+  dialogKav: {
+    flex: 1,
   },
   dialogScrim: {
     flex: 1,

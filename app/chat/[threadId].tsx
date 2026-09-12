@@ -4,13 +4,13 @@ import {
   ActivityIndicator,
   FlatList,
   Keyboard,
-  Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
   View as RNView,
 } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { SymbolView } from "expo-symbols";
 import {
   initialWindowMetrics,
@@ -56,7 +56,6 @@ export default function ThreadChatScreen() {
 
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [attachOpen, setAttachOpen] = useState(false);
   const pendingSentRef = useRef(false);
   const listRef = useRef<FlatList<ListItem>>(null);
@@ -84,25 +83,6 @@ export default function ThreadChatScreen() {
     agentId: effectiveAgentId,
     threadId: threadId ?? "",
   });
-
-  useEffect(() => {
-    const showEvent = Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-    const hideEvent = Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-    const onShow = Keyboard.addListener(showEvent, (e) => {
-      // Android typically resizes the window; only lift the composer on iOS.
-      if (Platform.OS === "android") {
-        return;
-      }
-      setKeyboardHeight(e.endCoordinates.height);
-    });
-    const onHide = Keyboard.addListener(hideEvent, () => {
-      setKeyboardHeight(0);
-    });
-    return () => {
-      onShow.remove();
-      onHide.remove();
-    };
-  }, []);
 
   useEffect(() => {
     if (effectiveAgentId && selectedAgentId !== effectiveAgentId) {
@@ -151,9 +131,9 @@ export default function ThreadChatScreen() {
     return items.reverse();
   }, [messages, showStreamingRow]);
 
-  // Keyboard open: pad by keyboard height (screen-bottom). Closed: home indicator only.
-  // Avoid KeyboardAvoidingView — it stacked with safe-area and left a huge bottom gap.
-  const composerPadBottom = keyboardHeight > 0 ? keyboardHeight + 8 : Math.max(bottomInset, 8);
+  // KeyboardAvoidingView (keyboard-controller) lifts the composer on both platforms —
+  // edge-to-edge Android no longer resizes the window for the IME.
+  const composerPadBottom = Math.max(bottomInset, 8);
 
   if (!effectiveAgentId) {
     return (
@@ -172,7 +152,10 @@ export default function ThreadChatScreen() {
   }
 
   return (
-    <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: C.bgLayout }]}
+      behavior="padding"
+    >
       <RNView
         style={[
           styles.header,
@@ -362,7 +345,7 @@ export default function ThreadChatScreen() {
           },
         ]}
       />
-    </RNView>
+    </KeyboardAvoidingView>
   );
 }
 
