@@ -1,0 +1,27 @@
+# Regression: a tool-using turn must render ONE aggregated row per tool call,
+# never raw "tool_call_chunk" rows (Redmi bug, 2026-09-12).
+appId: host.exp.Exponent
+---
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 15000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- extendedWaitUntil:
+    visible: "对话"
+    timeout: 90000
+- tapOn: "新对话"
+- extendedWaitUntil:
+    visible: "发送"
+    timeout: 30000
+- tapOn:
+    id: "chat-composer"
+- inputText: "运行 shell 命令 echo smoke-tools-ok 并把输出回复给我"
+- tapOn: "发送"
+- extendedWaitUntil:
+    visible: "smoke-tools-ok"
+    timeout: 180000
+- assertNotVisible: "tool_call_chunk"
+- takeScreenshot: "tc-process-card"

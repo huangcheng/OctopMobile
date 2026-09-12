@@ -57,13 +57,23 @@ export type ChatWsClient = {
   subscribe: (threadId: string) => void;
   reconnect: () => void;
   close: () => void;
+  isOpen: () => boolean;
 };
+
+/** Exponential backoff for silent auto-reconnect (phone sleep, flaky LAN). */
+export const RECONNECT_DELAYS_MS = [1000, 2000, 4000, 8000, 15000, 15000] as const;
+
+export function reconnectDelayMs(attempt: number): number {
+  const capped = Math.max(0, Math.min(attempt, RECONNECT_DELAYS_MS.length - 1));
+  return RECONNECT_DELAYS_MS[capped];
+}
 
 export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
   const WebSocketImpl = options.WebSocketImpl ?? WebSocket;
   let ws: WebSocket | null = null;
   let expectedClose = false;
-  let autoReconnectUsed = false;
+  let reconnectAttempt = 0;
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   let pendingSubscribe: string | null = null;
   const outboundQueue: Record<string, unknown>[] = [];
 
@@ -101,6 +111,11 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
       if (ws !== socket) {
         return;
       }
+      reconnectAttempt = 0;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+      }
       options.onOpen?.();
       flushQueue();
       if (pendingSubscribe && ws?.readyState === WebSocketImpl.OPEN) {
@@ -126,18 +141,10 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
       if (expectedClose) {
         return;
       }
-
-      if (options.isForeground() && !autoReconnectUsed) {
-        autoReconnectUsed = true;
-        const threadId = options.getThreadId();
-        if (threadId) {
-          pendingSubscribe = threadId;
-        }
-        openSocket();
-        return;
-      }
-
+      // Unexpected drop (sleep, NAT expiry, server restart): signal the banner
+      // but keep retrying silently with backoff — no manual tap required.
       options.onDisconnected?.();
+      scheduleReconnect();
     };
 
     socket.onerror = () => {
@@ -145,8 +152,34 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
     };
   }
 
+  function scheduleReconnect(): void {
+    if (reconnectTimer) {
+      return;
+    }
+    const delay = reconnectDelayMs(reconnectAttempt);
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      if (!options.isForeground()) {
+        // Backgrounded: hold the attempt until the app wakes.
+        scheduleReconnect();
+        return;
+      }
+      reconnectAttempt += 1;
+      const threadId = options.getThreadId();
+      if (threadId) {
+        pendingSubscribe = threadId;
+      }
+      openSocket();
+      // If this socket dies again, onclose schedules the next backoff step.
+    }, delay);
+  }
+
   function reconnect(): void {
-    autoReconnectUsed = false;
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
+    reconnectAttempt = 0;
     const threadId = options.getThreadId();
     if (threadId) {
       pendingSubscribe = threadId;
@@ -154,19 +187,27 @@ export function createChatWsClient(options: ChatWsClientOptions): ChatWsClient {
     if (ws) {
       expectedClose = true;
       ws.close();
+      expectedClose = false;
     }
-    expectedClose = false;
     openSocket();
   }
 
   function close(): void {
+    if (reconnectTimer) {
+      clearTimeout(reconnectTimer);
+      reconnectTimer = null;
+    }
     expectedClose = true;
     outboundQueue.length = 0;
     ws?.close();
     ws = null;
   }
 
+  function isOpen(): boolean {
+    return ws?.readyState === WebSocketImpl.OPEN;
+  }
+
   openSocket();
 
-  return { send, subscribe, reconnect, close };
+  return { send, subscribe, reconnect, close, isOpen };
 }

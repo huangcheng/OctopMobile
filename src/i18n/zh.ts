@@ -114,6 +114,7 @@ export const zh: Record<keyof typeof en, string> = {
   "chat.today": "今天",
   "chat.processSummary": "使用 {tools} 个工具 · {thinking} 次深度思考",
   "chat.processDone": "完成",
+  "chat.processRunning": "执行中…",
   "chat.thinking": "深度思考",
   "chat.attach": "附件",
 

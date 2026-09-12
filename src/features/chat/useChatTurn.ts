@@ -12,6 +12,11 @@ import { getThreadHistory } from "../../api/threads";
 import type { HistoryMessage, MessageContentBlock } from "../../api/types";
 import { t } from "../../i18n";
 import { getToken } from "../../storage/secure";
+import {
+  applyToolFrame,
+  EMPTY_TOOL_FRAME_STATE,
+  type ToolFrameState,
+} from "../../utils/processFrames";
 import { useAuth } from "../auth/AuthContext";
 
 export type ChatDisplayMessage = {
@@ -25,6 +30,8 @@ export type ProcessItem = {
   kind: "tool" | "thinking";
   name: string;
   detail: string;
+  /** Tool output preview, rendered inside the row under the call. */
+  result?: string;
   status: "running" | "done" | "error";
 };
 
@@ -102,6 +109,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
   const [error, setError] = useState<string | null>(null);
   const [historyLoading, setHistoryLoading] = useState(true);
   const [process, setProcess] = useState<ProcessState>(EMPTY_PROCESS);
+  const toolFrameRef = useRef<ToolFrameState>(EMPTY_TOOL_FRAME_STATE);
 
   const wsRef = useRef<ChatWsClient | null>(null);
   const connectDeduperRef = useRef(createConnectDeduper());
@@ -178,22 +186,27 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
         case "pong":
           break;
         default: {
-          // Non-text stream events: tool calls feed the process card (design 15),
-          // anything else keeps the working chip alive.
+          // Non-text stream events: tool-call CHUNKS accumulate into one row
+          // per tool call (utils/processFrames); results attach inside the row.
           const lower = type.toLowerCase();
           if (lower.startsWith("tool")) {
-            const name =
-              asString(frame.tool) || asString(frame.name) || asString(frame.tool_name) || type;
-            const detail =
-              asString(frame.args) || asString(frame.input) || asString(frame.query) || "";
-            const status: ProcessItem["status"] = lower.includes("error")
-              ? "error"
-              : lower.endsWith("end") || lower.endsWith("done") || lower.endsWith("result")
-                ? "done"
-                : "running";
-            setProcess((prev) =>
-              mergeProcessItem(prev, { id: `${name}:${detail}`, kind: "tool", name, detail, status }),
-            );
+            const next = applyToolFrame(toolFrameRef.current, frame);
+            toolFrameRef.current = next;
+            setProcess((prev) => ({
+              ...prev,
+              items: [
+                ...next.rows.map((row) => ({
+                  id: row.id,
+                  kind: "tool" as const,
+                  name: row.name,
+                  detail: row.detail,
+                  result: row.result,
+                  status: row.status,
+                })),
+                ...prev.items.filter((item) => item.kind === "thinking"),
+              ],
+              toolCount: next.rows.length,
+            }));
             if (!streamingTextRef.current) {
               setWorking(true);
             }
@@ -313,6 +326,16 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextState: AppStateStatus) => {
       foregroundRef.current = nextState === "active";
+      if (nextState === "active") {
+        // Wake from sleep: the socket usually died while backgrounded — the
+        // client's backoff holds in background, so kick it now (silent).
+        const client = wsRef.current;
+        if (client && !client.isOpen()) {
+          client.reconnect();
+        } else if (!client) {
+          void ensureWs(true);
+        }
+      }
     });
 
     return () => subscription.remove();
@@ -333,6 +356,7 @@ export function useChatTurn({ agentId, threadId }: UseChatTurnOptions) {
       setTurnActive(true);
       turnActiveRef.current = true;
       setProcess(EMPTY_PROCESS);
+      toolFrameRef.current = EMPTY_TOOL_FRAME_STATE;
 
       const client = await ensureWs(false);
       client?.send({ type: "user_turn", text: trimmed, thread_id: threadId });

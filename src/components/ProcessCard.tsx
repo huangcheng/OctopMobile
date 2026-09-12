@@ -65,37 +65,57 @@ export function ProcessCard(props: { process: ProcessState }) {
                 {item.detail ?? t("chat.thinking")}
               </Text>
             ) : (
-              <RNView key={item.id} style={styles.row}>
-                <RNView style={[styles.toolIcon, { backgroundColor: C.bgTertiary }]}>
-                  <SymbolView
-                    name={
-                      { ios: "wrench.and.screwdriver", android: "build", web: "build" } as unknown as Parameters<typeof SymbolView>[0]["name"]
-                    }
-                    tintColor={C.textTertiary}
-                    size={13}
-                  />
-                </RNView>
-                <RNView style={styles.rowBody}>
-                  <Text style={[styles.toolName, { color: C.text }]} numberOfLines={1}>
-                    {item.name}
-                  </Text>
-                  {item.detail ? (
-                    <Text style={[styles.toolDetail, { color: C.textTertiary }]} numberOfLines={1}>
-                      {item.detail}
+              <RNView key={item.id}>
+                <RNView style={styles.row}>
+                  <RNView style={[styles.toolIcon, { backgroundColor: C.bgTertiary }]}>
+                    <SymbolView
+                      name={
+                        { ios: "wrench.and.screwdriver", android: "build", web: "build" } as unknown as Parameters<typeof SymbolView>[0]["name"]
+                      }
+                      tintColor={C.textTertiary}
+                      size={13}
+                    />
+                  </RNView>
+                  <RNView style={styles.rowBody}>
+                    <Text style={[styles.toolName, { color: C.text }]} numberOfLines={1}>
+                      {item.name}
                     </Text>
-                  ) : null}
+                    {item.detail ? (
+                      <Text style={[styles.toolDetail, { color: C.textTertiary }]} numberOfLines={1}>
+                        {item.detail}
+                      </Text>
+                    ) : null}
+                  </RNView>
+                  <Text
+                    style={[
+                      styles.statusText,
+                      {
+                        color:
+                          item.status === "error"
+                            ? C.danger
+                            : item.status === "done"
+                              ? C.success
+                              : C.textTertiary,
+                      },
+                    ]}
+                  >
+                    {item.status === "error"
+                      ? t("automation.error")
+                      : item.status === "done"
+                        ? t("chat.processDone")
+                        : t("chat.processRunning")}
+                  </Text>
                 </RNView>
-                <Text
-                  style={[
-                    styles.statusText,
-                    {
-                      color:
-                        item.status === "error" ? C.danger : item.status === "done" ? C.success : C.textTertiary,
-                    },
-                  ]}
-                >
-                  {item.status === "error" ? t("automation.error") : t("chat.processDone")}
-                </Text>
+                {item.result ? (
+                  <RNView style={[styles.toolResult, { backgroundColor: C.bgTertiary }]}>
+                    <Text
+                      style={[styles.toolResultText, { color: C.textSecondary }]}
+                      numberOfLines={4}
+                    >
+                      {item.result}
+                    </Text>
+                  </RNView>
+                ) : null}
               </RNView>
             ),
           )
@@ -138,6 +158,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  toolResult: {
+    marginTop: 6,
+    marginLeft: 32,
+    borderRadius: 8,
+    borderCurve: "continuous",
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+  },
+  toolResultText: {
+    fontSize: 11,
+    lineHeight: 16,
   },
   toolIcon: {
     width: 24,

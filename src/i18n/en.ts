@@ -113,6 +113,7 @@ export const en = {
   "chat.today": "Today",
   "chat.processSummary": "Used {tools} tools · {thinking} deep thinking",
   "chat.processDone": "Done",
+  "chat.processRunning": "Running…",
   "chat.thinking": "Deep thinking",
   "chat.attach": "Attach",
 

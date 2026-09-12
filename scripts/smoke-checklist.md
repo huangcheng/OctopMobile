@@ -25,6 +25,16 @@ maestro test -e OCTOP_URL=http://192.168.x.x:9000 -e OCTOP_USER=admin -e OCTOP_P
 `suite.yaml` runs `00` → `07` in order (folder runs are unordered); `04` expects a running expert and sends a real turn (cleaned up by `05`). Requires Expo Go on a booted simulator with Metro on :8081.
 
 
+## Run log — 2026-09-13 (device-found bugs)
+
+- Redmi real-device testing found two gaps now fixed + regression-covered:
+  1. tool_call_chunk frames rendered as one row per stream chunk — chunks now
+     accumulate per tool call with the result inside the row
+     (`utils/processFrames.ts`, unit tests, `.maestro/smoke-toolcall.yaml`
+     asserts `assertNotVisible: tool_call_chunk` on a tool-using turn).
+  2. no auto-reconnect after phone sleep — WS client now retries with
+     exponential backoff and reconnects on AppState→active (wake).
+
 ## Run log — 2026-09-12 (second pass)
 
 - Steps 4–8 completed in-app on iPhone 17 Pro as `smoke-e2e` against the local
