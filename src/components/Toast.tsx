@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
-import { Animated, Pressable, StyleSheet, Text, View as RNView } from "react-native";
+import { Pressable, StyleSheet, Text, View as RNView } from "react-native";
+import Animated, { FadeIn, FadeInDown, FadeOut, FadeOutDown, useReducedMotion } from "react-native-reanimated";
 import { SymbolView } from "expo-symbols";
+import * as Haptics from "expo-haptics";
 import { useSegments } from "expo-router";
 import {
   initialWindowMetrics,
@@ -39,15 +41,14 @@ const ICONS: Record<ToastKind, { ios: string; android: string; web: string }> = 
 /**
  * Ardot `cp/toast-*`: floating card (surface + border + 0 8 20 shadow),
  * tinted 28px icon disc, 13 SemiBold message, optional rose action.
- * Floats above the PillTabBar on tab screens, above the home inset elsewhere.
+ * Occasional feedback → Reanimated enter/exit; reduced motion: fade only.
  */
 export function ToastProvider({ children }: { children: ReactNode }) {
   const C = useOctopTheme();
   const insets = useSafeAreaInsets();
   const segments = useSegments();
+  const reduced = useReducedMotion();
   const [toast, setToast] = useState<(ToastOptions & { id: number }) | null>(null);
-  const translate = useRef(new Animated.Value(24)).current;
-  const opacity = useRef(new Animated.Value(0)).current;
   const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dismiss = useCallback(() => {
@@ -55,28 +56,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       clearTimeout(dismissTimer.current);
       dismissTimer.current = null;
     }
-    Animated.parallel([
-      Animated.timing(translate, { toValue: 24, duration: 180, useNativeDriver: true }),
-      Animated.timing(opacity, { toValue: 0, duration: 180, useNativeDriver: true }),
-    ]).start(() => setToast(null));
-  }, [opacity, translate]);
+    setToast(null);
+  }, []);
 
   const show = useCallback(
     (options: ToastOptions) => {
       if (dismissTimer.current) {
         clearTimeout(dismissTimer.current);
       }
-      const id = Date.now();
-      setToast({ ...options, id });
-      translate.setValue(24);
-      opacity.setValue(0);
-      Animated.parallel([
-        Animated.timing(translate, { toValue: 0, duration: 220, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 220, useNativeDriver: true }),
-      ]).start();
+      const kind = options.kind ?? "info";
+      if (kind === "success") {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      } else if (kind === "error") {
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+      setToast({ ...options, id: Date.now() });
       dismissTimer.current = setTimeout(dismiss, options.durationMs ?? 2800);
     },
-    [dismiss, opacity, translate],
+    [dismiss],
   );
 
   useEffect(() => {
@@ -105,8 +102,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {toast ? (
         <Animated.View
+          key={toast.id}
           pointerEvents="box-none"
-          style={[styles.host, { bottom, transform: [{ translateY: translate }], opacity }]}
+          entering={reduced ? FadeIn.duration(150) : FadeInDown.duration(220)}
+          exiting={reduced ? FadeOut.duration(120) : FadeOutDown.duration(180)}
+          style={[styles.host, { bottom }]}
         >
           <RNView
             style={[

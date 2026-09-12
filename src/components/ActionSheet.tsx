@@ -1,6 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View as RNView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SymbolView } from "expo-symbols";
+import * as Haptics from "expo-haptics";
 import Animated, { FadeIn, SlideInDown, useReducedMotion } from "react-native-reanimated";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
@@ -74,6 +75,11 @@ export function ActionSheet(props: {
               <Pressable
                 key={action.key}
                 onPress={() => {
+                  if (action.destructive) {
+                    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  } else {
+                    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
                   props.onDismiss();
                   action.onPress();
                 }}

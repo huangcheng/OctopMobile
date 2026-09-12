@@ -1,14 +1,24 @@
+import { useEffect } from "react";
 import { Pressable, StyleSheet } from "react-native";
-import Animated, { useAnimatedStyle, withTiming, Easing } from "react-native-reanimated";
+import Animated, {
+  Easing,
+  ReduceMotion,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 
 const EASE_OUT = Easing.bezier(0.23, 1, 0.32, 1);
 const DURATION = 180;
+const KNOB_ON_X = 18;
 
 /**
  * Toggle (Ardot `cp/toggle-on|off`: 44×26, knob 22, on = brand, off = tertiary).
- * Two-state change → timing 180ms ease-out on the UI thread (no finger tracking).
+ * Two-state change → timing 180ms ease-out on a shared value (UI thread).
  */
 export function Toggle(props: {
   value: boolean;
@@ -17,29 +27,45 @@ export function Toggle(props: {
   accessibilityLabel: string;
 }) {
   const C = useOctopTheme();
+  const reduced = useReducedMotion();
+  const offset = useSharedValue(props.value ? KNOB_ON_X : 0);
+
+  useEffect(() => {
+    offset.set(
+      withTiming(props.value ? KNOB_ON_X : 0, {
+        duration: reduced ? 1 : DURATION,
+        easing: EASE_OUT,
+        reduceMotion: ReduceMotion.System,
+      }),
+    );
+  }, [offset, props.value, reduced]);
 
   const knobStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: withTiming(props.value ? 18 : 0, { duration: DURATION, easing: EASE_OUT }) },
-    ],
+    transform: [{ translateX: offset.get() }],
   }));
 
   return (
     <Pressable
-      onPress={() => !props.disabled && props.onChange(!props.value)}
+      onPress={() => {
+        if (props.disabled) {
+          return;
+        }
+        void Haptics.selectionAsync();
+        props.onChange(!props.value);
+      }}
       style={({ pressed }) => [
         styles.track,
         { backgroundColor: props.value ? C.brand : C.bgTertiary },
         (props.disabled || pressed) && { opacity: 0.7 },
       ]}
+      hitSlop={8}
+      pressRetentionOffset={12}
       accessibilityRole="switch"
       accessibilityState={{ checked: props.value, disabled: props.disabled }}
       accessibilityLabel={props.accessibilityLabel}
       disabled={props.disabled}
     >
-      <Animated.View
-        style={[styles.knob, { backgroundColor: C.onBrand }, knobStyle]}
-      />
+      <Animated.View style={[styles.knob, { backgroundColor: C.onBrand }, knobStyle]} />
     </Pressable>
   );
 }

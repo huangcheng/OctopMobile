@@ -1,5 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { StyleSheet, Text, View as RNView } from "react-native";
+import { useEffect, useMemo } from "react";
+import { StyleSheet, View as RNView } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
 import Markdown from "react-native-markdown-display";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
@@ -11,18 +20,37 @@ type StreamingBubbleProps = {
   content: string;
 };
 
-/** Live assistant bubble: markdown rendered as tokens arrive + blinking caret. */
+const BLINK_HALF_MS = 265;
+
+/** Live assistant bubble: markdown rendered as tokens arrive + UI-thread caret blink. */
 export function StreamingBubble({ content }: StreamingBubbleProps) {
   const C = useOctopTheme();
-  const [caretOn, setCaretOn] = useState(true);
+  const reduced = useReducedMotion();
+  const caretOpacity = useSharedValue(1);
   const rendered = useMemo(() => softenStreamingMarkdown(content), [content]);
   const markdownStyles = useMemo(() => buildAssistantMarkdownStyles(C), [C]);
   const markdownRules = useMemo(() => buildMarkdownRules(C), [C]);
 
   useEffect(() => {
-    const id = setInterval(() => setCaretOn((v) => !v), 530);
-    return () => clearInterval(id);
-  }, []);
+    if (reduced) {
+      caretOpacity.set(1);
+      return;
+    }
+    caretOpacity.set(
+      withRepeat(
+        withSequence(
+          withTiming(0, { duration: BLINK_HALF_MS, easing: Easing.linear }),
+          withTiming(1, { duration: BLINK_HALF_MS, easing: Easing.linear }),
+        ),
+        -1,
+      ),
+    );
+    return () => {
+      caretOpacity.set(1);
+    };
+  }, [caretOpacity, reduced]);
+
+  const caretStyle = useAnimatedStyle(() => ({ opacity: caretOpacity.get() }));
 
   return (
     <RNView
@@ -37,11 +65,20 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
       ]}
     >
       {content.length > 0 ? (
-        <Markdown style={markdownStyles} rules={markdownRules}>{rendered}</Markdown>
+        <Markdown style={markdownStyles} rules={markdownRules}>
+          {rendered}
+        </Markdown>
       ) : null}
-      <Text style={[styles.caret, { color: C.brandText }, content.length > 0 && styles.caretAfter, !caretOn && styles.caretOff]}>
+      <Animated.Text
+        style={[
+          styles.caret,
+          { color: C.brandText },
+          content.length > 0 && styles.caretAfter,
+          caretStyle,
+        ]}
+      >
         ▍
-      </Text>
+      </Animated.Text>
     </RNView>
   );
 }
@@ -64,8 +101,5 @@ const styles = StyleSheet.create({
   },
   caretAfter: {
     marginTop: 2,
-  },
-  caretOff: {
-    opacity: 0,
   },
 });

@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { AgentTile } from "@/src/components/AgentTile";
+import { PressableScale } from "@/src/components/PressableScale";
 import { StatusPill } from "@/src/components/StatusPill";
 import { useToast } from "@/src/components/Toast";
 import { listThreads } from "@/src/api/threads";
@@ -267,12 +268,11 @@ export default function ExpertDetailScreen() {
           },
         ]}
       >
-        <Pressable
+        <PressableScale
           onPress={shareExpert}
-          style={({ pressed }) => [
+          contentStyle={[
             styles.shareButton,
             { backgroundColor: C.bgElevated, borderColor: C.border },
-            pressed && styles.pressed,
           ]}
           accessibilityRole="button"
           accessibilityLabel={t("expert.share")}
@@ -282,13 +282,13 @@ export default function ExpertDetailScreen() {
             tintColor={C.text}
             size={20}
           />
-        </Pressable>
-        <Pressable
+        </PressableScale>
+        <PressableScale
           onPress={() => startChat()}
-          style={({ pressed }) => [
+          style={styles.startChatFlex}
+          contentStyle={[
             styles.startChatButton,
             { backgroundColor: C.brand, boxShadow: `0px 4px 12px ${C.brandShadow}` },
-            pressed && styles.pressed,
           ]}
           accessibilityRole="button"
           accessibilityLabel={t("expert.startChat")}
@@ -299,7 +299,7 @@ export default function ExpertDetailScreen() {
             size={18}
           />
           <Text style={[styles.startChatText, { color: C.onBrand }]}>{t("expert.startChat")}</Text>
-        </Pressable>
+        </PressableScale>
       </RNView>
     </RNView>
   );
@@ -416,8 +416,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  startChatButton: {
+  startChatFlex: {
     flex: 1,
+  },
+  startChatButton: {
     height: 44,
     borderRadius: 12,
     borderCurve: "continuous",

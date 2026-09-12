@@ -4,7 +4,6 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { mapAuthError, useAuth } from "@/src/features/auth/AuthContext";
@@ -120,12 +120,11 @@ export default function LoginScreen() {
               editable={!pending}
             />
 
-            <Pressable
-              style={({ pressed }) => [
+            <PressableScale
+              contentStyle={[
                 styles.button,
                 { backgroundColor: C.brand },
                 pending && styles.buttonDisabled,
-                pressed && !pending && styles.buttonPressed,
               ]}
               onPress={handleSubmit}
               disabled={pending}
@@ -137,7 +136,7 @@ export default function LoginScreen() {
               ) : (
                 <Text style={[styles.buttonText, { color: C.onBrand }]}>{t("login.submit")}</Text>
               )}
-            </Pressable>
+            </PressableScale>
           </RNView>
 
           <Text style={[styles.securityNote, { color: C.textTertiary }]}>
@@ -210,9 +209,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: "center",
     boxShadow: "0px 4px 10px rgba(232, 93, 117, 0.3)",
-  },
-  buttonPressed: {
-    transform: [{ scale: 0.98 }],
   },
   buttonDisabled: {
     opacity: 0.7,

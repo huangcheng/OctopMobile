@@ -21,6 +21,7 @@ import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { AgentTile } from "@/src/components/AgentTile";
 import { ActionSheet } from "@/src/components/ActionSheet";
+import { PressableScale } from "@/src/components/PressableScale";
 import * as WebBrowser from "expo-web-browser";
 import { createThread } from "@/src/api/threads";
 import { useAuth } from "@/src/features/auth/AuthContext";
@@ -255,12 +256,11 @@ export default function NewChatScreen() {
         ]}
       >
         <RNView style={styles.composerRow}>
-          <Pressable
+          <PressableScale
             onPress={() => setAttachOpen(true)}
-            style={({ pressed }) => [
+            contentStyle={[
               styles.attachButton,
               { backgroundColor: C.bgElevated, borderColor: C.border },
-              pressed && styles.pressed,
             ]}
             accessibilityRole="button"
             accessibilityLabel={t("chat.attach")}
@@ -272,7 +272,7 @@ export default function NewChatScreen() {
               tintColor={C.textTertiary}
               size={18}
             />
-          </Pressable>
+          </PressableScale>
           <TextInput
             style={[
               styles.input,
@@ -287,13 +287,12 @@ export default function NewChatScreen() {
             multiline
             editable={!creating}
           />
-          <Pressable
+          <PressableScale
             onPress={() => void handleSend()}
             disabled={!draft.trim() || creating}
-            style={({ pressed }) => [
+            contentStyle={[
               styles.sendButton,
               { backgroundColor: C.brand },
-              pressed && styles.pressed,
               (!draft.trim() || creating) && styles.sendDisabled,
             ]}
             accessibilityRole="button"
@@ -314,7 +313,7 @@ export default function NewChatScreen() {
                 size={18}
               />
             )}
-          </Pressable>
+          </PressableScale>
         </RNView>
       </RNView>
 
@@ -337,10 +336,6 @@ export default function NewChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  pressed: {
-    transform: [{ scale: 0.95 }],
-    opacity: 0.9,
   },
   header: {
     flexDirection: "row",

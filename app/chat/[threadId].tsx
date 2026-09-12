@@ -20,6 +20,7 @@ import {
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { MarkdownBubble } from "@/src/components/MarkdownBubble";
+import { PressableScale } from "@/src/components/PressableScale";
 import { StreamingBubble } from "@/src/components/StreamingBubble";
 import { WorkingIndicator } from "@/src/components/WorkingIndicator";
 import { ProcessCard } from "@/src/components/ProcessCard";
@@ -278,12 +279,11 @@ export default function ThreadChatScreen() {
           ]}
         >
         <RNView style={styles.composerRow}>
-          <Pressable
+          <PressableScale
             onPress={() => setAttachOpen(true)}
-            style={({ pressed }) => [
+            contentStyle={[
               styles.attachButton,
               { backgroundColor: C.bgElevated, borderColor: C.border },
-              pressed && styles.pressed,
             ]}
             accessibilityRole="button"
             accessibilityLabel={t("chat.attach")}
@@ -295,7 +295,7 @@ export default function ThreadChatScreen() {
               tintColor={C.textTertiary}
               size={18}
             />
-          </Pressable>
+          </PressableScale>
           <TextInput
             style={[
               styles.input,
@@ -309,13 +309,12 @@ export default function ThreadChatScreen() {
             editable={!turnActive && !sending}
           />
 
-          <Pressable
+          <PressableScale
             onPress={turnActive ? stop : handleSend}
             disabled={!turnActive && (!draft.trim() || sending)}
-            style={({ pressed }) => [
+            contentStyle={[
               styles.sendButton,
               { backgroundColor: C.brand },
-              pressed && styles.pressed,
               !turnActive && (!draft.trim() || sending) && styles.sendDisabled,
             ]}
             accessibilityRole="button"
@@ -346,7 +345,7 @@ export default function ThreadChatScreen() {
                 size={18}
               />
             )}
-          </Pressable>
+          </PressableScale>
         </RNView>
       </RNView>
 
@@ -480,9 +479,5 @@ const styles = StyleSheet.create({
   },
   sendDisabled: {
     opacity: 0.45,
-  },
-  pressed: {
-    transform: [{ scale: 0.95 }],
-    opacity: 0.9,
   },
 });

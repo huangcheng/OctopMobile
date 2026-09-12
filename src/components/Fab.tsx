@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import {
   initialWindowMetrics,
   useSafeAreaInsets,
@@ -6,6 +6,7 @@ import {
 import { SymbolView } from "expo-symbols";
 
 import { PILL_TAB_BAR_CONTENT_HEIGHT } from "@/src/components/PillTabBar";
+import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 
 /** 56px rose FAB with brand shadow (Ardot pattern, designs 11/13). */
@@ -23,19 +24,19 @@ export function Fab(props: {
   const icon = props.icon ?? { ios: "plus", android: "add", web: "add" };
 
   return (
-    <Pressable
+    <PressableScale
       onPress={props.onPress}
-      style={({ pressed }) => [
+      style={[styles.host, { bottom }]}
+      contentStyle={[
         styles.fab,
         {
-          bottom,
           backgroundColor: C.brand,
           boxShadow: `0px 6px 16px rgba(232, 93, 117, 0.35)`,
-          opacity: pressed ? 0.88 : 1,
         },
       ]}
       accessibilityRole="button"
       accessibilityLabel={props.accessibilityLabel}
+      disabled={props.busy}
     >
       {props.busy ? (
         <ActivityIndicator color={C.onBrand} />
@@ -46,14 +47,17 @@ export function Fab(props: {
           size={22}
         />
       )}
-    </Pressable>
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
-  fab: {
+  host: {
     position: "absolute",
     right: 20,
+    zIndex: 20,
+  },
+  fab: {
     width: 56,
     height: 56,
     borderRadius: 28,

@@ -9,6 +9,8 @@ import {
 } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useMemo } from 'react';
+import { StyleSheet } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -90,25 +92,33 @@ function RootLayoutNav() {
   );
 
   return (
-    <I18nProvider>
-      <AuthProvider>
-        <AgentProvider>
-          <ToastProvider>
-            <ThemeProvider value={theme}>
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="index" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="settings" />
-                <Stack.Screen name="about" />
-                <Stack.Screen name="expert/[agentId]" />
-                <Stack.Screen name="chat/[threadId]" />
-                <Stack.Screen name="chat/new" />
-              </Stack>
-            </ThemeProvider>
-          </ToastProvider>
-        </AgentProvider>
-      </AuthProvider>
-    </I18nProvider>
+    <GestureHandlerRootView style={styles.root}>
+      <I18nProvider>
+        <AuthProvider>
+          <AgentProvider>
+            <ToastProvider>
+              <ThemeProvider value={theme}>
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="(auth)" />
+                  <Stack.Screen name="(tabs)" />
+                  <Stack.Screen name="settings" />
+                  <Stack.Screen name="about" />
+                  <Stack.Screen name="expert/[agentId]" />
+                  <Stack.Screen name="chat/[threadId]" />
+                  <Stack.Screen name="chat/new" />
+                </Stack>
+              </ThemeProvider>
+            </ToastProvider>
+          </AgentProvider>
+        </AuthProvider>
+      </I18nProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+});

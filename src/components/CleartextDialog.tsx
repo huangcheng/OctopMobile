@@ -1,5 +1,7 @@
-import { Modal, Pressable, StyleSheet, Text, View as RNView } from "react-native";
+import { Modal, StyleSheet, Text, View as RNView } from "react-native";
+import * as Haptics from "expo-haptics";
 
+import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { useI18n } from "@/src/i18n/I18nProvider";
 
@@ -27,34 +29,34 @@ export function CleartextDialog(props: {
           <Text style={[styles.title, { color: C.text }]}>{t("login.cleartextTitle")}</Text>
           <Text style={[styles.body, { color: C.textSecondary }]}>{t("login.cleartextBody")}</Text>
           <RNView style={styles.buttonRow}>
-            <Pressable
-              onPress={() => props.onAnswer(false)}
-              style={({ pressed }) => [
-                styles.cancelButton,
-                { borderColor: C.border },
-                pressed && styles.pressed,
-              ]}
+            <PressableScale
+              onPress={() => {
+                void Haptics.selectionAsync();
+                props.onAnswer(false);
+              }}
+              style={styles.flex}
+              contentStyle={[styles.cancelButton, { borderColor: C.border }]}
               accessibilityRole="button"
               accessibilityLabel={t("login.cleartextCancel")}
             >
               <Text style={[styles.cancelText, { color: C.textSecondary }]}>
                 {t("login.cleartextCancel")}
               </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => props.onAnswer(true)}
-              style={({ pressed }) => [
-                styles.continueButton,
-                { backgroundColor: C.brand },
-                pressed && styles.pressed,
-              ]}
+            </PressableScale>
+            <PressableScale
+              onPress={() => {
+                void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                props.onAnswer(true);
+              }}
+              style={styles.flexContinue}
+              contentStyle={[styles.continueButton, { backgroundColor: C.brand }]}
               accessibilityRole="button"
               accessibilityLabel={t("login.cleartextContinue")}
             >
               <Text style={[styles.continueText, { color: C.onBrand }]}>
                 {t("login.cleartextContinue")}
               </Text>
-            </Pressable>
+            </PressableScale>
           </RNView>
         </RNView>
       </RNView>
@@ -68,10 +70,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 32,
-  },
-  pressed: {
-    transform: [{ scale: 0.97 }],
-    opacity: 0.9,
   },
   dialog: {
     width: "100%",
@@ -108,8 +106,13 @@ const styles = StyleSheet.create({
     marginTop: 8,
     alignSelf: "stretch",
   },
-  cancelButton: {
+  flex: {
     flex: 1,
+  },
+  flexContinue: {
+    flex: 1.4,
+  },
+  cancelButton: {
     borderWidth: 1,
     borderRadius: 14,
     borderCurve: "continuous",
@@ -121,7 +124,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   continueButton: {
-    flex: 1.4,
     borderRadius: 14,
     borderCurve: "continuous",
     alignItems: "center",

@@ -1,4 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View as RNView } from "react-native";
+import { Image, StyleSheet, Text, View as RNView } from "react-native";
 import type { ReactNode } from "react";
 import {
   initialWindowMetrics,
@@ -6,6 +6,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { PILL_TAB_BAR_CONTENT_HEIGHT } from "@/src/components/PillTabBar";
+import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 
 /**
@@ -44,18 +45,17 @@ export function EmptyState(props: {
         <Text style={[styles.subtitle, { color: C.textSecondary }]}>{props.subtitle}</Text>
       ) : null}
       {props.ctaLabel && props.onCta ? (
-        <Pressable
+        <PressableScale
           onPress={props.onCta}
-          style={({ pressed }) => [
+          contentStyle={[
             styles.cta,
             { backgroundColor: C.brand, boxShadow: `0px 3px 8px ${C.brandShadow}` },
-            pressed && styles.ctaPressed,
           ]}
           accessibilityRole="button"
           accessibilityLabel={props.ctaLabel}
         >
           <Text style={[styles.ctaText, { color: C.onBrand }]}>{props.ctaLabel}</Text>
-        </Pressable>
+        </PressableScale>
       ) : null}
       {props.footer}
     </RNView>
@@ -92,10 +92,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 24,
     borderCurve: "continuous",
-  },
-  ctaPressed: {
-    transform: [{ scale: 0.97 }],
-    opacity: 0.9,
   },
   ctaText: {
     fontSize: 15,

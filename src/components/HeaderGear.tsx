@@ -1,47 +1,45 @@
-import { router } from "expo-router";
+import { StyleSheet } from "react-native";
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, View as RNView } from "react-native";
+import { useRouter } from "expo-router";
 
+import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
-import { useI18n } from "@/src/i18n/I18nProvider";
 
+/** Settings gear in large-title headers (designs 03/08/11/13). */
 export function HeaderGear() {
   const C = useOctopTheme();
-  const { t } = useI18n();
+  const router = useRouter();
+
   return (
-    <Pressable
+    <PressableScale
       onPress={() => router.push("/settings")}
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      contentStyle={[styles.button, { backgroundColor: C.bgElevated, borderColor: C.border }]}
       accessibilityRole="button"
-      accessibilityLabel={t("settings.title")}
+      accessibilityLabel="Settings"
+      hitSlop={12}
     >
-      <RNView style={[styles.iconWrap, { backgroundColor: C.brand, boxShadow: `0px 2px 6px ${C.brandShadow}` }]}>
-        <SymbolView
-          name={{
-            ios: "gearshape.fill",
+      <SymbolView
+        name={
+          {
+            ios: "gearshape",
             android: "settings",
             web: "settings",
-          }}
-          tintColor={C.onBrand}
-          size={18}
-        />
-      </RNView>
-    </Pressable>
+          } as unknown as Parameters<typeof SymbolView>[0]["name"]
+        }
+        tintColor={C.textSecondary}
+        size={18}
+      />
+    </PressableScale>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    padding: 2,
-  },
-  pressed: {
-    opacity: 0.75,
-    transform: [{ scale: 0.95 }],
-  },
-  iconWrap: {
     width: 36,
     height: 36,
     borderRadius: 18,
+    borderCurve: "continuous",
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },

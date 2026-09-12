@@ -11,6 +11,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "im.cheng.OctopMobile",
       "infoPlist": {
+        "CADisableMinimumFrameDurationOnPhone": true,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
         }
