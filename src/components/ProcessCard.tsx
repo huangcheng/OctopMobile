@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View as RNView } from "react-native";
 import { SymbolView } from "expo-symbols";
 
@@ -9,11 +9,19 @@ import { useI18n } from "@/src/i18n/I18nProvider";
 /**
  * Process card (design 15): collapsible "Used N tools · M deep thinking" header;
  * expanded rows show tool name + query + Done chip, thinking in italics.
+ * Behaves like Qwen/Doubao/DeepSeek: expanded while the turn is working,
+ * collapsed to the one-line summary once every item settles; a manual tap
+ * overrides until the next running→settled transition.
  */
 export function ProcessCard(props: { process: ProcessState }) {
   const C = useOctopTheme();
   const { t } = useI18n();
-  const [open, setOpen] = useState(true);
+  const isRunning = props.process.items.some((item) => item.status === "running");
+  const [open, setOpen] = useState(isRunning);
+
+  useEffect(() => {
+    setOpen(isRunning);
+  }, [isRunning]);
 
   if (props.process.items.length === 0) {
     return null;
