@@ -361,6 +361,7 @@ export default function SettingsScreen() {
                 keyboardType="url"
                 returnKeyType="done"
                 onSubmitEditing={() => void saveAndClose()}
+                placeholder="https://octop.example.com"
                 placeholderTextColor={C.textPlaceholder}
               />
               <Text style={[styles.hint, { color: C.textTertiary }]}>
