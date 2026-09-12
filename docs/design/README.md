@@ -18,6 +18,11 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 | 17–18 | new-chat (+ zh) | `app/chat/new` | Done — prompts + create thread |
 | 19 | settings | `app/settings` | Done — server, language, proactive care, about |
 | 20 | conversation-dark | theme via `useOctopTheme` | Done — scheme-aware tokens |
+| 21 | about | `app/about` | Done (parallel session) |
+| 22 | knowledge-detail | `app/knowledge/[kbId]` — **designed, pending implementation** | Hero tile + name/meta + DOCUMENTS list + Manage-in-console CTA |
+| 23 | document-reader | `app/knowledge/[kbId]/[docId]` — **designed, pending implementation** | Nav title = doc name, meta line, reader card (md headings/bullets/dark code block) + Share Markdown CTA |
+
+**Design deltas added 2026-09-12:** frame 03 gained a `Search Bar` ("Search conversations", client-side title filter); frame 07's action sheet gained `Action Share` → "Share as Markdown" (RN Share, history → markdown). Both pending implementation alongside 22/23.
 
 **Tabs:** `PillTabBar` — Chats / Experts / Knowledge / Automation (`app/(tabs)/_layout.tsx`); icons are exact Ardot exports in `assets/icons/tab-{chat,bot,book,alarm}-{w,g}.png` (white = active, gray = idle).
 
