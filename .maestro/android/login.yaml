@@ -1,0 +1,54 @@
+# Android Expo Go login (en). Prefer adb reverse + 127.0.0.1 for Octop.
+#
+#   adb reverse tcp:8081 tcp:8081 && adb reverse tcp:9000 tcp:9000
+#   MAESTRO_DRIVER_STARTUP_TIMEOUT=180000 maestro --udid emulator-5554 test \
+#     -e OCTOP_URL=http://127.0.0.1:9000 -e OCTOP_USER=admin -e OCTOP_PASS=admin \
+#     .maestro/android/login.yaml
+appId: host.exp.exponent
+---
+- openLink: "exp://127.0.0.1:8081"
+- extendedWaitUntil:
+    visible: "Octop"
+    timeout: 90000
+- tapOn:
+    text: "Continue"
+    optional: true
+- runFlow:
+    when:
+      visible: "Reload"
+    commands:
+      - swipe:
+          start: "50%,45%"
+          end: "50%,95%"
+          duration: 400
+      - waitForAnimationToEnd: { timeout: 3000 }
+- extendedWaitUntil:
+    visible: "Sign in"
+    timeout: 120000
+- tapOn:
+    id: "login-base-url"
+- eraseText: 80
+- inputText: ${OCTOP_URL}
+- hideKeyboard
+- tapOn:
+    id: "login-username"
+- eraseText: 40
+- inputText: ${OCTOP_USER}
+- hideKeyboard
+- assertVisible: ${OCTOP_USER}
+- tapOn:
+    id: "login-password"
+- eraseText: 40
+- inputText: ${OCTOP_PASS}
+- hideKeyboard
+- tapOn: "Sign in"
+# Cleartext dialog (design 02) — already-acked sessions skip this
+- runFlow:
+    when:
+      visible: "Continue once"
+    commands:
+      - tapOn: "Continue once"
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 90000
+- takeScreenshot: "android-after-login"

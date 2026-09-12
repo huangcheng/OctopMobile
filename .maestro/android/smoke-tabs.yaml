@@ -1,0 +1,36 @@
+# Android tab smoke (en). Run after login.yaml — session should already be authenticated.
+appId: host.exp.exponent
+---
+- openLink: "exp://127.0.0.1:8081"
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- runFlow:
+    when:
+      visible: "Reload"
+    commands:
+      - swipe:
+          start: "50%,45%"
+          end: "50%,95%"
+          duration: 400
+      - waitForAnimationToEnd: { timeout: 3000 }
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 120000
+- tapOn: "Chats"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "android-03-chats"
+- tapOn: "Experts"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "android-08-experts"
+- tapOn: "Knowledge"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "android-11-knowledge"
+- tapOn: "Automation"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "android-13-automation"
+- tapOn: "Chats"
+- waitForAnimationToEnd: { timeout: 8000 }
+- assertVisible: "Chats"
