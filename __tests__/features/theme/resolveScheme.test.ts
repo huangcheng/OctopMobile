@@ -1,4 +1,11 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it, jest } from "@jest/globals";
+
+jest.mock("expo-secure-store", () => ({
+  getItemAsync: jest.fn(),
+  setItemAsync: jest.fn(),
+  deleteItemAsync: jest.fn(),
+}));
+
 import { resolveScheme } from "@/src/features/theme/themeModeStore";
 
 describe("resolveScheme", () => {

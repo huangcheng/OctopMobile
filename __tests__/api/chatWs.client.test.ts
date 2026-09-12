@@ -170,6 +170,26 @@ describe("createChatWsClient", () => {
 
     client.close();
   });
+
+  test("cancel frame matches the contract shape on the wire", () => {
+    const { MockWebSocket, instances } = createMockWebSocketClass();
+    const client = createChatWsClient({
+      url: "ws://example.test/ws",
+      onFrame: () => {},
+      isForeground: () => true,
+      getThreadId: () => "thread-1",
+      WebSocketImpl: MockWebSocket as unknown as typeof WebSocket,
+    });
+
+    instances[0]?.simulateOpen();
+    client.send({ type: "cancel", thread_id: "thread-1" });
+
+    expect(instances[0]?.sent).toEqual([
+      JSON.stringify({ type: "cancel", thread_id: "thread-1" }),
+    ]);
+
+    client.close();
+  });
 });
 
 describe("createConnectDeduper", () => {
