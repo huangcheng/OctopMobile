@@ -3,15 +3,17 @@ import { SymbolView } from "expo-symbols";
 import { Pressable, StyleSheet, View as RNView } from "react-native";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { useI18n } from "@/src/i18n/I18nProvider";
 
 export function HeaderGear() {
   const C = useOctopTheme();
+  const { t } = useI18n();
   return (
     <Pressable
       onPress={() => router.push("/settings")}
       style={({ pressed }) => [styles.button, pressed && styles.pressed]}
       accessibilityRole="button"
-      accessibilityLabel="Settings"
+      accessibilityLabel={t("settings.title")}
     >
       <RNView style={[styles.iconWrap, { backgroundColor: C.brand, boxShadow: `0px 2px 6px ${C.brandShadow}` }]}>
         <SymbolView
