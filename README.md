@@ -1,5 +1,7 @@
 # OctopMobile
 
+English | [简体中文](./README.zh-CN.md)
+
 **Unofficial** Expo/React Native companion for self-hosted [Octop](https://github.com/TencentCloud/Octop).
 
 This is a **bonus / extension** project under a personal GitHub account. It is **not** an official TencentCloud product. Octop's primary clients remain the web dashboard, PWA, desktop shell, and IM channels.
