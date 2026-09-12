@@ -14,11 +14,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { useOctopColorScheme } from '@/src/components/useOctopTheme';
 import { Octop, OctopDark } from '@/constants/OctopTheme';
 import { ToastProvider } from '@/src/components/Toast';
 import { AgentProvider } from '@/src/features/agents/AgentContext';
 import { AuthProvider } from '@/src/features/auth/AuthContext';
 import { initPalette } from '@/src/features/theme/paletteStore';
+import { initThemeMode } from '@/src/features/theme/themeModeStore';
 import { I18nProvider } from '@/src/i18n/I18nProvider';
 
 export {
@@ -69,6 +71,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     void initPalette();
+    void initThemeMode();
   }, []);
 
   useEffect(() => {
@@ -85,7 +88,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useOctopColorScheme();
   const theme = useMemo(
     () => (colorScheme === 'dark' ? OctopDarkNavTheme : OctopLightTheme),
     [colorScheme],

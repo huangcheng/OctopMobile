@@ -5,4 +5,5 @@ export const STORAGE_KEYS = {
   selectedAgentId: "octop.selected_agent_id",
   localePreference: "octop.locale_preference",
   palette: "octop.palette",
+  themeMode: "octop.theme_mode",
 } as const;

@@ -17,6 +17,7 @@ import { PALETTE_KEYS } from "@/constants/OctopTheme";
 import { ActionSheet } from "@/src/components/ActionSheet";
 import { Toggle } from "@/src/components/Toggle";
 import { selectPalette, usePalette } from "@/src/features/theme/paletteStore";
+import { selectThemeMode, useThemeMode } from "@/src/features/theme/themeModeStore";
 import { useToast } from "@/src/components/Toast";
 import { getProactiveCare, putProactiveCare } from "@/src/api/proactiveCare";
 import type { ProactiveCareConfig } from "@/src/api/types";
@@ -45,7 +46,9 @@ export default function SettingsScreen() {
   const [careBusy, setCareBusy] = useState(false);
   const [langSheet, setLangSheet] = useState(false);
   const [paletteSheet, setPaletteSheet] = useState(false);
+  const [appearanceSheet, setAppearanceSheet] = useState(false);
   const palette = usePalette();
+  const themeMode = useThemeMode();
 
   useEffect(() => {
     setBaseUrlInput(baseUrl ?? "");
@@ -211,6 +214,18 @@ export default function SettingsScreen() {
             </Pressable>
 
             <Pressable
+              onPress={() => setAppearanceSheet(true)}
+              style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}
+              accessibilityRole="button"
+              accessibilityLabel={t("settings.appearance")}
+            >
+              <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.appearance")}</Text>
+              <Text style={[styles.valueText, { color: C.textSecondary }]}>
+                {t(`settings.appearance.${themeMode}`)}
+              </Text>
+            </Pressable>
+
+            <Pressable
               onPress={() => setPaletteSheet(true)}
               style={[styles.valueRow, styles.valueRowLast]}
               accessibilityRole="button"
@@ -323,6 +338,26 @@ export default function SettingsScreen() {
             onPress: () => {
               void setPreference(option);
               setLangSheet(false);
+            },
+          }))}
+        />
+
+        <ActionSheet
+          visible={appearanceSheet}
+          title={t("settings.appearance")}
+          onDismiss={() => setAppearanceSheet(false)}
+          actions={(["system", "light", "dark"] as const).map((mode) => ({
+            key: mode,
+            label: t(`settings.appearance.${mode}`),
+            icon:
+              mode === "dark"
+                ? { ios: "moon.fill", android: "dark_mode", web: "dark_mode" }
+                : mode === "light"
+                  ? { ios: "sun.max.fill", android: "light_mode", web: "light_mode" }
+                  : { ios: "circle.lefthalf.filled", android: "brightness_auto", web: "brightness_auto" },
+            onPress: () => {
+              void selectThemeMode(mode);
+              setAppearanceSheet(false);
             },
           }))}
         />

@@ -95,3 +95,19 @@ export async function getPalettePreference(): Promise<PaletteKey> {
 export async function setPalettePreference(palette: PaletteKey): Promise<void> {
   await SecureStore.setItemAsync(STORAGE_KEYS.palette, palette);
 }
+
+export type ThemeMode = "system" | "light" | "dark";
+const THEME_MODES = new Set<string>(["system", "light", "dark"]);
+
+/** In-app color scheme override; default follows the OS. */
+export async function getThemeMode(): Promise<ThemeMode> {
+  const value = await SecureStore.getItemAsync(STORAGE_KEYS.themeMode);
+  if (value && THEME_MODES.has(value)) {
+    return value as ThemeMode;
+  }
+  return "system";
+}
+
+export async function setThemeMode(mode: ThemeMode): Promise<void> {
+  await SecureStore.setItemAsync(STORAGE_KEYS.themeMode, mode);
+}

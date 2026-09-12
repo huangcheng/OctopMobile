@@ -1,0 +1,55 @@
+# End-to-end: the Appearance switcher flips the app from dark to light live.
+# Run with the sim appearance set to dark (system default = dark).
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 15000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 90000
+- takeScreenshot: "ap-before-dark"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 5000 }
+- tapOn: "Settings"
+- extendedWaitUntil:
+    visible: "Appearance"
+    timeout: 30000
+- takeScreenshot: "ap-settings-dark"
+- tapOn: "Appearance"
+- extendedWaitUntil:
+    visible: "Light"
+    timeout: 10000
+- takeScreenshot: "ap-sheet"
+- tapOn: "Light"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "ap-settings-light"
+- back
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 20000
+- takeScreenshot: "ap-after-light"
+- tapOn: "Settings"
+- extendedWaitUntil:
+    visible: "Appearance"
+    timeout: 20000
+- tapOn: "Appearance"
+- extendedWaitUntil:
+    visible: "System"
+    timeout: 10000
+- tapOn: "System"
+- waitForAnimationToEnd: { timeout: 5000 }
