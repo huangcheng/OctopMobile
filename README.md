@@ -35,7 +35,7 @@ Screenshots/layout come from the [Ardot design file](https://ardot.tencent.com/f
 
 ### Self-hosted HTTP (LAN)
 
-`app.json` enables Android cleartext traffic and iOS ATS arbitrary loads **intentionally** so the app can reach self-hosted Octop over plain HTTP on a local network. Use HTTPS in production when possible. Certificates are never bypassed.
+`app.json` enables Android cleartext traffic and iOS ATS arbitrary loads **intentionally** so the app can reach self-hosted Octop over plain HTTP on a local network — this is a supported, designed feature (one-time warning dialog, design 02), not an oversight. Do **not** remove these flags: most self-hosters run plain HTTP on LAN, and valid TLS for a LAN IP is impractical (self-signed certs are unsupported by design — certificates are never bypassed). For remote access, put Octop behind HTTPS (reverse proxy + Let's Encrypt).
 
 ### E2E (Maestro, local)
 
