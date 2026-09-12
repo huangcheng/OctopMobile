@@ -9,7 +9,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { ErrorBanner } from "@/src/components/ErrorBanner";
-import { SkeletonList } from "@/src/components/SkeletonList";
+import { DocSkeleton } from "@/src/components/SkeletonList";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { useToast } from "@/src/components/Toast";
 import { buildMarkdownRules } from "@/src/components/markdownRules";
@@ -97,7 +97,7 @@ export default function DocumentReaderScreen() {
 
       {loading ? (
         <RNView style={styles.scrollWrap}>
-          <SkeletonList rows={4} />
+          <DocSkeleton />
         </RNView>
       ) : null}
 
