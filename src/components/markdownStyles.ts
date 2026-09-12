@@ -38,7 +38,8 @@ export function buildAssistantMarkdownStyles(C: OctopThemeTokens) {
       marginVertical: 2,
     },
     // NOTE: fenced blocks never hit these styles — markdownRules.tsx replaces
-    // the fence/code_block rules with <CodeBlock /> (dark one-dark card).
+    // the fence/code_block rules with <CodeBlock /> (scheme-aware one-light/
+    // one-dark card, mirroring the Octop dashboard).
     code_inline: {
       fontFamily: "SpaceMono",
       backgroundColor: C.brandBg,

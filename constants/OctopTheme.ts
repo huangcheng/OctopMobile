@@ -6,6 +6,9 @@
  */
 
 export type OctopThemeTokens = {
+  /** Which base scheme these tokens came from; palettes never change it. */
+  scheme: "light" | "dark";
+
   brand: string;
   brandHover: string;
   brandActive: string;
@@ -58,6 +61,8 @@ export type OctopThemeTokens = {
 };
 
 export const Octop: OctopThemeTokens = {
+  scheme: "light",
+
   brand: "#E85D75",
   brandHover: "#D14A62",
   brandActive: "#B83A50",
@@ -88,9 +93,11 @@ export const Octop: OctopThemeTokens = {
   assistantBubble: "#FFF7F9",
   assistantBorder: "rgba(232, 93, 117, 0.14)",
 
-  // Code cards stay dark in both schemes (one-dark look, design 15).
-  codeBg: "#11161D",
-  codeText: "#E5E7EB",
+  // Code cards follow the scheme, mirroring the Octop dashboard
+  // (react-syntax-highlighter prism one-light / one-dark). Ardot: `code-bg`
+  // / `code-text` variables + "Code Block / Themes" spec (frame 10:3).
+  codeBg: "#F7F8FA",
+  codeText: "#383A42",
 
   danger: "#EF4444",
   dangerBg: "#FEF2F2",
@@ -111,6 +118,8 @@ export const Octop: OctopThemeTokens = {
 };
 
 export const OctopDark: OctopThemeTokens = {
+  scheme: "dark",
+
   brand: "#F08B9A",
   brandHover: "#E85D75",
   brandActive: "#D14A62",
@@ -142,7 +151,7 @@ export const OctopDark: OctopThemeTokens = {
   assistantBorder: "rgba(255, 255, 255, 0.08)",
 
   codeBg: "#11161D",
-  codeText: "#E5E7EB",
+  codeText: "#ABB2BF",
 
   danger: "#F87171",
   dangerBg: "rgba(239, 68, 68, 0.08)",
