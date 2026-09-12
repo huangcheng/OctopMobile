@@ -1,0 +1,37 @@
+# A2 smoke: in-app streaming turn + history (contract §6 steps 3-8).
+# Requires the app logged in (run smoke-login.yaml first).
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "对话"
+    timeout: 90000
+- takeScreenshot: "a2-step3-agents"
+- tapOn: "新对话"
+- extendedWaitUntil:
+    visible: "发送"
+    timeout: 20000
+- takeScreenshot: "a2-step4-newthread"
+- tapOn:
+    id: "chat-composer"
+- inputText: "请只回复两个字符：pong"
+- tapOn: "发送"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 60000
+- takeScreenshot: "a2-step7-streamed"
+- back
+- extendedWaitUntil:
+    visible: "请只回复两个字符"
+    timeout: 20000
+- tapOn: "请只回复两个字符.*"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 30000
+- takeScreenshot: "a2-step8-history"

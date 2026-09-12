@@ -4,10 +4,12 @@ import { useRouter } from "expo-router";
 
 import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { useI18n } from "@/src/i18n/I18nProvider";
 
 /** Settings gear in large-title headers (designs 03/08/11/13). */
 export function HeaderGear() {
   const C = useOctopTheme();
+  const { t } = useI18n();
   const router = useRouter();
 
   return (
@@ -15,7 +17,8 @@ export function HeaderGear() {
       onPress={() => router.push("/settings")}
       contentStyle={[styles.button, { backgroundColor: C.bgElevated, borderColor: C.border }]}
       accessibilityRole="button"
-      accessibilityLabel="Settings"
+      accessibilityLabel={t("settings.title")}
+      testID="header-settings"
       hitSlop={12}
     >
       <SymbolView

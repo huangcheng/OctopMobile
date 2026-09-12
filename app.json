@@ -39,13 +39,21 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "resizeMode": "contain",
+          "imageWidth": 874,
+          "resizeMode": "cover",
           "backgroundColor": "#FBFAF9"
         }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ce74a8dc-83d0-4283-b23d-b7650cfead81"
+      }
+    },
+    "owner": "playhasnolimits"
   }
 }

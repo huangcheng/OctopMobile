@@ -1,0 +1,27 @@
+# Smoke 00 — land on the login screen (logs out when a session exists).
+# Run first. Optional taps keep it idempotent in both auth states.
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+# logged in? gear → settings → logout; skipped silently when on login screen
+- tapOn:
+    id: "header-settings"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 5000
+- extendedWaitUntil:
+    visible: "退出登录"
+    timeout: 6000
+    optional: true
+- tapOn:
+    text: "退出登录"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: "login-username"
+    timeout: 30000

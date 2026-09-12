@@ -280,6 +280,7 @@ export default function NewChatScreen() {
             ]}
             value={draft}
             onChangeText={setDraft}
+            testID="chat-composer"
             placeholder={
               agentName ? t("chat.messageName", { name: agentName }) : t("chat.placeholder")
             }

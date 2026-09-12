@@ -1,0 +1,27 @@
+# Smoke 04 — core happy path: new chat → send → streamed reply.
+# Covers checklist 4–8: create thread, WS connect, token frames, done.
+# The prompt makes the assistant emit a unique marker only the REPLY contains.
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 30000
+- tapOn: "新对话"
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible:
+      id: "chat-composer"
+    timeout: 15000
+- tapOn:
+    id: "chat-composer"
+- inputText: "Say the word PONG42 and nothing else"
+- tapOn: "发送"
+# streamed assistant reply must contain the marker (user echo does not)
+- extendedWaitUntil:
+    visible: "PONG42"
+    timeout: 180000

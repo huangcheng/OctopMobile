@@ -1,0 +1,26 @@
+# Smoke 01 — wrong password shows an error instead of logging in.
+# Covers: login validation + error feedback.
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible:
+      id: "login-username"
+    timeout: 30000
+- longPressOn:
+    id: "login-base-url"
+- tapOn: "Select All"
+- inputText: ${OCTOP_URL}
+- tapOn:
+    id: "login-username"
+- inputText: ${OCTOP_USER}
+- tapOn:
+    id: "login-password"
+- inputText: "definitely-wrong-password"
+- tapOn: "登录"
+- extendedWaitUntil:
+    visible: "会话已过期，请重新登录。"
+    timeout: 20000

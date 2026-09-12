@@ -1,0 +1,22 @@
+# Smoke 07 — logout leaves the app back on the login screen (clean state).
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 30000
+- tapOn:
+    id: "header-settings"
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible: "退出登录"
+    timeout: 10000
+- tapOn: "退出登录"
+- extendedWaitUntil:
+    visible:
+      id: "login-username"
+    timeout: 20000

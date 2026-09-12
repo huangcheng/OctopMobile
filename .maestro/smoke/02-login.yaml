@@ -1,0 +1,36 @@
+# Smoke 02 — real login succeeds and lands on the chats tab.
+# Covers checklist 1–3 (health, auth token, agents fetch on tab load).
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible:
+      id: "login-username"
+    timeout: 30000
+- longPressOn:
+    id: "login-base-url"
+- tapOn: "Select All"
+- inputText: ${OCTOP_URL}
+- tapOn:
+    id: "login-username"
+- eraseText: 60
+- inputText: ${OCTOP_USER}
+- tapOn:
+    id: "login-password"
+- eraseText: 60
+- inputText: ${OCTOP_PASS}
+- tapOn: "登录"
+# One-time cleartext HTTP warning (design 02)
+- tapOn:
+    text: "继续一次"
+    optional: true
+# iOS "Save Password?" sheet
+- tapOn:
+    text: "Not Now"
+    optional: true
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 40000

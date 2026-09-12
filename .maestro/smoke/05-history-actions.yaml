@@ -1,0 +1,45 @@
+# Smoke 05 — thread persists in the list, pin/unpin, delete (cleanup).
+# Covers: history persistence + thread actions (sheet, pin, delete).
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 30000
+# thread from smoke 04 shows the marker in its title/preview
+- assertVisible: "PONG42"
+# reopen → history persisted (checklist 8)
+- tapOn: "PONG42"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "PONG42"
+- tapOn: "Back"
+- waitForAnimationToEnd:
+    timeout: 8000
+# pin, then unpin (restores state)
+- longPressOn: "PONG42"
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn: "置顶"
+- extendedWaitUntil:
+    visible: "已置顶"
+    timeout: 8000
+- longPressOn: "PONG42"
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn: "取消置顶"
+- extendedWaitUntil:
+    visible: "已取消置顶"
+    timeout: 8000
+# delete the smoke thread so the suite leaves no residue
+- longPressOn: "PONG42"
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn: "删除"
+- extendedWaitUntil:
+    visible: "对话已删除"
+    timeout: 8000
+- assertNotVisible: "PONG42"

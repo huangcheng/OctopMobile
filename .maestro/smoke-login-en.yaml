@@ -1,0 +1,25 @@
+# A2/A3 on Android (en-US): login (cleartext dialog already acked+captured).
+# Metro via exp://10.0.2.2:8081; Octop via adb-reversed localhost:9000
+# (10.0.2.2 NAT can't hit the IPv4-only server socket).
+appId: host.exp.Exponent
+---
+- openLink: "exp://10.0.2.2:8081"
+- extendedWaitUntil:
+    visible: "Sign in"
+    timeout: 90000
+- tapOn:
+    id: "login-base-url"
+- eraseText: 60
+- inputText: "http://10.0.2.2:9444"
+- tapOn:
+    id: "login-username"
+- inputText: "smoke-e2e"
+- tapOn:
+    id: "login-password"
+- inputText: "Smoke-1234!"
+- hideKeyboard
+- tapOn: "Sign in"
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 60000
+- takeScreenshot: "d-a2-logged-in"

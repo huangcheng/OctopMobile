@@ -1,0 +1,30 @@
+# A2 smoke on Android (en-US): streaming turn + history (§6 steps 4-8).
+appId: host.exp.Exponent
+---
+- openLink: "exp://10.0.2.2:8081"
+- extendedWaitUntil:
+    visible: "Chats"
+    timeout: 90000
+- takeScreenshot: "d-a2-step3-agents"
+- tapOn: "New"
+- extendedWaitUntil:
+    visible: "Send"
+    timeout: 30000
+- takeScreenshot: "d-a2-step4-newthread"
+- tapOn:
+    id: "chat-composer"
+- inputText: "Reply with exactly: pong"
+- tapOn: "Send"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 90000
+- takeScreenshot: "d-a2-step7-streamed"
+- back
+- extendedWaitUntil:
+    visible: "Reply with exactly"
+    timeout: 30000
+- tapOn: "Reply with exactly.*"
+- extendedWaitUntil:
+    visible: "pong"
+    timeout: 30000
+- takeScreenshot: "d-a2-step8-history"

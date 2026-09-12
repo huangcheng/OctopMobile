@@ -1,0 +1,23 @@
+# Smoke 03 — experts tab: list renders, open detail, back.
+# Covers: agents list rendering + expert detail navigation.
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 30000
+- tapOn: "专家"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "我的专家"
+- tapOn: "dev"
+- waitForAnimationToEnd:
+    timeout: 8000
+# Expert detail is up: the agent name shows in the nav header
+- assertVisible: "dev"
+- tapOn: "Back"
+- waitForAnimationToEnd:
+    timeout: 8000

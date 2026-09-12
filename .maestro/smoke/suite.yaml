@@ -1,0 +1,13 @@
+# Release smoke — the full gate in ORDER. `maestro test <dir>` runs flows
+# unordered, so run THIS file: maestro test .maestro/smoke/suite.yaml
+# Env: OCTOP_URL / OCTOP_USER / OCTOP_PASS.
+appId: host.exp.Exponent
+---
+- runFlow: 00-reset.yaml
+- runFlow: 01-login-error.yaml
+- runFlow: 02-login.yaml
+- runFlow: 03-experts.yaml
+- runFlow: 04-chat-stream.yaml
+- runFlow: 05-history-actions.yaml
+- runFlow: 06-tabs.yaml
+- runFlow: 07-logout.yaml

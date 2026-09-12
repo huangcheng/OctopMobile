@@ -1,0 +1,37 @@
+# Smoke 06 — knowledge, automation, settings, about screens render.
+# Covers: remaining tabs + settings/about navigation.
+appId: host.exp.Exponent
+---
+- stopApp
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd:
+    timeout: 40000
+- extendedWaitUntil:
+    visible: "新对话"
+    timeout: 30000
+- tapOn: "知识"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "我的知识库"
+- tapOn: "自动化"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "自动化"
+- tapOn: "对话"
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: "header-settings"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "主题"
+- extendedWaitUntil:
+    visible: "关于 Octop"
+    timeout: 10000
+- tapOn: "关于 Octop"
+- waitForAnimationToEnd:
+    timeout: 8000
+- assertVisible: "© 2026 HUANG Cheng"
+- tapOn: "Back"
+- waitForAnimationToEnd:
+    timeout: 5000

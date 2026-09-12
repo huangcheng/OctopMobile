@@ -1,0 +1,34 @@
+# A3 login capture (designs 01+02) + A2 in-app login. Fresh Expo Go install:
+# empty fields (no eraseText), guaranteed system "Open in Expo Go?" dialog,
+# first http submit re-triggers the one-time cleartext dialog (design 02).
+appId: host.exp.Exponent
+---
+- openLink: "exp://localhost:8081"
+- extendedWaitUntil:
+    visible: "Open"
+    timeout: 20000
+- tapOn: "Open"
+- extendedWaitUntil:
+    visible: "登录"
+    timeout: 90000
+- takeScreenshot: "a3-login-fresh"
+- tapOn:
+    id: "login-base-url"
+- inputText: "http://192.168.31.200:9000"
+- tapOn:
+    id: "login-username"
+- inputText: "smoke-e2e"
+- tapOn:
+    id: "login-password"
+- inputText: "Smoke-1234!"
+- hideKeyboard
+- tapOn: "登录"
+- extendedWaitUntil:
+    visible: "使用明文 HTTP？"
+    timeout: 15000
+- takeScreenshot: "a3-cleartext-dialog"
+- tapOn: "继续一次"
+- extendedWaitUntil:
+    visible: "对话"
+    timeout: 45000
+- takeScreenshot: "a2-logged-in"
