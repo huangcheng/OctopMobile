@@ -9,7 +9,7 @@ export const zh: Record<keyof typeof en, string> = {
   "login.password": "密码",
   "login.submit": "登录",
   "login.securityNote": "局域网 HTTP 可用（仅提醒一次）。绝不绕过证书校验。",
-  "login.footer": "非官方伴侣应用 · Octop v0.9.32",
+  "login.footer": "非官方伴侣应用 · Octop v{octopVersion}",
   "console.title": "控制台",
   "login.cleartextTitle": "使用明文 HTTP？",
   "login.cleartextBody":
@@ -146,7 +146,7 @@ export const zh: Record<keyof typeof en, string> = {
   "settings.dnd": "勿扰时段",
   "settings.about": "关于",
   "settings.aboutBody": "自托管 Octop 的非官方伴侣应用。品牌：Elegant Rose。",
-  "settings.version": "版本 0.1.0 · Octop v0.9.32",
+  "settings.version": "版本 {version} · Octop v{octopVersion}",
   "about.title": "关于 Octop",
   "about.legal": "法律信息",
   "about.copyright": "© 2026 HUANG Cheng",

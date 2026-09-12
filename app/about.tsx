@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as WebBrowser from "expo-web-browser";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { APP_VERSION, OCTOP_SERVER_VERSION } from "@/constants/appInfo";
 import { useI18n } from "@/src/i18n/I18nProvider";
 
 type SFSymbol = Parameters<typeof SymbolView>[0]["name"];
@@ -57,7 +58,10 @@ export default function AboutScreen() {
           </RNView>
           <Text style={[styles.heroName, { color: C.text }]}>Octop</Text>
           <Text style={[styles.heroVersion, { color: C.textTertiary }]}>
-            {t("settings.version")}
+            {t("settings.version", {
+              version: APP_VERSION,
+              octopVersion: OCTOP_SERVER_VERSION,
+            })}
           </Text>
         </RNView>
 

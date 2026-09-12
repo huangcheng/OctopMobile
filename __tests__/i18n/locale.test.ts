@@ -43,4 +43,16 @@ describe("translate", () => {
   test("falls back to en for missing keys via en dict completeness", () => {
     expect(translate("en", "settings.language")).toBe("Language");
   });
+
+  test("version strings interpolate app + pinned Octop versions", () => {
+    expect(
+      translate("en", "settings.version", { version: "1.0.0", octopVersion: "0.9.32" }),
+    ).toBe("Version 1.0.0 · Octop v0.9.32");
+    expect(
+      translate("zh", "settings.version", { version: "1.0.0", octopVersion: "0.9.32" }),
+    ).toBe("版本 1.0.0 · Octop v0.9.32");
+    expect(translate("en", "login.footer", { octopVersion: "0.9.32" })).toBe(
+      "Unofficial companion · Octop v0.9.32",
+    );
+  });
 });

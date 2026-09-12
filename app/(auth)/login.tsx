@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PressableScale } from "@/src/components/PressableScale";
 import { useOctopTheme } from "@/src/components/useOctopTheme";
+import { OCTOP_SERVER_VERSION } from "@/constants/appInfo";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { mapAuthError, useAuth } from "@/src/features/auth/AuthContext";
 import { useI18n } from "@/src/i18n/I18nProvider";
@@ -142,7 +143,9 @@ export default function LoginScreen() {
           <Text style={[styles.securityNote, { color: C.textTertiary }]}>
             {t("login.securityNote")}
           </Text>
-          <Text style={[styles.footer, { color: C.textTertiary }]}>{t("login.footer")}</Text>
+          <Text style={[styles.footer, { color: C.textTertiary }]}>
+            {t("login.footer", { octopVersion: OCTOP_SERVER_VERSION })}
+          </Text>
         </ScrollView>
       </RNView>
     </KeyboardAvoidingView>

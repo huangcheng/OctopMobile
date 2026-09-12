@@ -7,7 +7,7 @@ export const en = {
   "login.password": "Password",
   "login.submit": "Sign in",
   "login.securityNote": "LAN HTTP is supported with a one-time warning. Certificates are never bypassed.",
-  "login.footer": "Unofficial companion · Octop v0.9.32",
+  "login.footer": "Unofficial companion · Octop v{octopVersion}",
   "console.title": "Console",
   "login.cleartextTitle": "Use cleartext HTTP?",
   "login.cleartextBody":
@@ -145,7 +145,7 @@ export const en = {
   "settings.dnd": "Do not disturb",
   "settings.about": "ABOUT",
   "settings.aboutBody": "Unofficial companion for self-hosted Octop. Brand: Elegant Rose.",
-  "settings.version": "Version 0.1.0 · Octop v0.9.32",
+  "settings.version": "Version {version} · Octop v{octopVersion}",
   "about.title": "About Octop",
   "about.legal": "LEGAL",
   "about.copyright": "© 2026 HUANG Cheng",
