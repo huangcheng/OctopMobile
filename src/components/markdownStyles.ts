@@ -37,21 +37,14 @@ export function buildAssistantMarkdownStyles(C: OctopThemeTokens) {
     list_item: {
       marginVertical: 2,
     },
+    // NOTE: fenced blocks never hit these styles — markdownRules.tsx replaces
+    // the fence/code_block rules with <CodeBlock /> (dark one-dark card).
     code_inline: {
       fontFamily: "SpaceMono",
       backgroundColor: C.brandBg,
       color: C.brandActive,
       paddingHorizontal: 5,
       borderRadius: 4,
-    },
-    fence: {
-      fontFamily: "monospace",
-      backgroundColor: C.bgTertiary,
-      padding: 10,
-      borderRadius: 10,
-      marginVertical: 6,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: C.border,
     },
     hr: {
       backgroundColor: C.border,

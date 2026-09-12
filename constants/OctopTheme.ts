@@ -36,6 +36,9 @@ export type OctopThemeTokens = {
   assistantBubble: string;
   assistantBorder: string;
 
+  codeBg: string;
+  codeText: string;
+
   danger: string;
   dangerBg: string;
   dangerText: string;
@@ -85,6 +88,10 @@ export const Octop: OctopThemeTokens = {
   assistantBubble: "#FFF7F9",
   assistantBorder: "rgba(232, 93, 117, 0.14)",
 
+  // Code cards stay dark in both schemes (one-dark look, design 15).
+  codeBg: "#11161D",
+  codeText: "#E5E7EB",
+
   danger: "#EF4444",
   dangerBg: "#FEF2F2",
   dangerText: "#B91C1C",
@@ -133,6 +140,9 @@ export const OctopDark: OctopThemeTokens = {
 
   assistantBubble: "#1A1A1A",
   assistantBorder: "rgba(255, 255, 255, 0.08)",
+
+  codeBg: "#11161D",
+  codeText: "#E5E7EB",
 
   danger: "#F87171",
   dangerBg: "rgba(239, 68, 68, 0.08)",

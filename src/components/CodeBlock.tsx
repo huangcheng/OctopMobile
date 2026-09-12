@@ -1,3 +1,5 @@
+import { useMemo } from "react";
+import type { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text } from "react-native";
 import { createLowlight, common } from "lowlight";
 
@@ -68,11 +70,11 @@ function colorFor(classNames: string[] | undefined): string | undefined {
   return undefined;
 }
 
-function renderNodes(nodes: HastChild[] | undefined, keyPrefix: string): React.ReactNode[] {
+function renderNodes(nodes: HastChild[] | undefined, keyPrefix: string): ReactNode[] {
   if (!nodes) {
     return [];
   }
-  const out: React.ReactNode[] = [];
+  const out: ReactNode[] = [];
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     if (node.type === "text" && node.value) {
@@ -89,6 +91,9 @@ function renderNodes(nodes: HastChild[] | undefined, keyPrefix: string): React.R
           inner
         ),
       );
+    } else if (node.value) {
+      // Unknown node types (e.g. "comment") still carry their raw value.
+      out.push(node.value);
     }
   }
   return out;
@@ -100,25 +105,29 @@ function renderNodes(nodes: HastChild[] | undefined, keyPrefix: string): React.R
  */
 export function CodeBlock(props: { code: string; language?: string | null; C: OctopThemeTokens }) {
   const { code, language } = props;
-  let tree: HastChild[] | undefined;
-  try {
-    const hasLang = language && lowlight.registered(language);
-    const result = hasLang
-      ? lowlight.highlight(language as string, code)
-      : lowlight.highlightAuto(code);
-    tree = result.children as unknown as HastChild[];
-  } catch {
-    tree = undefined;
-  }
+  // Highlight in a memo: streaming re-renders (per token + caret blink) must
+  // not re-tokenize. No-language blocks skip highlighting entirely —
+  // `highlightAuto` fans out across every registered grammar each pass.
+  const tree = useMemo<HastChild[] | undefined>(() => {
+    if (!language || !lowlight.registered(language)) {
+      return undefined;
+    }
+    try {
+      // lowlight v3 returns hast `Root`; we only walk its element/text children.
+      return lowlight.highlight(language, code).children as unknown as HastChild[];
+    } catch {
+      return undefined;
+    }
+  }, [code, language]);
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={[styles.scroll, { backgroundColor: "#11161D", borderColor: props.C.border }]}
+      style={[styles.scroll, { backgroundColor: props.C.codeBg, borderColor: props.C.border }]}
       contentContainerStyle={styles.content}
     >
-      <Text style={styles.code} selectable>
+      <Text style={[styles.code, { color: props.C.codeText }]} selectable>
         {tree ? renderNodes(tree, "cb") : code}
       </Text>
     </ScrollView>
@@ -141,6 +150,5 @@ const styles = StyleSheet.create({
     fontFamily: "SpaceMono",
     fontSize: 12.5,
     lineHeight: 19,
-    color: "#E5E7EB",
   },
 });
