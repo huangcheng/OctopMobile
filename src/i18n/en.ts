@@ -3,7 +3,7 @@ export const en = {
   "login.tagline": "Your self-hosted AI companion",
   "login.baseUrl": "Server URL",
   "login.username": "Username",
-  "login.usernamePlaceholder": "your-username",
+  "login.usernamePlaceholder": "Username or email",
   "login.password": "Password",
   "login.submit": "Sign in",
   "login.securityNote": "LAN HTTP is supported with a one-time warning. Certificates are never bypassed.",

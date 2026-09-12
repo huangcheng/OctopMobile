@@ -5,7 +5,7 @@ export const zh: Record<keyof typeof en, string> = {
   "login.tagline": "你的自托管 AI 伴侣",
   "login.baseUrl": "服务器地址",
   "login.username": "用户名",
-  "login.usernamePlaceholder": "你的用户名",
+  "login.usernamePlaceholder": "用户名或邮箱",
   "login.password": "密码",
   "login.submit": "登录",
   "login.securityNote": "局域网 HTTP 可用（仅提醒一次）。绝不绕过证书校验。",
