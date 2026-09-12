@@ -4,6 +4,7 @@
 **Commit:** `deb7ac81e89b8779fec59378684582efcde70d43`  
 **Sources:** `TencentCloud/Octop` tag `v0.9.32` — `docs/api.md`, `src/octop/api/routers/{auth,agents,chat,health}.py`, `tests/integration/test_chat_ws.py`  
 **Spike date:** 2026-09-11  
+**Compatibility note (2026-09-12):** exercised end-to-end against a server self-reporting `v0.9.33` (login/agents/threads/WS stream/history/KB list+documents+preview/cron list+toggle) with no shape drift — treat `v0.9.32` as the minimum, `v0.9.33` as verified.
 
 > Prefer **source + integration tests** over `docs/api.md` when they disagree. At this pin, `docs/api.md` still documents legacy `/agents/{id}/chat/sessions*` paths; the live routers use `/agents/{id}/threads*`.
 
