@@ -57,9 +57,8 @@ export default function ExpertsScreen() {
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       <ScreenHeader title={t("experts.title")} action={<HeaderGear />} />
-
       <RNView style={styles.searchWrap}>
-        <SearchField
+      <SearchField
           value={query}
           onChangeText={setQuery}
           placeholder={t("experts.searchPlaceholder")}
@@ -76,16 +75,16 @@ export default function ExpertsScreen() {
 
       {loading && agents.length === 0 ? (
         <RNView style={styles.listWrap}>
-          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border, opacity: 0.7 }]}>
-            <RNView style={styles.cardRow}>
-              <RNView style={[styles.skeletonTile, { backgroundColor: C.bgTertiary }]} />
-              <RNView style={styles.skeletonLines}>
-                <RNView style={[styles.skeletonTitle, { backgroundColor: C.bgTertiary }]} />
-                <RNView style={[styles.skeletonDesc, { backgroundColor: C.bgTertiary }]} />
-              </RNView>
-            </RNView>
-          </RNView>
-        </RNView>
+      <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border, opacity: 0.7 }]}>
+      <RNView style={styles.cardRow}>
+      <RNView style={[styles.skeletonTile, { backgroundColor: C.bgTertiary }]} />
+      <RNView style={styles.skeletonLines}>
+      <RNView style={[styles.skeletonTitle, { backgroundColor: C.bgTertiary }]} />
+      <RNView style={[styles.skeletonDesc, { backgroundColor: C.bgTertiary }]} />
+      </RNView>
+      </RNView>
+      </RNView>
+      </RNView>
       ) : null}
 
       {!loading && agents.length === 0 && !error ? (
@@ -124,8 +123,8 @@ export default function ExpertsScreen() {
               accessibilityRole="button"
               accessibilityLabel={t("experts.market")}
             >
-              <Text style={[styles.marketText, { color: C.brandText }]}>{t("experts.market")}</Text>
-            </Pressable>
+      <Text style={[styles.marketText, { color: C.brandText }]}>{t("experts.market")}</Text>
+      </Pressable>
           }
           renderItem={({ item }) => {
             const mbti = agentMbti(item);
@@ -145,21 +144,21 @@ export default function ExpertsScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={item.name}
               >
-                <AgentTile
+      <AgentTile
                   label={tileInitial(item.name)}
                   color={tileColor(item.color, item.agent_id)}
                   iconUrl={item.icon_url}
                   iconName={item.icon_name}
                 />
-                <RNView style={styles.cardBody}>
-                  <RNView style={styles.nameRow}>
-                    <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
+      <RNView style={styles.cardBody}>
+      <RNView style={styles.nameRow}>
+      <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
                       {item.name}
                     </Text>
                     {mbti ? (
                       <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
-                        <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
-                      </RNView>
+      <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
+      </RNView>
                     ) : null}
                   </RNView>
                   {item.description ? (
@@ -168,11 +167,11 @@ export default function ExpertsScreen() {
                     </Text>
                   ) : null}
                 </RNView>
-                <StatusPill
+      <StatusPill
                   kind={isRunning(item) ? "running" : "stopped"}
                   label={isRunning(item) ? t("experts.running") : t("experts.stopped")}
                 />
-              </Pressable>
+      </Pressable>
             );
           }}
         />

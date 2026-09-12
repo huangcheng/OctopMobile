@@ -138,20 +138,20 @@ export function PillTabBar({ state, navigation, insets: navInsets }: PillTabBarP
               accessibilityState={{ selected: active }}
               accessibilityLabel={t(tab.labelKey)}
             >
-              <Image
+      <Image
                 source={active ? tab.icon.active : tab.icon.idle}
                 style={styles.icon}
                 resizeMode="contain"
                 accessibilityIgnoresInvertColors
               />
-              <Text style={[styles.label, { color: fg }]} numberOfLines={1}>
+      <Text style={[styles.label, { color: fg }]} numberOfLines={1}>
                 {t(tab.labelKey)}
               </Text>
-            </Pressable>
+      </Pressable>
           );
         })}
       </RNView>
-    </RNView>
+      </RNView>
   );
 }
 

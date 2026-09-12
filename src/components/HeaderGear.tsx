@@ -32,7 +32,7 @@ export function HeaderGear() {
         tintColor={C.textSecondary}
         size={18}
       />
-    </PressableScale>
+      </PressableScale>
   );
 }
 

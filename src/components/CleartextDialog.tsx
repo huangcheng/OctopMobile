@@ -22,14 +22,14 @@ export function CleartextDialog(props: {
   return (
     <Modal transparent animationType="fade" visible onRequestClose={() => props.onAnswer(false)}>
       <RNView style={[styles.scrim, { backgroundColor: C.scrim }]}>
-        <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
-          <RNView style={[styles.iconWrap, { backgroundColor: C.warningBg }]}>
-            <Text style={styles.icon}>⚠</Text>
-          </RNView>
-          <Text style={[styles.title, { color: C.text }]}>{t("login.cleartextTitle")}</Text>
-          <Text style={[styles.body, { color: C.textSecondary }]}>{t("login.cleartextBody")}</Text>
-          <RNView style={styles.buttonRow}>
-            <PressableScale
+      <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
+      <RNView style={[styles.iconWrap, { backgroundColor: C.warningBg }]}>
+      <Text style={styles.icon}>⚠</Text>
+      </RNView>
+      <Text style={[styles.title, { color: C.text }]}>{t("login.cleartextTitle")}</Text>
+      <Text style={[styles.body, { color: C.textSecondary }]}>{t("login.cleartextBody")}</Text>
+      <RNView style={styles.buttonRow}>
+      <PressableScale
               onPress={() => {
                 void Haptics.selectionAsync();
                 props.onAnswer(false);
@@ -39,11 +39,11 @@ export function CleartextDialog(props: {
               accessibilityRole="button"
               accessibilityLabel={t("login.cleartextCancel")}
             >
-              <Text style={[styles.cancelText, { color: C.textSecondary }]}>
+      <Text style={[styles.cancelText, { color: C.textSecondary }]}>
                 {t("login.cleartextCancel")}
               </Text>
-            </PressableScale>
-            <PressableScale
+      </PressableScale>
+      <PressableScale
               onPress={() => {
                 void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 props.onAnswer(true);
@@ -53,14 +53,14 @@ export function CleartextDialog(props: {
               accessibilityRole="button"
               accessibilityLabel={t("login.cleartextContinue")}
             >
-              <Text style={[styles.continueText, { color: C.onBrand }]}>
+      <Text style={[styles.continueText, { color: C.onBrand }]}>
                 {t("login.cleartextContinue")}
               </Text>
-            </PressableScale>
-          </RNView>
-        </RNView>
+      </PressableScale>
       </RNView>
-    </Modal>
+      </RNView>
+      </RNView>
+      </Modal>
   );
 }
 

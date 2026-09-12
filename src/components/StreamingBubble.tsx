@@ -79,7 +79,7 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
       >
         ▍
       </Animated.Text>
-    </RNView>
+      </RNView>
   );
 }
 

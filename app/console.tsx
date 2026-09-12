@@ -92,24 +92,24 @@ export default function ConsoleScreen() {
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       <RNView style={[styles.header, { paddingTop: topInset + 8 }]}>
-        <RNView style={styles.headerSide}>
-          <Pressable
+      <RNView style={styles.headerSide}>
+      <Pressable
             onPress={() => router.back()}
             hitSlop={12}
             accessibilityLabel="Back"
             accessibilityRole="button"
           >
-            <SymbolView
+      <SymbolView
               name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
               tintColor={C.brand}
               size={20}
             />
-          </Pressable>
-        </RNView>
-        <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
+      </Pressable>
+      </RNView>
+      <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
           {title}
         </Text>
-        <RNView style={styles.headerSide} />
+      <RNView style={styles.headerSide} />
       </RNView>
 
       {ready && uri ? (

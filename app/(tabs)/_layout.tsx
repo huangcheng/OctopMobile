@@ -20,6 +20,6 @@ export default function TabLayout() {
       <Tabs.Screen name="experts" />
       <Tabs.Screen name="knowledge" />
       <Tabs.Screen name="automation" />
-    </Tabs>
+      </Tabs>
   );
 }

@@ -108,7 +108,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           exiting={reduced ? FadeOut.duration(120) : FadeOutDown.duration(180)}
           style={[styles.host, { bottom }]}
         >
-          <RNView
+      <RNView
             style={[
               styles.card,
               {
@@ -120,14 +120,14 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             accessibilityRole="alert"
             accessibilityLiveRegion="polite"
           >
-            <RNView style={[styles.iconWrap, { backgroundColor: palette.bg }]}>
-              <SymbolView
+      <RNView style={[styles.iconWrap, { backgroundColor: palette.bg }]}>
+      <SymbolView
                 name={ICONS[kind] as unknown as Parameters<typeof SymbolView>[0]["name"]}
                 tintColor={palette.fg}
                 size={14}
               />
-            </RNView>
-            <Text style={[styles.message, { color: C.text }]} numberOfLines={2}>
+      </RNView>
+      <Text style={[styles.message, { color: C.text }]} numberOfLines={2}>
               {toast.message}
             </Text>
             {toast.actionLabel ? (
@@ -140,11 +140,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 accessibilityLabel={toast.actionLabel}
               >
-                <Text style={[styles.action, { color: C.brandText }]}>{toast.actionLabel}</Text>
-              </Pressable>
+      <Text style={[styles.action, { color: C.brandText }]}>{toast.actionLabel}</Text>
+      </Pressable>
             ) : null}
           </RNView>
-        </Animated.View>
+      </Animated.View>
       ) : null}
     </ToastContext.Provider>
   );

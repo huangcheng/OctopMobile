@@ -27,7 +27,7 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
           { backgroundColor: C.brand, boxShadow: "0px 4px 14px rgba(232, 93, 117, 0.18)" },
         ]}
       >
-        <Text style={[styles.userText, { color: C.onBrand }]}>{content}</Text>
+      <Text style={[styles.userText, { color: C.onBrand }]}>{content}</Text>
       </RNView>
     );
   }
@@ -45,7 +45,7 @@ export function MarkdownBubble({ content, role }: MarkdownBubbleProps) {
       ]}
     >
       <Markdown style={markdownStyles} rules={markdownRules}>{content}</Markdown>
-    </RNView>
+      </RNView>
   );
 }
 

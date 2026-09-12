@@ -54,7 +54,7 @@ export default function LoginScreen() {
       behavior="padding"
     >
       <RNView style={[styles.container, { backgroundColor: C.bgLogin }]}>
-        <ScrollView
+      <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scroll,
@@ -65,24 +65,24 @@ export default function LoginScreen() {
           ]}
           keyboardShouldPersistTaps="handled"
         >
-          <RNView style={styles.hero}>
-            <Image
+      <RNView style={styles.hero}>
+      <Image
               source={require("@/assets/images/pwa-512.png")}
               style={styles.logo}
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <Text style={[styles.brand, { color: C.text }]}>Octop</Text>
-            <Text style={[styles.tagline, { color: C.textSecondary }]}>
+      <Text style={[styles.brand, { color: C.text }]}>Octop</Text>
+      <Text style={[styles.tagline, { color: C.textSecondary }]}>
               {t("login.tagline")}
             </Text>
-          </RNView>
+      </RNView>
 
           {error ? <ErrorBanner message={error} /> : null}
 
           <RNView style={[styles.formCard, { backgroundColor: C.bgElevated, borderColor: C.border, boxShadow: `0px 1px 3px ${C.cardShadow}` }]}>
-            <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.baseUrl")}</Text>
-            <TextInput
+      <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.baseUrl")}</Text>
+      <TextInput
               testID="login-base-url"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={baseUrl}
@@ -94,9 +94,8 @@ export default function LoginScreen() {
               placeholderTextColor={C.textPlaceholder}
               editable={!pending}
             />
-
-            <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.username")}</Text>
-            <TextInput
+      <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.username")}</Text>
+      <TextInput
               testID="login-username"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={username}
@@ -107,9 +106,8 @@ export default function LoginScreen() {
               placeholderTextColor={C.textPlaceholder}
               editable={!pending}
             />
-
-            <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.password")}</Text>
-            <TextInput
+      <Text style={[styles.label, { color: C.textSecondary }]}>{t("login.password")}</Text>
+      <TextInput
               testID="login-password"
               style={[styles.input, { borderColor: C.borderInput, backgroundColor: C.bgSecondary, color: C.text }]}
               value={password}
@@ -119,8 +117,7 @@ export default function LoginScreen() {
               placeholderTextColor={C.textPlaceholder}
               editable={!pending}
             />
-
-            <PressableScale
+      <PressableScale
               contentStyle={[
                 styles.button,
                 { backgroundColor: C.brand },
@@ -137,17 +134,16 @@ export default function LoginScreen() {
                 <Text style={[styles.buttonText, { color: C.onBrand }]}>{t("login.submit")}</Text>
               )}
             </PressableScale>
-          </RNView>
-
-          <Text style={[styles.securityNote, { color: C.textTertiary }]}>
+      </RNView>
+      <Text style={[styles.securityNote, { color: C.textTertiary }]}>
             {t("login.securityNote")}
           </Text>
-          <Text style={[styles.footer, { color: C.textTertiary }]}>
+      <Text style={[styles.footer, { color: C.textTertiary }]}>
             {t("login.footer", { octopVersion: OCTOP_SERVER_VERSION })}
           </Text>
-        </ScrollView>
+      </ScrollView>
       </RNView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
   );
 }
 

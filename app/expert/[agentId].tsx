@@ -115,24 +115,24 @@ export default function ExpertDetailScreen() {
   const navHeader = (
     <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
       <RNView style={styles.headerSide}>
-        <Pressable
+      <Pressable
           onPress={() => router.back()}
           hitSlop={12}
           accessibilityLabel="Back"
           accessibilityRole="button"
         >
-          <SymbolView
+      <SymbolView
             name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
             tintColor={C.brand}
             size={20}
           />
-        </Pressable>
+      </Pressable>
       </RNView>
       <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
         {t("expert.title")}
       </Text>
       <RNView style={styles.headerSide} />
-    </RNView>
+      </RNView>
   );
 
   if (!agent) {
@@ -155,7 +155,7 @@ export default function ExpertDetailScreen() {
         {error ? <ErrorBanner message={error} /> : null}
 
         <RNView style={styles.hero}>
-          <AgentTile
+      <AgentTile
             label={tileInitial(agent.name)}
             color={agentColor}
             size={88}
@@ -164,14 +164,14 @@ export default function ExpertDetailScreen() {
             iconName={agent.icon_name}
             glow
           />
-          <Text style={[styles.heroName, { color: C.text }]} numberOfLines={1}>
+      <Text style={[styles.heroName, { color: C.text }]} numberOfLines={1}>
             {agent.name}
           </Text>
-          <RNView style={styles.heroMeta}>
+      <RNView style={styles.heroMeta}>
             {mbti ? (
               <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
-                <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
-              </RNView>
+      <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
+      </RNView>
             ) : null}
             <StatusPill
               kind={running ? "running" : "stopped"}
@@ -183,14 +183,14 @@ export default function ExpertDetailScreen() {
               </Text>
             ) : null}
           </RNView>
-        </RNView>
+      </RNView>
 
         {agent.description ? (
           <>
-            <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
+      <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
               {t("expert.about")}
             </Text>
-            <RNView
+      <RNView
               style={[
                 styles.card,
                 {
@@ -200,11 +200,11 @@ export default function ExpertDetailScreen() {
                 },
               ]}
             >
-              <Text style={[styles.aboutText, { color: C.textSecondary }]}>
+      <Text style={[styles.aboutText, { color: C.textSecondary }]}>
                 {agent.description}
               </Text>
-            </RNView>
-          </>
+      </RNView>
+      </>
         ) : null}
 
         <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
@@ -232,13 +232,13 @@ export default function ExpertDetailScreen() {
             accessibilityRole="button"
             accessibilityLabel={qp.prompt}
           >
-            <Text style={[styles.promptQuote, { color: C.textSecondary }]}>"{qp.prompt}"</Text>
-            <SymbolView
+      <Text style={[styles.promptQuote, { color: C.textSecondary }]}>"{qp.prompt}"</Text>
+      <SymbolView
               name={{ ios: "arrow.up.right", android: "north_east", web: "north_east" } as unknown as SFSymbol}
               tintColor={C.textTertiary}
               size={16}
             />
-          </Pressable>
+      </Pressable>
         ))}
 
         <Pressable
@@ -257,7 +257,6 @@ export default function ExpertDetailScreen() {
           )}
         </Pressable>
       </ScrollView>
-
       <RNView
         style={[
           styles.ctaBar,
@@ -268,7 +267,7 @@ export default function ExpertDetailScreen() {
           },
         ]}
       >
-        <PressableScale
+      <PressableScale
           onPress={shareExpert}
           contentStyle={[
             styles.shareButton,
@@ -277,13 +276,13 @@ export default function ExpertDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("expert.share")}
         >
-          <SymbolView
+      <SymbolView
             name={{ ios: "square.and.arrow.up", android: "share", web: "share" } as unknown as SFSymbol}
             tintColor={C.text}
             size={20}
           />
-        </PressableScale>
-        <PressableScale
+      </PressableScale>
+      <PressableScale
           onPress={() => startChat()}
           style={styles.startChatFlex}
           contentStyle={[
@@ -293,15 +292,15 @@ export default function ExpertDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("expert.startChat")}
         >
-          <SymbolView
+      <SymbolView
             name={{ ios: "message", android: "chat_bubble_outline", web: "chat_bubble_outline" } as unknown as SFSymbol}
             tintColor={C.onBrand}
             size={18}
           />
-          <Text style={[styles.startChatText, { color: C.onBrand }]}>{t("expert.startChat")}</Text>
-        </PressableScale>
+      <Text style={[styles.startChatText, { color: C.onBrand }]}>{t("expert.startChat")}</Text>
+      </PressableScale>
       </RNView>
-    </RNView>
+      </RNView>
   );
 }
 

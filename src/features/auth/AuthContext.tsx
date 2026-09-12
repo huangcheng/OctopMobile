@@ -185,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           resolve?.(accept);
         }}
       />
-    </AuthContext.Provider>
+      </AuthContext.Provider>
   );
 }
 

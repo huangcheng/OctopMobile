@@ -20,7 +20,7 @@ export function StatusPill(props: { kind: StatusKind; label: string }) {
         <RNView style={[styles.dot, { backgroundColor: palette.fg }]} />
       ) : null}
       <Text style={[styles.label, { color: palette.fg }]}>{props.label}</Text>
-    </RNView>
+      </RNView>
   );
 }
 

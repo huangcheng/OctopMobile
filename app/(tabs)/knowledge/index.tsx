@@ -115,12 +115,12 @@ export default function KnowledgeScreen() {
 
       {rows.length > 0 ? (
         <RNView style={styles.searchWrap}>
-          <SearchField
+      <SearchField
             value={query}
             onChangeText={setQuery}
             placeholder={t("knowledge.searchPlaceholder")}
           />
-        </RNView>
+      </RNView>
       ) : null}
 
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
@@ -131,16 +131,16 @@ export default function KnowledgeScreen() {
 
       {loading && rows.length === 0 ? (
         <RNView style={styles.skeletonWrap}>
-          <SkeletonList rows={3} />
-        </RNView>
+      <SkeletonList rows={3} />
+      </RNView>
       ) : null}
 
       {disabled && !loading ? (
         <RNView style={styles.centerWrap}>
-          <Text style={[styles.disabledText, { color: C.textSecondary }]} numberOfLines={3}>
+      <Text style={[styles.disabledText, { color: C.textSecondary }]} numberOfLines={3}>
             {t("knowledge.disabled")}
           </Text>
-        </RNView>
+      </RNView>
       ) : null}
 
       {!loading && !error && !disabled && rows.length === 0 ? (
@@ -194,15 +194,15 @@ export default function KnowledgeScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={item.name}
               >
-                <RNView style={styles.cardRow}>
-                  <AgentTile
+      <RNView style={styles.cardRow}>
+      <AgentTile
                     label=""
                     color={tileColor(null, KB_TILE_KEY + item.id)}
                     iconName="book-open"
                     tone="tint"
                   />
-                  <RNView style={styles.cardBody}>
-                    <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
+      <RNView style={styles.cardBody}>
+      <Text style={[styles.name, { color: C.text }]} numberOfLines={1}>
                       {item.name}
                     </Text>
                     {metaParts.length > 0 ? (
@@ -213,19 +213,19 @@ export default function KnowledgeScreen() {
                   </RNView>
                   {item.shared ? (
                     <RNView style={[styles.sharedBadge, { backgroundColor: C.infoBg }]}>
-                      <Text style={[styles.sharedText, { color: C.info }]}>
+      <Text style={[styles.sharedText, { color: C.info }]}>
                         {t("knowledge.shared")}
                       </Text>
-                    </RNView>
+      </RNView>
                   ) : null}
                 </RNView>
-              </Pressable>
+      </Pressable>
             );
           }}
           ListFooterComponent={
             <RNView style={[styles.tipCard, { backgroundColor: C.brandSoft }]}>
-              <Text style={[styles.tip, { color: C.brandText }]}>{t("knowledge.tip")}</Text>
-            </RNView>
+      <Text style={[styles.tip, { color: C.brandText }]}>{t("knowledge.tip")}</Text>
+      </RNView>
           }
         />
       ) : null}

@@ -52,7 +52,7 @@ export function PressableScale({
       >
         {children}
       </Animated.View>
-    </Pressable>
+      </Pressable>
   );
 }
 

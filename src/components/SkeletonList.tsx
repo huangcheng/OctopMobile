@@ -53,15 +53,15 @@ export function SkeletonThreadRow() {
       importantForAccessibility="no-hide-descendants"
     >
       <RNView style={styles.row}>
-        <Animated.View
+      <Animated.View
           style={[styles.tile, { backgroundColor: C.bgTertiary }, pulse]}
         />
-        <RNView style={styles.lines}>
-          <Animated.View style={[styles.titleBar, { backgroundColor: C.bgTertiary }, pulse]} />
-          <Animated.View style={[styles.metaBar, { backgroundColor: C.bgTertiary }, pulse]} />
-        </RNView>
+      <RNView style={styles.lines}>
+      <Animated.View style={[styles.titleBar, { backgroundColor: C.bgTertiary }, pulse]} />
+      <Animated.View style={[styles.metaBar, { backgroundColor: C.bgTertiary }, pulse]} />
       </RNView>
-    </RNView>
+      </RNView>
+      </RNView>
   );
 }
 
@@ -120,7 +120,7 @@ export function DocSkeleton() {
         {line("100%", 11, "p2l2")}
         {line("54%", 11, "p2l3")}
       </RNView>
-    </RNView>
+      </RNView>
   );
 }
 

@@ -15,7 +15,7 @@ export function WorkingIndicator() {
       ]}
     >
       <Text style={[styles.label, { color: C.brandText }]}>{t("chat.working")}</Text>
-    </RNView>
+      </RNView>
   );
 }
 

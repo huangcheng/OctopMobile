@@ -1,9 +1,27 @@
-# Regression: a tool-using turn must render ONE aggregated row per tool call,
-# never raw "tool_call_chunk" rows (Redmi bug, 2026-09-12).
+# Regression: tool-using turn renders ONE aggregated row per tool call and the
+# process card collapses to its summary line when the turn settles
+# (Qwen/Doubao/DeepSeek-style summary; Redmi bug 2026-09-12).
 appId: host.exp.Exponent
 ---
+- stopApp: host.exp.Exponent
 - openLink: "exp://localhost:8081"
 - waitForAnimationToEnd: { timeout: 15000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 3000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
 - runFlow:
     when:
       visible: "Close"
@@ -12,6 +30,8 @@ appId: host.exp.Exponent
 - extendedWaitUntil:
     visible: "对话"
     timeout: 90000
+- tapOn: "对话"
+- waitForAnimationToEnd: { timeout: 4000 }
 - tapOn: "新对话"
 - extendedWaitUntil:
     visible: "发送"
@@ -24,4 +44,12 @@ appId: host.exp.Exponent
     visible: "smoke-tools-ok"
     timeout: 180000
 - assertNotVisible: "tool_call_chunk"
-- takeScreenshot: "tc-process-card"
+- assertNotVisible: "执行中…"
+- extendedWaitUntil:
+    visible: "使用 \\d+ 个工具.*"
+    timeout: 15000
+- takeScreenshot: "tc-collapsed-summary"
+- tapOn: "使用 \\d+ 个工具.*"
+- waitForAnimationToEnd: { timeout: 4000 }
+- assertVisible: "完成"
+- takeScreenshot: "tc-expanded-rows"

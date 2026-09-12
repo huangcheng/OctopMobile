@@ -126,8 +126,8 @@ export default function AutomationScreen() {
 
       {(loading || agentsLoading) && rows.length === 0 ? (
         <RNView style={styles.skeletonWrap}>
-          <SkeletonList rows={3} />
-        </RNView>
+      <SkeletonList rows={3} />
+      </RNView>
       ) : null}
 
       {!loading && !hasAgents && !error ? (
@@ -181,19 +181,19 @@ export default function AutomationScreen() {
                   },
                 ]}
               >
-                <RNView style={styles.cardTop}>
-                  <Text style={[styles.jobName, { color: C.text }]} numberOfLines={1}>
+      <RNView style={styles.cardTop}>
+      <Text style={[styles.jobName, { color: C.text }]} numberOfLines={1}>
                     {item.prompt.split("\n")[0].slice(0, 60) || item.cron_id}
                   </Text>
-                  <Toggle
+      <Toggle
                     value={enabled}
                     onChange={(next) => void toggleJob(item, next)}
                     disabled={busyId === item.cron_id}
                     accessibilityLabel={item.prompt.slice(0, 30)}
                   />
-                </RNView>
-                <RNView style={styles.metaRow}>
-                  <RNView
+      </RNView>
+      <RNView style={styles.metaRow}>
+      <RNView
                     style={[
                       styles.statusDot,
                       {
@@ -206,7 +206,7 @@ export default function AutomationScreen() {
                       },
                     ]}
                   />
-                  <Text style={[styles.metaText, { color: C.textTertiary }]} numberOfLines={1}>
+      <Text style={[styles.metaText, { color: C.textTertiary }]} numberOfLines={1}>
                     {`${item.agentName} · ${schedule}`}
                   </Text>
                   {jobStatus !== "pending" ? (
@@ -216,7 +216,7 @@ export default function AutomationScreen() {
                     />
                   ) : null}
                 </RNView>
-              </RNView>
+      </RNView>
             );
           }}
           ListFooterComponent={

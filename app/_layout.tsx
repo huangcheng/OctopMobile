@@ -98,28 +98,28 @@ function RootLayoutNav() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <KeyboardProvider>
-        <I18nProvider>
-          <AuthProvider>
-            <AgentProvider>
-              <ToastProvider>
-                <ThemeProvider value={theme}>
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="index" />
-                    <Stack.Screen name="(auth)" />
-                    <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name="settings" />
-                    <Stack.Screen name="about" />
-                    <Stack.Screen name="expert/[agentId]" />
-                    <Stack.Screen name="chat/[threadId]" />
-                    <Stack.Screen name="chat/new" />
-                  </Stack>
-                </ThemeProvider>
-              </ToastProvider>
-            </AgentProvider>
-          </AuthProvider>
-        </I18nProvider>
+      <I18nProvider>
+      <AuthProvider>
+      <AgentProvider>
+      <ToastProvider>
+      <ThemeProvider value={theme}>
+      <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="settings" />
+      <Stack.Screen name="about" />
+      <Stack.Screen name="expert/[agentId]" />
+      <Stack.Screen name="chat/[threadId]" />
+      <Stack.Screen name="chat/new" />
+      </Stack>
+      </ThemeProvider>
+      </ToastProvider>
+      </AgentProvider>
+      </AuthProvider>
+      </I18nProvider>
       </KeyboardProvider>
-    </GestureHandlerRootView>
+      </GestureHandlerRootView>
   );
 }
 

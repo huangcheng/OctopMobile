@@ -43,15 +43,15 @@ export function ActionSheet(props: {
   return (
     <Modal transparent animationType="fade" visible onRequestClose={props.onDismiss}>
       <RNView style={styles.fill}>
-        <RNView style={[styles.scrim, { backgroundColor: C.scrim }]} />
-        <Pressable
+      <RNView style={[styles.scrim, { backgroundColor: C.scrim }]} />
+      <Pressable
           style={styles.scrimPress}
           onPress={props.onDismiss}
           accessibilityLabel="Close"
           accessibilityRole="button"
         />
-        <RNView style={styles.sheetAnchor}>
-          <Animated.View
+      <RNView style={styles.sheetAnchor}>
+      <Animated.View
             style={[
               styles.sheet,
               {
@@ -65,7 +65,7 @@ export function ActionSheet(props: {
                 : SlideInDown.springify().dampingRatio(0.8).duration(300)
             }
           >
-            <RNView style={[styles.grabber, { backgroundColor: C.border }]} />
+      <RNView style={[styles.grabber, { backgroundColor: C.border }]} />
             {props.title ? (
               <Text style={[styles.title, { color: C.textSecondary }]} numberOfLines={1}>
                 {props.title}
@@ -91,20 +91,20 @@ export function ActionSheet(props: {
                 accessibilityRole="button"
                 accessibilityLabel={action.label}
               >
-                <SymbolView
+      <SymbolView
                   name={action.icon as unknown as Parameters<typeof SymbolView>[0]["name"]}
                   tintColor={action.destructive ? C.danger : C.text}
                   size={20}
                 />
-                <Text style={[styles.rowLabel, { color: action.destructive ? C.danger : C.text }]}>
+      <Text style={[styles.rowLabel, { color: action.destructive ? C.danger : C.text }]}>
                   {action.label}
                 </Text>
-              </Pressable>
+      </Pressable>
             ))}
           </Animated.View>
-        </RNView>
       </RNView>
-    </Modal>
+      </RNView>
+      </Modal>
   );
 }
 

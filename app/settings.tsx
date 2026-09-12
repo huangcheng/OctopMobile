@@ -137,30 +137,29 @@ export default function SettingsScreen() {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
-        <ScrollView
+      <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.scroll,
             { paddingTop: insets.top + 10, paddingBottom: Math.max(30, insets.bottom + 20) },
           ]}
         >
-          <RNView style={styles.navRow}>
-            <Pressable
+      <RNView style={styles.navRow}>
+      <Pressable
               onPress={() => router.back()}
               hitSlop={12}
               accessibilityLabel="Back"
               accessibilityRole="button"
             >
-              <SymbolView
+      <SymbolView
                 name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
                 tintColor={C.brand}
                 size={20}
               />
-            </Pressable>
-            <Text style={[styles.title, { color: C.text }]}>{t("settings.title")}</Text>
-          </RNView>
-
-          <RNView
+      </Pressable>
+      <Text style={[styles.title, { color: C.text }]}>{t("settings.title")}</Text>
+      </RNView>
+      <RNView
             style={[
               styles.profileCard,
               {
@@ -170,98 +169,93 @@ export default function SettingsScreen() {
               },
             ]}
           >
-            <RNView style={[styles.avatar, { backgroundColor: C.brandSoft }]}>
-              <Text style={[styles.avatarText, { color: C.brandText }]}>
+      <RNView style={[styles.avatar, { backgroundColor: C.brandSoft }]}>
+      <Text style={[styles.avatarText, { color: C.brandText }]}>
                 {tileInitial(displayName)}
               </Text>
-            </RNView>
-            <RNView style={styles.profileBody}>
-              <Text style={[styles.profileName, { color: C.text }]}>{displayName}</Text>
-              <Text style={[styles.profileMeta, { color: C.textSecondary }]}>
+      </RNView>
+      <RNView style={styles.profileBody}>
+      <Text style={[styles.profileName, { color: C.text }]}>{displayName}</Text>
+      <Text style={[styles.profileMeta, { color: C.textSecondary }]}>
                 {`${roleLabel} · ${hostOfBaseUrl(baseUrl)}`}
               </Text>
-            </RNView>
-          </RNView>
-
-          <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
+      </RNView>
+      </RNView>
+      <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.server")}
           </Text>
-          <Pressable
+      <Pressable
             style={[styles.card, styles.serverRow, { backgroundColor: C.bgElevated, borderColor: C.border }]}
             onPress={() => setEditingUrl(true)}
             accessibilityRole="button"
             accessibilityLabel={t("login.baseUrl")}
           >
-            <Text style={[styles.rowLabel, { color: C.text }]}>{t("login.baseUrl")}</Text>
-            <Text style={[styles.valueText, { color: C.textSecondary }]} numberOfLines={1}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("login.baseUrl")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]} numberOfLines={1}>
               {hostOfBaseUrl(baseUrl)}
             </Text>
-          </Pressable>
-
-          <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
+      </Pressable>
+      <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.app")}
           </Text>
-          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
-            <Pressable
+      <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
+      <Pressable
               onPress={() => setLangSheet(true)}
               style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}
               accessibilityRole="button"
               accessibilityLabel={t("settings.language")}
             >
-              <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.language")}</Text>
-              <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.language")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                 {languageLabel(preference)}
               </Text>
-            </Pressable>
-
-            <Pressable
+      </Pressable>
+      <Pressable
               onPress={() => setAppearanceSheet(true)}
               style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}
               accessibilityRole="button"
               accessibilityLabel={t("settings.appearance")}
             >
-              <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.appearance")}</Text>
-              <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.appearance")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                 {t(`settings.appearance.${themeMode}`)}
               </Text>
-            </Pressable>
-
-            <Pressable
+      </Pressable>
+      <Pressable
               onPress={() => setPaletteSheet(true)}
               style={[styles.valueRow, styles.valueRowLast]}
               accessibilityRole="button"
               accessibilityLabel={t("settings.theme")}
             >
-              <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.theme")}</Text>
-              <RNView style={styles.themeValue}>
-                <RNView style={[styles.themeDot, { backgroundColor: C.brand }]} />
-                <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.theme")}</Text>
+      <RNView style={styles.themeValue}>
+      <RNView style={[styles.themeDot, { backgroundColor: C.brand }]} />
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                   {t(`palette.${palette}`)}
                 </Text>
-              </RNView>
-            </Pressable>
-          </RNView>
-
-          <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
+      </RNView>
+      </Pressable>
+      </RNView>
+      <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.notifications")}
           </Text>
-          <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
+      <RNView style={[styles.card, { backgroundColor: C.bgElevated, borderColor: C.border }]}>
             {selectedAgentId ? (
               <>
-                <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
-                  <Text style={[styles.rowLabel, { color: C.text }]}>
+      <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>
                     {t("settings.proactiveReminders")}
                   </Text>
-                  <Toggle
+      <Toggle
                     value={care?.enabled ?? false}
                     onChange={(next) => void toggleCare(next)}
                     disabled={careBusy || !care}
                     accessibilityLabel={t("settings.proactiveReminders")}
                   />
-                </RNView>
-                <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
-                  <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.checkEvery")}</Text>
-                  <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      </RNView>
+      <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.checkEvery")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                     {care
                       ? t("settings.intervalHours", {
                           min: care.min_interval_hours,
@@ -269,31 +263,30 @@ export default function SettingsScreen() {
                         })
                       : "—"}
                   </Text>
-                </RNView>
-                <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
-                  <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.sendTo")}</Text>
-                  <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      </RNView>
+      <RNView style={[styles.valueRow, { borderBottomColor: C.borderSecondary }]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.sendTo")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                     {t("settings.mainChat")}
                   </Text>
-                </RNView>
-                <RNView style={[styles.valueRow, styles.valueRowLast]}>
-                  <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.dnd")}</Text>
-                  <Text style={[styles.valueText, { color: C.textSecondary }]}>
+      </RNView>
+      <RNView style={[styles.valueRow, styles.valueRowLast]}>
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("settings.dnd")}</Text>
+      <Text style={[styles.valueText, { color: C.textSecondary }]}>
                     {care ? `${care.active_hours_end} – ${care.active_hours_start}` : "—"}
                   </Text>
-                </RNView>
-              </>
+      </RNView>
+      </>
             ) : (
               <Text style={[styles.hint, { color: C.textTertiary }]}>
                 {t("settings.needsAgent")}
               </Text>
             )}
           </RNView>
-
-          <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
+      <Text style={[styles.sectionHeading, { color: C.textTertiary }]}>
             {t("settings.about")}
           </Text>
-          <Pressable
+      <Pressable
             style={({ pressed }) => [
               styles.card,
               styles.serverRow,
@@ -304,15 +297,14 @@ export default function SettingsScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("about.title")}
           >
-            <Text style={[styles.rowLabel, { color: C.text }]}>{t("about.title")}</Text>
-            <SymbolView
+      <Text style={[styles.rowLabel, { color: C.text }]}>{t("about.title")}</Text>
+      <SymbolView
               name={{ ios: "chevron.right", android: "chevron_right", web: "chevron_right" } as unknown as Parameters<typeof SymbolView>[0]["name"]}
               tintColor={C.textTertiary}
               size={16}
             />
-          </Pressable>
-
-          <Pressable
+      </Pressable>
+      <Pressable
             style={({ pressed }) => [
               styles.logoutButton,
               { backgroundColor: C.bgElevated, borderColor: C.border, borderWidth: 1 },
@@ -324,11 +316,10 @@ export default function SettingsScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("settings.logout")}
           >
-            <Text style={[styles.logoutText, { color: C.danger }]}>{t("settings.logout")}</Text>
-          </Pressable>
-        </ScrollView>
-
-        <ActionSheet
+      <Text style={[styles.logoutText, { color: C.danger }]}>{t("settings.logout")}</Text>
+      </Pressable>
+      </ScrollView>
+      <ActionSheet
           visible={langSheet}
           title={t("settings.language")}
           onDismiss={() => setLangSheet(false)}
@@ -342,8 +333,7 @@ export default function SettingsScreen() {
             },
           }))}
         />
-
-        <ActionSheet
+      <ActionSheet
           visible={appearanceSheet}
           title={t("settings.appearance")}
           onDismiss={() => setAppearanceSheet(false)}
@@ -362,8 +352,7 @@ export default function SettingsScreen() {
             },
           }))}
         />
-
-        <ActionSheet
+      <ActionSheet
           visible={paletteSheet}
           title={t("settings.theme")}
           onDismiss={() => setPaletteSheet(false)}
@@ -377,18 +366,17 @@ export default function SettingsScreen() {
             },
           }))}
         />
-
-        <Modal
+      <Modal
           transparent
           visible={editingUrl}
           animationType="fade"
           onRequestClose={() => setEditingUrl(false)}
         >
-          <KeyboardAvoidingView behavior="padding" style={styles.dialogKav}>
-          <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
-            <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
-              <Text style={[styles.dialogTitle, { color: C.text }]}>{t("login.baseUrl")}</Text>
-              <TextInput
+      <KeyboardAvoidingView behavior="padding" style={styles.dialogKav}>
+      <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
+      <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
+      <Text style={[styles.dialogTitle, { color: C.text }]}>{t("login.baseUrl")}</Text>
+      <TextInput
                 style={[styles.dialogInput, { borderColor: C.borderInput, color: C.text }]}
                 value={baseUrlInput}
                 onChangeText={setBaseUrlInput}
@@ -401,22 +389,22 @@ export default function SettingsScreen() {
                 placeholder="https://octop.example.com"
                 placeholderTextColor={C.textPlaceholder}
               />
-              <Text style={[styles.hint, { color: C.textTertiary }]}>
+      <Text style={[styles.hint, { color: C.textTertiary }]}>
                 {t("settings.baseUrlHint")}
               </Text>
               {urlError ? (
                 <Text style={[styles.hint, { color: C.danger }]}>{urlError}</Text>
               ) : null}
               <RNView style={styles.dialogRow}>
-                <Pressable
+      <Pressable
                   onPress={() => setEditingUrl(false)}
                   style={({ pressed }) => [styles.dialogButton, pressed && styles.pressed]}
                 >
-                  <Text style={[styles.dialogCancel, { color: C.textSecondary }]}>
+      <Text style={[styles.dialogCancel, { color: C.textSecondary }]}>
                     {t("chats.cancel")}
                   </Text>
-                </Pressable>
-                <Pressable
+      </Pressable>
+      <Pressable
                   onPress={() => void saveAndClose()}
                   style={({ pressed }) => [
                     styles.dialogButton,
@@ -424,17 +412,17 @@ export default function SettingsScreen() {
                     pressed && styles.pressed,
                   ]}
                 >
-                  <Text style={[styles.dialogSave, { color: C.onBrand }]}>
+      <Text style={[styles.dialogSave, { color: C.onBrand }]}>
                     {t("chats.renameSave")}
                   </Text>
-                </Pressable>
-              </RNView>
-            </RNView>
-          </RNView>
-          </KeyboardAvoidingView>
-        </Modal>
+      </Pressable>
       </RNView>
-    </>
+      </RNView>
+      </RNView>
+      </KeyboardAvoidingView>
+      </Modal>
+      </RNView>
+      </>
   );
 }
 

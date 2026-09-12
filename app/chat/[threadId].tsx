@@ -138,7 +138,7 @@ export default function ThreadChatScreen() {
   if (!effectiveAgentId) {
     return (
       <RNView style={[styles.centered, { backgroundColor: C.bgLayout }]}>
-        <Text style={[styles.placeholder, { color: C.textSecondary }]}>{t("settings.needsAgent")}</Text>
+      <Text style={[styles.placeholder, { color: C.textSecondary }]}>{t("settings.needsAgent")}</Text>
       </RNView>
     );
   }
@@ -146,7 +146,7 @@ export default function ThreadChatScreen() {
   if (historyLoading && messages.length === 0 && !pendingMessage) {
     return (
       <RNView style={[styles.centered, { backgroundColor: C.bgLayout }]}>
-        <ActivityIndicator size="large" color={C.brand} />
+      <ActivityIndicator size="large" color={C.brand} />
       </RNView>
     );
   }
@@ -164,14 +164,14 @@ export default function ThreadChatScreen() {
           },
         ]}
       >
-        <RNView style={styles.headerSide}>
-          <Pressable
+      <RNView style={styles.headerSide}>
+      <Pressable
             onPress={() => router.back()}
             hitSlop={12}
             accessibilityLabel="Back"
             accessibilityRole="button"
           >
-          <SymbolView
+      <SymbolView
             name={
               { ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<
                 typeof SymbolView
@@ -180,9 +180,9 @@ export default function ThreadChatScreen() {
             tintColor={C.brand}
             size={20}
           />
-          </Pressable>
-        </RNView>
-        <RNView style={styles.headerCenter}>
+      </Pressable>
+      </RNView>
+      <RNView style={styles.headerCenter}>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
@@ -194,11 +194,11 @@ export default function ThreadChatScreen() {
           />
         ) : null}
         <RNView style={styles.headerBody}>
-          <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
+      <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
             {title || agentName || t("newChat.subtitle")}
           </Text>
-          <RNView style={styles.statusRow}>
-            <RNView
+      <RNView style={styles.statusRow}>
+      <RNView
               style={[
                 styles.statusDot,
                 {
@@ -207,13 +207,13 @@ export default function ThreadChatScreen() {
                 },
               ]}
             />
-            <Text style={[styles.statusText, { color: C.textTertiary }]} numberOfLines={1}>
+      <Text style={[styles.statusText, { color: C.textTertiary }]} numberOfLines={1}>
               {agentName}
             </Text>
-          </RNView>
-        </RNView>
-        </RNView>
-        <RNView style={styles.headerSide} />
+      </RNView>
+      </RNView>
+      </RNView>
+      <RNView style={styles.headerSide} />
       </RNView>
 
       {disconnected ? <ErrorBanner message={t("chat.disconnected")} onRetry={reconnect} /> : null}
@@ -252,7 +252,6 @@ export default function ThreadChatScreen() {
           return <MarkdownBubble role={item.role} content={item.content} />;
         }}
       />
-
       <RNView
         style={[
           styles.composerShell,
@@ -261,8 +260,8 @@ export default function ThreadChatScreen() {
             },
           ]}
         >
-        <RNView style={styles.composerRow}>
-          <PressableScale
+      <RNView style={styles.composerRow}>
+      <PressableScale
             onPress={() => setAttachOpen(true)}
             contentStyle={[
               styles.attachButton,
@@ -271,15 +270,15 @@ export default function ThreadChatScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("chat.attach")}
           >
-            <SymbolView
+      <SymbolView
               name={{ ios: "plus", android: "add", web: "add" } as unknown as Parameters<
                 typeof SymbolView
               >[0]["name"]}
               tintColor={C.textTertiary}
               size={18}
             />
-          </PressableScale>
-          <TextInput
+      </PressableScale>
+      <TextInput
             style={[
               styles.input,
               { borderColor: C.border, backgroundColor: C.bgElevated, color: C.text },
@@ -292,8 +291,7 @@ export default function ThreadChatScreen() {
             multiline
             editable={!turnActive && !sending}
           />
-
-          <PressableScale
+      <PressableScale
             onPress={turnActive ? stop : handleSend}
             disabled={!turnActive && (!draft.trim() || sending)}
             contentStyle={[
@@ -330,9 +328,8 @@ export default function ThreadChatScreen() {
               />
             )}
           </PressableScale>
-        </RNView>
       </RNView>
-
+      </RNView>
       <ActionSheet
         visible={attachOpen}
         onDismiss={() => setAttachOpen(false)}
@@ -345,7 +342,7 @@ export default function ThreadChatScreen() {
           },
         ]}
       />
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
   );
 }
 

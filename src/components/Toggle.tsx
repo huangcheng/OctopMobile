@@ -66,7 +66,7 @@ export function Toggle(props: {
       disabled={props.disabled}
     >
       <Animated.View style={[styles.knob, { backgroundColor: C.onBrand }, knobStyle]} />
-    </Pressable>
+      </Pressable>
   );
 }
 

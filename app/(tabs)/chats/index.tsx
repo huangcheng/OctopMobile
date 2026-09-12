@@ -284,7 +284,7 @@ export default function ChatsScreen() {
         title={t("chats.title")}
         action={
           <RNView style={styles.headerActions}>
-            <Pressable
+      <Pressable
               onPress={handleNew}
               style={({ pressed }) => [
                 styles.newPill,
@@ -294,22 +294,22 @@ export default function ChatsScreen() {
               accessibilityRole="button"
               accessibilityLabel={t("chats.new")}
             >
-              <Text style={[styles.newPillText, { color: C.onBrand }]}>{t("chats.new")}</Text>
-            </Pressable>
-            <HeaderGear />
-          </RNView>
+      <Text style={[styles.newPillText, { color: C.onBrand }]}>{t("chats.new")}</Text>
+      </Pressable>
+      <HeaderGear />
+      </RNView>
         }
       />
 
       {hasData ? (
         <RNView style={styles.searchWrap}>
-          <SearchField
+      <SearchField
             testID="chats-search"
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder={t("chats.searchPlaceholder")}
           />
-        </RNView>
+      </RNView>
       ) : null}
 
       {hasData ? (
@@ -335,7 +335,7 @@ export default function ChatsScreen() {
                   accessibilityRole="button"
                   accessibilityState={{ selected }}
                 >
-                  <Text
+      <Text
                     style={[
                       styles.chipText,
                       {
@@ -347,7 +347,7 @@ export default function ChatsScreen() {
                   >
                     {agent.name}
                   </Text>
-                </Pressable>
+      </Pressable>
               );
             },
           )}
@@ -356,7 +356,7 @@ export default function ChatsScreen() {
 
       {hasData ? (
         <RNView style={styles.greetingWrap}>
-          <RNView
+      <RNView
             style={[
               styles.greeting,
               {
@@ -366,30 +366,30 @@ export default function ChatsScreen() {
               },
             ]}
           >
-            <Image
+      <Image
               source={require("@/assets/images/octop-mascot-tasks-trim.png")}
               style={styles.greetingMascot}
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <RNView style={styles.greetingBody}>
-              <Text style={[styles.greetingTitle, { color: C.text }]}>
+      <RNView style={styles.greetingBody}>
+      <Text style={[styles.greetingTitle, { color: C.text }]}>
                 {t(greetingKey, { name: userName })}
               </Text>
-              <Text style={[styles.greetingMeta, { color: C.textTertiary }]}>
+      <Text style={[styles.greetingMeta, { color: C.textTertiary }]}>
                 {t("chats.stats", { running: runningCount, unread: unreadTotal })}
               </Text>
-            </RNView>
-          </RNView>
-        </RNView>
+      </RNView>
+      </RNView>
+      </RNView>
       ) : null}
 
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
       {loading && rows.length === 0 && hasData ? (
         <RNView style={styles.skeletonWrap}>
-          <SkeletonList rows={4} />
-        </RNView>
+      <SkeletonList rows={4} />
+      </RNView>
       ) : null}
 
       {!hasData && !loading ? (
@@ -459,15 +459,15 @@ export default function ChatsScreen() {
                 accessibilityRole="button"
                 accessibilityLabel={threadTitle(item2.thread, untitled)}
               >
-                <AgentTile
+      <AgentTile
                   label={tileInitial(item2.agent.name)}
                   color={tileColor(item2.agent.color, item2.agent.agent_id)}
                   iconUrl={item2.agent.icon_url}
                   iconName={item2.agent.icon_name}
                 />
-                <RNView style={styles.cardBody}>
-                  <RNView style={styles.titleRow}>
-                    <Text style={[styles.cardTitle, { color: C.text }]} numberOfLines={1}>
+      <RNView style={styles.cardBody}>
+      <RNView style={styles.titleRow}>
+      <Text style={[styles.cardTitle, { color: C.text }]} numberOfLines={1}>
                       {threadTitle(item2.thread, untitled)}
                     </Text>
                     {item2.thread.pinned ? (
@@ -484,14 +484,14 @@ export default function ChatsScreen() {
                       />
                     ) : null}
                   </RNView>
-                  <Text style={[styles.cardMeta, { color: C.textTertiary }]} numberOfLines={1}>
+      <Text style={[styles.cardMeta, { color: C.textTertiary }]} numberOfLines={1}>
                     {meta}
                   </Text>
-                </RNView>
+      </RNView>
                 {unread ? (
                   <RNView style={[styles.badge, { backgroundColor: C.brand }]}>
-                    <Text style={[styles.badgeText, { color: C.onBrand }]}>{unread}</Text>
-                  </RNView>
+      <Text style={[styles.badgeText, { color: C.onBrand }]}>{unread}</Text>
+      </RNView>
                 ) : null}
               </Pressable>
             );
@@ -538,13 +538,12 @@ export default function ChatsScreen() {
             : []
         }
       />
-
       <Modal transparent visible={renameRow !== null} animationType="fade" onRequestClose={() => setRenameRow(null)}>
-        <KeyboardAvoidingView behavior="padding" style={styles.dialogKav}>
-        <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
-          <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
-            <Text style={[styles.dialogTitle, { color: C.text }]}>{t("chats.renameTitle")}</Text>
-            <TextInput
+      <KeyboardAvoidingView behavior="padding" style={styles.dialogKav}>
+      <RNView style={[styles.dialogScrim, { backgroundColor: C.scrim }]}>
+      <RNView style={[styles.dialog, { backgroundColor: C.bgElevated }]}>
+      <Text style={[styles.dialogTitle, { color: C.text }]}>{t("chats.renameTitle")}</Text>
+      <TextInput
               style={[styles.dialogInput, { borderColor: C.borderInput, color: C.text }]}
               value={renameText}
               onChangeText={setRenameText}
@@ -552,16 +551,16 @@ export default function ChatsScreen() {
               returnKeyType="done"
               onSubmitEditing={submitRename}
             />
-            <RNView style={styles.dialogRow}>
-              <Pressable
+      <RNView style={styles.dialogRow}>
+      <Pressable
                 onPress={() => setRenameRow(null)}
                 style={({ pressed }) => [styles.dialogButton, pressed && styles.pressed]}
               >
-                <Text style={[styles.dialogCancel, { color: C.textSecondary }]}>
+      <Text style={[styles.dialogCancel, { color: C.textSecondary }]}>
                   {t("chats.cancel")}
                 </Text>
-              </Pressable>
-              <Pressable
+      </Pressable>
+      <Pressable
                 onPress={submitRename}
                 style={({ pressed }) => [
                   styles.dialogButton,
@@ -569,16 +568,16 @@ export default function ChatsScreen() {
                   pressed && styles.pressed,
                 ]}
               >
-                <Text style={[styles.dialogSave, { color: C.onBrand }]}>
+      <Text style={[styles.dialogSave, { color: C.onBrand }]}>
                   {t("chats.renameSave")}
                 </Text>
-              </Pressable>
-            </RNView>
-          </RNView>
-        </RNView>
-        </KeyboardAvoidingView>
+      </Pressable>
+      </RNView>
+      </RNView>
+      </RNView>
+      </KeyboardAvoidingView>
       </Modal>
-    </RNView>
+      </RNView>
   );
 }
 

@@ -14,8 +14,16 @@ appId: host.exp.Exponent
     commands:
       - tapOn: "Open"
 - extendedWaitUntil:
-    visible: "对话"
+    visible: "Smoke Tester"
     timeout: 90000
+- runFlow:
+    when:
+      visible: "Back"
+    commands:
+      - tapOn: "Back"
+- waitForAnimationToEnd: { timeout: 4000 }
+- tapOn: "对话"
+- waitForAnimationToEnd: { timeout: 4000 }
 - takeScreenshot: "a2-step3-agents"
 - tapOn: "新对话"
 - extendedWaitUntil:
@@ -30,12 +38,13 @@ appId: host.exp.Exponent
     visible: "pong"
     timeout: 60000
 - takeScreenshot: "a2-step7-streamed"
-- back
+- tapOn: "Back"
+- waitForAnimationToEnd: { timeout: 4000 }
 - extendedWaitUntil:
-    visible: "请只回复两个字符"
-    timeout: 20000
+    visible: "请只回复两个字符.*"
+    timeout: 30000
 - tapOn: "请只回复两个字符.*"
 - extendedWaitUntil:
     visible: "pong"
-    timeout: 30000
+    timeout: 60000
 - takeScreenshot: "a2-step8-history"

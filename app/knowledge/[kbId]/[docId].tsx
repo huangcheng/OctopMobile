@@ -78,27 +78,27 @@ export default function DocumentReaderScreen() {
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       <RNView style={[styles.header, { paddingTop: Math.max(insets.top, initialWindowMetrics?.insets.top ?? 0) + 8 }]}>
-        <RNView style={styles.headerSide}>
-          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Back" accessibilityRole="button">
-            <SymbolView
+      <RNView style={styles.headerSide}>
+      <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Back" accessibilityRole="button">
+      <SymbolView
               name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
               tintColor={C.brand}
               size={20}
             />
-          </Pressable>
-        </RNView>
-        <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
+      </Pressable>
+      </RNView>
+      <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
           {title}
         </Text>
-        <RNView style={styles.headerSide} />
+      <RNView style={styles.headerSide} />
       </RNView>
 
       {error ? <ErrorBanner message={error} onRetry={refresh} /> : null}
 
       {loading ? (
         <RNView style={styles.scrollWrap}>
-          <DocSkeleton />
-        </RNView>
+      <DocSkeleton />
+      </RNView>
       ) : null}
 
       {!loading && !error && text !== null ? (
@@ -134,7 +134,7 @@ export default function DocumentReaderScreen() {
               </Text>
             )}
           </RNView>
-        </ScrollView>
+      </ScrollView>
       ) : null}
 
       {!loading && !error ? (
@@ -148,20 +148,20 @@ export default function DocumentReaderScreen() {
             },
           ]}
         >
-          <Pressable
+      <Pressable
             onPress={() => void share()}
             style={({ pressed }) => [styles.ctaPrimary, { backgroundColor: C.brand }, pressed && { opacity: 0.88 }]}
             accessibilityRole="button"
             accessibilityLabel={t("reader.share")}
           >
-            <SymbolView
+      <SymbolView
               name={{ ios: "square.and.arrow.up", android: "share", web: "share" } as unknown as SFSymbol}
               tintColor={C.onBrand}
               size={18}
             />
-            <Text style={[styles.ctaText, { color: C.onBrand }]}>{t("reader.share")}</Text>
-          </Pressable>
-        </RNView>
+      <Text style={[styles.ctaText, { color: C.onBrand }]}>{t("reader.share")}</Text>
+      </Pressable>
+      </RNView>
       ) : null}
     </RNView>
   );

@@ -28,45 +28,43 @@ export default function AboutScreen() {
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       <RNView style={[styles.header, { paddingTop: insets.top + 10 }]}>
-        <Pressable
+      <Pressable
           onPress={() => router.back()}
           hitSlop={12}
           accessibilityLabel="Back"
           accessibilityRole="button"
         >
-          <SymbolView
+      <SymbolView
             name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
             tintColor={C.brand}
             size={20}
           />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: C.text }]}>{t("about.title")}</Text>
+      </Pressable>
+      <Text style={[styles.headerTitle, { color: C.text }]}>{t("about.title")}</Text>
       </RNView>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
       >
-        <RNView style={styles.hero}>
-          <RNView style={[styles.logoMark, { boxShadow: "0px 8px 16px rgba(255, 75, 78, 0.30)" }]}>
-            <Image
+      <RNView style={styles.hero}>
+      <RNView style={[styles.logoMark, { boxShadow: "0px 8px 16px rgba(255, 75, 78, 0.30)" }]}>
+      <Image
               source={require("@/assets/images/pwa-512.png")}
               style={styles.logoImage}
               resizeMode="cover"
               accessibilityIgnoresInvertColors
             />
-          </RNView>
-          <Text style={[styles.heroName, { color: C.text }]}>Octop</Text>
-          <Text style={[styles.heroVersion, { color: C.textTertiary }]}>
+      </RNView>
+      <Text style={[styles.heroName, { color: C.text }]}>Octop</Text>
+      <Text style={[styles.heroVersion, { color: C.textTertiary }]}>
             {t("settings.version", {
               version: APP_VERSION,
               octopVersion: OCTOP_SERVER_VERSION,
             })}
           </Text>
-        </RNView>
-
-        <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>{t("about.legal")}</Text>
-        <RNView
+      </RNView>
+      <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>{t("about.legal")}</Text>
+      <RNView
           style={[
             styles.card,
             {
@@ -76,14 +74,13 @@ export default function AboutScreen() {
             },
           ]}
         >
-          <Text style={[styles.copyright, { color: C.text }]}>{t("about.copyright")}</Text>
-          <Text style={[styles.disclaimer, { color: C.textSecondary }]}>
+      <Text style={[styles.copyright, { color: C.text }]}>{t("about.copyright")}</Text>
+      <Text style={[styles.disclaimer, { color: C.textSecondary }]}>
             {t("about.disclaimer")}
           </Text>
-        </RNView>
-
-        <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>{t("about.oss")}</Text>
-        <RNView
+      </RNView>
+      <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>{t("about.oss")}</Text>
+      <RNView
           style={[
             styles.card,
             styles.ossCard,
@@ -106,8 +103,8 @@ export default function AboutScreen() {
                 accessibilityRole={row.url ? "link" : "text"}
                 accessibilityLabel={row.url ? `${row.name} — ${row.url}` : row.name}
               >
-                <Text style={[styles.ossName, { color: C.text }]}>{row.name}</Text>
-                <Text style={[styles.ossMeta, { color: C.textTertiary }]}>{row.meta}</Text>
+      <Text style={[styles.ossName, { color: C.text }]}>{row.name}</Text>
+      <Text style={[styles.ossMeta, { color: C.textTertiary }]}>{row.meta}</Text>
                 {row.url ? (
                   <SymbolView
                     name={{ ios: "arrow.up.right", android: "north_east", web: "north_east" } as unknown as SFSymbol}
@@ -116,11 +113,11 @@ export default function AboutScreen() {
                   />
                 ) : null}
               </Pressable>
-            </RNView>
+      </RNView>
           ))}
         </RNView>
       </ScrollView>
-    </RNView>
+      </RNView>
   );
 }
 

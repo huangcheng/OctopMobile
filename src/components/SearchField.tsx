@@ -33,7 +33,7 @@ export function SearchField(props: {
         autoCorrect={false}
         returnKeyType="search"
       />
-    </RNView>
+      </RNView>
   );
 }
 

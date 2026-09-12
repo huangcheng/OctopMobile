@@ -178,7 +178,7 @@ export function CodeBlock(props: { code: string; language?: string | null; C: Oc
       <Text style={[styles.code, { color: props.C.codeText }]} selectable>
         {tree ? renderNodes(tree, "cb", syntax) : code}
       </Text>
-    </ScrollView>
+      </ScrollView>
   );
 }
 

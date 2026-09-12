@@ -54,8 +54,8 @@ export function EmptyState(props: {
           accessibilityRole="button"
           accessibilityLabel={props.ctaLabel}
         >
-          <Text style={[styles.ctaText, { color: C.onBrand }]}>{props.ctaLabel}</Text>
-        </PressableScale>
+      <Text style={[styles.ctaText, { color: C.onBrand }]}>{props.ctaLabel}</Text>
+      </PressableScale>
       ) : null}
       {props.footer}
     </RNView>

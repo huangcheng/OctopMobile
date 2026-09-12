@@ -102,7 +102,8 @@ export default function NewChatScreen() {
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: C.bgLayout }]}
       behavior="padding"
-    >      <RNView
+    >
+      <RNView
         style={[
           styles.header,
           {
@@ -110,14 +111,14 @@ export default function NewChatScreen() {
           },
         ]}
       >
-        <RNView style={styles.headerSide}>
-          <Pressable
+      <RNView style={styles.headerSide}>
+      <Pressable
             onPress={() => router.back()}
             hitSlop={12}
             accessibilityLabel="Back"
             accessibilityRole="button"
           >
-          <SymbolView
+      <SymbolView
             name={
               { ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as Parameters<
                 typeof SymbolView
@@ -126,9 +127,9 @@ export default function NewChatScreen() {
             tintColor={C.brand}
             size={20}
           />
-          </Pressable>
-        </RNView>
-        <RNView style={styles.headerCenter}>
+      </Pressable>
+      </RNView>
+      <RNView style={styles.headerCenter}>
         {agent ? (
           <AgentTile
             label={tileInitial(agent.name)}
@@ -140,17 +141,16 @@ export default function NewChatScreen() {
           />
         ) : null}
         <RNView style={styles.headerBody}>
-          <Text style={[styles.headerName, { color: C.text }]} numberOfLines={1}>
+      <Text style={[styles.headerName, { color: C.text }]} numberOfLines={1}>
             {agentName}
           </Text>
-          <Text style={[styles.headerSub, { color: C.textTertiary }]} numberOfLines={1}>
+      <Text style={[styles.headerSub, { color: C.textTertiary }]} numberOfLines={1}>
             {t("newChat.subtitle")}
           </Text>
-        </RNView>
-        </RNView>
-        <RNView style={styles.headerSide} />
       </RNView>
-
+      </RNView>
+      <RNView style={styles.headerSide} />
+      </RNView>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
@@ -170,10 +170,10 @@ export default function NewChatScreen() {
               },
             ]}
           >
-            <Text style={[styles.welcomeText, { color: C.text }]}>
+      <Text style={[styles.welcomeText, { color: C.text }]}>
               {t("newChat.welcome", { name: agentName })}
             </Text>
-          </RNView>
+      </RNView>
         ) : null}
 
         {(
@@ -210,28 +210,27 @@ export default function NewChatScreen() {
             accessibilityRole="button"
             accessibilityLabel={qp.title}
           >
-            <RNView
+      <RNView
               style={[
                 styles.promptIcon,
                 { backgroundColor: `${tileColor(null, `prompt-${qp.key}`)}1F` },
               ]}
             >
-              <SymbolView
+      <SymbolView
                 name={qp.icon as unknown as Parameters<typeof SymbolView>[0]["name"]}
                 tintColor={tileColor(null, `prompt-${qp.key}`)}
                 size={20}
               />
-            </RNView>
-            <RNView style={styles.promptBody}>
-              <Text style={[styles.promptTitle, { color: C.text }]}>{qp.title}</Text>
-              <Text style={[styles.promptDesc, { color: C.textSecondary }]} numberOfLines={2}>
+      </RNView>
+      <RNView style={styles.promptBody}>
+      <Text style={[styles.promptTitle, { color: C.text }]}>{qp.title}</Text>
+      <Text style={[styles.promptDesc, { color: C.textSecondary }]} numberOfLines={2}>
                 {qp.desc}
               </Text>
-            </RNView>
-          </Pressable>
+      </RNView>
+      </Pressable>
         ))}
       </ScrollView>
-
       <RNView
         style={[
           styles.composerShell,
@@ -240,8 +239,8 @@ export default function NewChatScreen() {
           },
         ]}
       >
-        <RNView style={styles.composerRow}>
-          <PressableScale
+      <RNView style={styles.composerRow}>
+      <PressableScale
             onPress={() => setAttachOpen(true)}
             contentStyle={[
               styles.attachButton,
@@ -250,15 +249,15 @@ export default function NewChatScreen() {
             accessibilityRole="button"
             accessibilityLabel={t("chat.attach")}
           >
-            <SymbolView
+      <SymbolView
               name={{ ios: "plus", android: "add", web: "add" } as unknown as Parameters<
                 typeof SymbolView
               >[0]["name"]}
               tintColor={C.textTertiary}
               size={18}
             />
-          </PressableScale>
-          <TextInput
+      </PressableScale>
+      <TextInput
             style={[
               styles.input,
               { borderColor: C.border, backgroundColor: C.bgElevated, color: C.text },
@@ -273,7 +272,7 @@ export default function NewChatScreen() {
             multiline
             editable={!creating}
           />
-          <PressableScale
+      <PressableScale
             onPress={() => void handleSend()}
             disabled={!draft.trim() || creating}
             contentStyle={[
@@ -300,9 +299,8 @@ export default function NewChatScreen() {
               />
             )}
           </PressableScale>
-        </RNView>
       </RNView>
-
+      </RNView>
       <ActionSheet
         visible={attachOpen}
         onDismiss={() => setAttachOpen(false)}
@@ -315,7 +313,7 @@ export default function NewChatScreen() {
           },
         ]}
       />
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
   );
 }
 

@@ -109,21 +109,20 @@ export default function KnowledgeDetailScreen() {
   return (
     <RNView style={[styles.container, { backgroundColor: C.bgLayout }]}>
       <RNView style={[styles.header, { paddingTop: Math.max(insets.top, initialWindowMetrics?.insets.top ?? 0) + 8 }]}>
-        <RNView style={styles.headerSide}>
-          <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Back" accessibilityRole="button">
-            <SymbolView
+      <RNView style={styles.headerSide}>
+      <Pressable onPress={() => router.back()} hitSlop={12} accessibilityLabel="Back" accessibilityRole="button">
+      <SymbolView
               name={{ ios: "chevron.left", android: "arrow-back", web: "arrow_back" } as unknown as SFSymbol}
               tintColor={C.brand}
               size={20}
             />
-          </Pressable>
-        </RNView>
-        <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
+      </Pressable>
+      </RNView>
+      <Text style={[styles.headerTitle, { color: C.text }]} numberOfLines={1}>
           {t("knowledge.detailTitle")}
         </Text>
-        <RNView style={styles.headerSide} />
+      <RNView style={styles.headerSide} />
       </RNView>
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={[
@@ -137,14 +136,14 @@ export default function KnowledgeDetailScreen() {
 
         {!loading && !error ? (
           <>
-            <RNView style={styles.hero}>
-              <AgentTile
+      <RNView style={styles.hero}>
+      <AgentTile
                 label=""
                 color={tileColor(null, KB_TILE_KEY + kbId)}
                 iconName="book-open"
                 tone="tint"
               />
-              <Text style={[styles.heroName, { color: C.text }]} numberOfLines={2}>
+      <Text style={[styles.heroName, { color: C.text }]} numberOfLines={2}>
                 {kbName}
               </Text>
               {metaParts.length > 0 ? (
@@ -153,8 +152,7 @@ export default function KnowledgeDetailScreen() {
                 </Text>
               ) : null}
             </RNView>
-
-            <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
+      <Text style={[styles.sectionLabel, { color: C.textTertiary }]}>
               {t("knowledge.documents")}
             </Text>
 
@@ -191,45 +189,44 @@ export default function KnowledgeDetailScreen() {
                     accessibilityRole="button"
                     accessibilityLabel={title}
                   >
-                    <RNView
+      <RNView
                       style={[
                         styles.docTile,
                         { backgroundColor: `${C.info}1F` },
                       ]}
                     >
-                      <SymbolView
+      <SymbolView
                         name={{ ios: "doc.text", android: "description", web: "description" } as unknown as SFSymbol}
                         tintColor={C.info}
                         size={18}
                       />
-                    </RNView>
-                    <RNView style={styles.docBody}>
-                      <Text style={[styles.docTitle, { color: C.text }]} numberOfLines={1}>
+      </RNView>
+      <RNView style={styles.docBody}>
+      <Text style={[styles.docTitle, { color: C.text }]} numberOfLines={1}>
                         {title}
                       </Text>
-                      <Text style={[styles.docMeta, { color: C.textTertiary }]} numberOfLines={1}>
+      <Text style={[styles.docMeta, { color: C.textTertiary }]} numberOfLines={1}>
                         {docMeta}
                       </Text>
-                    </RNView>
-                    <SymbolView
+      </RNView>
+      <SymbolView
                       name={{ ios: "chevron.right", android: "chevron_right", web: "chevron_right" } as unknown as SFSymbol}
                       tintColor={C.textTertiary}
                       size={14}
                     />
-                  </Pressable>
+      </Pressable>
                 );
               })
             )}
 
             <RNView style={[styles.hint, { backgroundColor: C.brandSoft }]}>
-              <Text style={[styles.hintText, { color: C.brandActive }]}>
+      <Text style={[styles.hintText, { color: C.brandActive }]}>
                 {t("knowledge.manageHint")}
               </Text>
-            </RNView>
-          </>
+      </RNView>
+      </>
         ) : null}
       </ScrollView>
-
       <RNView
         style={[
           styles.ctaBar,
@@ -240,7 +237,7 @@ export default function KnowledgeDetailScreen() {
           },
         ]}
       >
-        <Pressable
+      <Pressable
           onPress={() => void shareBaseLink()}
           style={({ pressed }) => [
             styles.ctaSquare,
@@ -250,13 +247,13 @@ export default function KnowledgeDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("knowledge.shareBase")}
         >
-          <SymbolView
+      <SymbolView
             name={{ ios: "square.and.arrow.up", android: "share", web: "share" } as unknown as SFSymbol}
             tintColor={C.brand}
             size={20}
           />
-        </Pressable>
-        <Pressable
+      </Pressable>
+      <Pressable
           onPress={openConsole}
           style={({ pressed }) => [
             styles.ctaPrimary,
@@ -266,12 +263,12 @@ export default function KnowledgeDetailScreen() {
           accessibilityRole="button"
           accessibilityLabel={t("knowledge.manageCta")}
         >
-          <Text style={[styles.ctaPrimaryText, { color: C.onBrand }]}>
+      <Text style={[styles.ctaPrimaryText, { color: C.onBrand }]}>
             {t("knowledge.manageCta")}
           </Text>
-        </Pressable>
+      </Pressable>
       </RNView>
-    </RNView>
+      </RNView>
   );
 }
 

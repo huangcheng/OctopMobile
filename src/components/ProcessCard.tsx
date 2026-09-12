@@ -43,13 +43,13 @@ export function ProcessCard(props: { process: ProcessState }) {
           thinking: props.process.thinkingCount,
         })}
       >
-        <Text style={[styles.headerText, { color: C.text }]} numberOfLines={1}>
+      <Text style={[styles.headerText, { color: C.text }]} numberOfLines={1}>
           {t("chat.processSummary", {
             tools: props.process.toolCount,
             thinking: props.process.thinkingCount,
           })}
         </Text>
-        <SymbolView
+      <SymbolView
           name={{
             ios: open ? "chevron.up" : "chevron.down",
             android: open ? "expand_less" : "expand_more",
@@ -74,18 +74,18 @@ export function ProcessCard(props: { process: ProcessState }) {
               </Text>
             ) : (
               <RNView key={item.id}>
-                <RNView style={styles.row}>
-                  <RNView style={[styles.toolIcon, { backgroundColor: C.bgTertiary }]}>
-                    <SymbolView
+      <RNView style={styles.row}>
+      <RNView style={[styles.toolIcon, { backgroundColor: C.bgTertiary }]}>
+      <SymbolView
                       name={
                         { ios: "wrench.and.screwdriver", android: "build", web: "build" } as unknown as Parameters<typeof SymbolView>[0]["name"]
                       }
                       tintColor={C.textTertiary}
                       size={13}
                     />
-                  </RNView>
-                  <RNView style={styles.rowBody}>
-                    <Text style={[styles.toolName, { color: C.text }]} numberOfLines={1}>
+      </RNView>
+      <RNView style={styles.rowBody}>
+      <Text style={[styles.toolName, { color: C.text }]} numberOfLines={1}>
                       {item.name}
                     </Text>
                     {item.detail ? (
@@ -94,7 +94,7 @@ export function ProcessCard(props: { process: ProcessState }) {
                       </Text>
                     ) : null}
                   </RNView>
-                  <Text
+      <Text
                     style={[
                       styles.statusText,
                       {
@@ -113,16 +113,16 @@ export function ProcessCard(props: { process: ProcessState }) {
                         ? t("chat.processDone")
                         : t("chat.processRunning")}
                   </Text>
-                </RNView>
+      </RNView>
                 {item.result ? (
                   <RNView style={[styles.toolResult, { backgroundColor: C.bgTertiary }]}>
-                    <Text
+      <Text
                       style={[styles.toolResultText, { color: C.textSecondary }]}
                       numberOfLines={4}
                     >
                       {item.result}
                     </Text>
-                  </RNView>
+      </RNView>
                 ) : null}
               </RNView>
             ),

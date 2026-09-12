@@ -18,8 +18,8 @@ export function ErrorBanner({ message, onRetry }: ErrorBannerProps) {
       </Text>
       {onRetry ? (
         <Pressable onPress={onRetry} accessibilityRole="button" hitSlop={8}>
-          <Text style={[styles.retry, { color: C.brandText }]}>{t("chat.retry")}</Text>
-        </Pressable>
+      <Text style={[styles.retry, { color: C.brandText }]}>{t("chat.retry")}</Text>
+      </Pressable>
       ) : null}
     </RNView>
   );
