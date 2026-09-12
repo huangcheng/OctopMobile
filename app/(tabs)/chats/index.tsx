@@ -300,7 +300,7 @@ export default function ChatsScreen() {
                     style={[
                       styles.chipText,
                       {
-                        color: selected ? C.brand : C.textSecondary,
+                        color: selected ? C.brandText : C.textSecondary,
                         fontWeight: selected ? "600" : "500",
                       },
                     ]}

@@ -39,7 +39,7 @@ export function StreamingBubble({ content }: StreamingBubbleProps) {
       {content.length > 0 ? (
         <Markdown style={markdownStyles} rules={markdownRules}>{rendered}</Markdown>
       ) : null}
-      <Text style={[styles.caret, { color: C.brand }, content.length > 0 && styles.caretAfter, !caretOn && styles.caretOff]}>
+      <Text style={[styles.caret, { color: C.brandText }, content.length > 0 && styles.caretAfter, !caretOn && styles.caretOff]}>
         ▍
       </Text>
     </RNView>

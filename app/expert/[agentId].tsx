@@ -169,7 +169,7 @@ export default function ExpertDetailScreen() {
           <RNView style={styles.heroMeta}>
             {mbti ? (
               <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
-                <Text style={[styles.mbtiText, { color: C.brand }]}>{mbti}</Text>
+                <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
               </RNView>
             ) : null}
             <StatusPill

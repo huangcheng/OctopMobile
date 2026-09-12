@@ -10,6 +10,11 @@ export type OctopThemeTokens = {
   scheme: "light" | "dark";
 
   brand: string;
+  /** Brand as foreground text/icon. Dark mode uses the palette's brightened
+   * colorLink (dashboard ANTD_BRAND_TOKENS.dark) — the saturated primary is
+   * unreadable on dark surfaces. Ardot `brand-text`; identical to `brand` in
+   * light mode and for rose in both modes. */
+  brandText: string;
   brandHover: string;
   brandActive: string;
   brandSoft: string;
@@ -64,6 +69,7 @@ export const Octop: OctopThemeTokens = {
   scheme: "light",
 
   brand: "#E85D75",
+  brandText: "#E85D75",
   brandHover: "#D14A62",
   brandActive: "#B83A50",
   brandSoft: "#FDE8EC",
@@ -121,6 +127,7 @@ export const OctopDark: OctopThemeTokens = {
   scheme: "dark",
 
   brand: "#F08B9A",
+  brandText: "#F08B9A",
   brandHover: "#E85D75",
   brandActive: "#D14A62",
   brandSoft: "rgba(232, 93, 117, 0.16)",
@@ -212,6 +219,19 @@ export const PALETTE_PRIMARY: Record<PaletteKey, { light: string; dark: string }
   slate: { light: "#475569", dark: "#475569" },
 };
 
+/** Dashboard `ANTD_BRAND_TOKENS[palette].{light,dark}.colorLink` — brand as
+ * text on dark surfaces is the brightened variant, not the solid primary. */
+export const PALETTE_LINK: Record<PaletteKey, { light: string; dark: string }> = {
+  rose: { light: "#E85D75", dark: "#F08B9A" },
+  tech: { light: "#3A5FE0", dark: "#7B9BFC" },
+  indigo: { light: "#4F46E5", dark: "#818CF8" },
+  teal: { light: "#0F766E", dark: "#2DD4BF" },
+  violet: { light: "#7C3AED", dark: "#A78BFA" },
+  emerald: { light: "#047857", dark: "#34D399" },
+  amber: { light: "#B45309", dark: "#FBBF24" },
+  slate: { light: "#475569", dark: "#94A3B8" },
+};
+
 function hexToRgb(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
   return [
@@ -253,6 +273,7 @@ export function applyPalette(
   const lightPrimary = PALETTE_PRIMARY[palette].light;
   const brand = {
     brand: primary,
+    brandText: dark ? PALETTE_LINK[palette].dark : PALETTE_LINK[palette].light,
     brandHover: dark ? mix(primary, "#FFFFFF", 0.35) : mix(primary, "#000000", 0.08),
     brandActive: dark ? mix(primary, "#000000", 0.12) : mix(primary, "#000000", 0.18),
     brandSoft: dark ? rgba(lightPrimary, 0.16) : mix(primary, "#FFFFFF", 0.88),

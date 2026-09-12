@@ -167,7 +167,7 @@ export default function SettingsScreen() {
             ]}
           >
             <RNView style={[styles.avatar, { backgroundColor: C.brandSoft }]}>
-              <Text style={[styles.avatarText, { color: C.brand }]}>
+              <Text style={[styles.avatarText, { color: C.brandText }]}>
                 {tileInitial(displayName)}
               </Text>
             </RNView>

@@ -43,7 +43,7 @@ export function buildAssistantMarkdownStyles(C: OctopThemeTokens) {
     code_inline: {
       fontFamily: "SpaceMono",
       backgroundColor: C.brandBg,
-      color: C.brandActive,
+      color: C.brandText,
       paddingHorizontal: 5,
       borderRadius: 4,
     },
@@ -53,7 +53,7 @@ export function buildAssistantMarkdownStyles(C: OctopThemeTokens) {
       marginVertical: 10,
     },
     link: {
-      color: C.brand,
+      color: C.brandText,
       textDecorationLine: "underline",
     },
     strong: {

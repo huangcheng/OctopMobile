@@ -14,7 +14,7 @@ export function WorkingIndicator() {
         { backgroundColor: C.assistantBubble, borderColor: C.assistantBorder },
       ]}
     >
-      <Text style={[styles.label, { color: C.brandActive }]}>{t("chat.working")}</Text>
+      <Text style={[styles.label, { color: C.brandText }]}>{t("chat.working")}</Text>
     </RNView>
   );
 }

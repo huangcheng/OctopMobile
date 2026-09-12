@@ -127,7 +127,7 @@ export default function ExpertsScreen() {
               accessibilityRole="button"
               accessibilityLabel={t("experts.market")}
             >
-              <Text style={[styles.marketText, { color: C.brand }]}>{t("experts.market")}</Text>
+              <Text style={[styles.marketText, { color: C.brandText }]}>{t("experts.market")}</Text>
             </Pressable>
           }
           renderItem={({ item }) => {
@@ -161,7 +161,7 @@ export default function ExpertsScreen() {
                     </Text>
                     {mbti ? (
                       <RNView style={[styles.mbtiChip, { backgroundColor: C.brandSoft }]}>
-                        <Text style={[styles.mbtiText, { color: C.brand }]}>{mbti}</Text>
+                        <Text style={[styles.mbtiText, { color: C.brandText }]}>{mbti}</Text>
                       </RNView>
                     ) : null}
                   </RNView>

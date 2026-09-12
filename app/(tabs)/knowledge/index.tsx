@@ -205,7 +205,7 @@ export default function KnowledgeScreen() {
           }}
           ListFooterComponent={
             <RNView style={[styles.tipCard, { backgroundColor: C.brandSoft }]}>
-              <Text style={[styles.tip, { color: C.brandActive }]}>{t("knowledge.tip")}</Text>
+              <Text style={[styles.tip, { color: C.brandText }]}>{t("knowledge.tip")}</Text>
             </RNView>
           }
         />

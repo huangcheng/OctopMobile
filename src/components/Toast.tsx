@@ -140,7 +140,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 accessibilityRole="button"
                 accessibilityLabel={toast.actionLabel}
               >
-                <Text style={[styles.action, { color: C.brand }]}>{toast.actionLabel}</Text>
+                <Text style={[styles.action, { color: C.brandText }]}>{toast.actionLabel}</Text>
               </Pressable>
             ) : null}
           </RNView>
