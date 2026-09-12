@@ -36,6 +36,7 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 - **Brand palettes** — Settings ▸ Theme switches the 8 curated Octop dashboard palettes (rose/tech/indigo/teal/violet/emerald/amber/slate, `dashboard/src/styles/themePalettes.ts`). Only `rose` is in the Ardot file; the others derive the brand family via `applyPalette()` in `OctopTheme.ts` (rose returns the constitution base untouched). Persisted in SecureStore, live via `useOctopTheme()`.
 - **Code blocks** — fenced code renders as a dark one-dark card with lowlight highlighting (`src/components/CodeBlock.tsx`, wired through `src/components/markdownRules.tsx`); code surfaces use the `codeBg`/`codeText` tokens (dark in both schemes by design).
 - **Cron ids** — server emits `id`; the client contract and PATCH path use `cron_id` (`src/api/cron.ts` normalizes on every list/patch).
+- **Embedded console** — `app/console.tsx` renders the web console in a `react-native-webview` with the app JWT seeded into `localStorage["auth_token"]` (the dashboard's key, `dashboard/src/api/request.ts`) via `injectedJavaScriptBeforeContentLoaded`. `onShouldStartLoadWithRequest` bounces any non-server origin to the system browser so the token never reaches a third party. Console-only surfaces deep-link there (`/experts`, `/knowledge-bases`, `/tasks`).
 - **Refresh** — pull-to-refresh drives `refreshing` only for user pulls; silent focus refreshes never toggle it (avoids a parked ~70pt spinner offset on iOS).
 
 ## Token sync notes

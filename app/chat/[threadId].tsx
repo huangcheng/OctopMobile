@@ -26,7 +26,6 @@ import { WorkingIndicator } from "@/src/components/WorkingIndicator";
 import { ProcessCard } from "@/src/components/ProcessCard";
 import { AgentTile } from "@/src/components/AgentTile";
 import { ActionSheet } from "@/src/components/ActionSheet";
-import * as WebBrowser from "expo-web-browser";
 import { useAuth } from "@/src/features/auth/AuthContext";
 import { useSelectedAgent } from "@/src/features/agents/AgentContext";
 import { useChatTurn, type ChatDisplayMessage } from "@/src/features/chat/useChatTurn";
@@ -49,7 +48,7 @@ export default function ThreadChatScreen() {
     pendingMessage?: string;
   }>();
   const { agents, selectedAgentId, selectAgent } = useSelectedAgent();
-  const { baseUrl } = useAuth();
+  const { } = useAuth();
 
   const effectiveAgentId = agentIdParam ?? selectedAgentId;
   const agent = agents.find((a) => a.agent_id === effectiveAgentId);
@@ -63,9 +62,10 @@ export default function ThreadChatScreen() {
   const listRef = useRef<FlatList<ListItem>>(null);
 
   function openConsole() {
-    if (baseUrl) {
-      void WebBrowser.openBrowserAsync(baseUrl);
-    }
+    router.push({
+      pathname: "/console",
+      params: { path: "/knowledge-bases", title: t("chat.attachKb") },
+    });
   }
 
   const {

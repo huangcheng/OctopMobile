@@ -1,7 +1,6 @@
-import { useFocusEffect } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { FlatList, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
-import * as WebBrowser from "expo-web-browser";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
@@ -110,9 +109,10 @@ export default function AutomationScreen() {
   }
 
   function openConsole() {
-    if (baseUrl) {
-      void WebBrowser.openBrowserAsync(baseUrl);
-    }
+    router.push({
+      pathname: "/console",
+      params: { path: "/tasks", title: t("automation.title") },
+    });
   }
 
   const hasAgents = agents.length > 0;

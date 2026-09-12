@@ -8,6 +8,7 @@ export const en = {
   "login.submit": "Sign in",
   "login.securityNote": "LAN HTTP is supported with a one-time warning. Certificates are never bypassed.",
   "login.footer": "Unofficial companion · Octop v0.9.32",
+  "console.title": "Console",
   "login.cleartextTitle": "Use cleartext HTTP?",
   "login.cleartextBody":
     "http:// sends traffic unencrypted on your LAN. Continue only on networks you trust — https certificates are never bypassed.",

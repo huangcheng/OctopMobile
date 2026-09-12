@@ -10,6 +10,7 @@ export const zh: Record<keyof typeof en, string> = {
   "login.submit": "登录",
   "login.securityNote": "局域网 HTTP 可用（仅提醒一次）。绝不绕过证书校验。",
   "login.footer": "非官方伴侣应用 · Octop v0.9.32",
+  "console.title": "控制台",
   "login.cleartextTitle": "使用明文 HTTP？",
   "login.cleartextBody":
     "http:// 流量在局域网内不加密。仅在可信网络继续——绝不绕过 https 证书校验。",

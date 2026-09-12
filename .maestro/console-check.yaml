@@ -1,0 +1,18 @@
+appId: host.exp.Exponent
+---
+- openLink: "exp://localhost:8081"
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "自动化"
+    timeout: 90000
+- tapOn: "自动化"
+- extendedWaitUntil:
+    visible: "打开网页控制台"
+    timeout: 30000
+- tapOn: "打开网页控制台"
+- waitForAnimationToEnd: { timeout: 40000 }
+- tapOn: "ZZZ_DUMP"

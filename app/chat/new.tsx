@@ -22,7 +22,6 @@ import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { AgentTile } from "@/src/components/AgentTile";
 import { ActionSheet } from "@/src/components/ActionSheet";
 import { PressableScale } from "@/src/components/PressableScale";
-import * as WebBrowser from "expo-web-browser";
 import { createThread } from "@/src/api/threads";
 import { useAuth } from "@/src/features/auth/AuthContext";
 import { useSelectedAgent } from "@/src/features/agents/AgentContext";
@@ -54,9 +53,10 @@ export default function NewChatScreen() {
   const [attachOpen, setAttachOpen] = useState(false);
 
   function openConsole() {
-    if (baseUrl) {
-      void WebBrowser.openBrowserAsync(baseUrl);
-    }
+    router.push({
+      pathname: "/console",
+      params: { path: "/knowledge-bases", title: t("chat.attachKb") },
+    });
   }
 
   useEffect(() => {

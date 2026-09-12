@@ -1,7 +1,6 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
-import * as WebBrowser from "expo-web-browser";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
@@ -35,7 +34,7 @@ function isRunning(agent: Agent): boolean {
 export default function ExpertsScreen() {
   const C = useOctopTheme();
   const { t } = useI18n();
-  const { baseUrl } = useAuth();
+  const { } = useAuth();
   const { agents, loading, error, refresh } = useSelectedAgent();
   const [query, setQuery] = useState("");
 
@@ -52,9 +51,7 @@ export default function ExpertsScreen() {
   }, [agents, query]);
 
   function openConsole() {
-    if (baseUrl) {
-      void WebBrowser.openBrowserAsync(baseUrl);
-    }
+    router.push({ pathname: "/console", params: { path: "/experts", title: t("experts.market") } });
   }
 
   return (

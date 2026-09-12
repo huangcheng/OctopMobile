@@ -14,8 +14,9 @@ Everything from the [design spec](docs/superpowers/specs/2026-09-11-octop-mobile
 - **Chats** — cross-agent thread list with Today/Earlier sections, per-agent filter chips, greeting card, pull-to-refresh; rename / pin / delete via long-press sheet.
 - **Chat** — streaming replies over WebSocket with live markdown (syntax-highlighted code blocks), tool/thinking process card, Stop (cancel), reconnect banner.
 - **Experts** — search, MY EXPERTS cards, Expert Market deep-link, expert detail with quick prompts.
-- **Knowledge** — read-only knowledge bases with doc counts and shared badges (creation opens the web console).
-- **Automation** — read-only scheduled jobs with enable toggle and server-timezone footer (creation opens the web console).
+- **Knowledge** — read-only knowledge bases with doc counts and shared badges.
+- **Automation** — read-only scheduled jobs with enable toggle and server-timezone footer.
+- **Embedded console** — console-only surfaces (expert market, KB/cron creation, attach-KB) open an in-app webview **with the app session handed off** (the JWT is seeded into the dashboard's storage before load, strictly same-origin); creation/editing still happens in the web UI.
 - **Settings** — server URL, language (system/zh/en), **8 brand palettes** (rose/tech/indigo/teal/violet/emerald/amber/slate — mirrors the Octop dashboard picker), proactive care, about.
 - **Design system** — Elegant Rose tokens from the Ardot design file (Light + Dark), scheme-aware via `useOctopTheme()`; the tab bar uses exact Ardot icon exports.
 
