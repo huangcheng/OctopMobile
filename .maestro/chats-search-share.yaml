@@ -1,0 +1,33 @@
+# Verify chats search field (design 03 delta) + share action (design 07 delta).
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 10000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- extendedWaitUntil:
+    visible: "搜索对话"
+    timeout: 90000
+- takeScreenshot: "c1-search-field"
+- tapOn:
+    id: "chats-search"
+- inputText: "zzz-no-match"
+- waitForAnimationToEnd: { timeout: 5000 }
+- takeScreenshot: "c2-search-empty"
+- eraseText: 40
+- extendedWaitUntil:
+    visible: "未命名对话"
+    timeout: 15000
+- takeScreenshot: "c3-row-restored"
+- longPressOn: "未命名对话"
+- extendedWaitUntil:
+    visible: "分享为 Markdown"
+    timeout: 10000
+- takeScreenshot: "c4-sheet-share"
+- tapOn: "分享为 Markdown"
+- waitForAnimationToEnd: { timeout: 8000 }
+- takeScreenshot: "c5-share-sheet"

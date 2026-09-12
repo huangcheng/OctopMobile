@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { FlatList, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View as RNView } from "react-native";
 
 import { useOctopTheme } from "@/src/components/useOctopTheme";
 import { EmptyState } from "@/src/components/EmptyState";
@@ -12,13 +12,18 @@ import { SearchField } from "@/src/components/SearchField";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { AgentTile } from "@/src/components/AgentTile";
 import { listKnowledgeBases, listKnowledgeDocuments } from "@/src/api/knowledge";
-import type { KnowledgeBase } from "@/src/api/types";
+import type { KnowledgeBase, KnowledgeDocument } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
 import { useI18n } from "@/src/i18n/I18nProvider";
 import { tileColor, tileInitial } from "@/src/utils/color";
 import { formatRelativeTime } from "@/src/utils/time";
 
 const KB_TILE_KEY = "kb";
+
+function docTitleOf(doc: KnowledgeDocument): string {
+  const extra = doc as { title?: unknown; name?: unknown };
+  return ((doc.filename ?? extra.title ?? extra.name ?? doc.id) as string) ?? "";
+}
 
 type KnowledgeRow = KnowledgeBase & { docCount: number | null };
 
@@ -32,17 +37,20 @@ export default function KnowledgeScreen() {
   const [error, setError] = useState<string | null>(null);
   const [disabled, setDisabled] = useState(false);
   const [query, setQuery] = useState("");
+  const [docTitles, setDocTitles] = useState<Record<string, string[]>>({});
 
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     setDisabled(false);
+    const titleIndex: Record<string, string[]> = {};
     try {
       const bases = await listKnowledgeBases(api);
       const withCounts = await Promise.all(
         bases.map(async (base): Promise<KnowledgeRow> => {
           try {
             const docs = await listKnowledgeDocuments(api, base.id);
+            titleIndex[base.id] = docs.map(docTitleOf);
             return { ...base, docCount: docs.length };
           } catch {
             return { ...base, docCount: null };
@@ -50,6 +58,7 @@ export default function KnowledgeScreen() {
         }),
       );
       setRows(withCounts);
+      setDocTitles(titleIndex);
     } catch (err) {
       if (
         typeof err === "object" &&
@@ -88,9 +97,10 @@ export default function KnowledgeScreen() {
     return rows.filter(
       (row) =>
         row.name.toLowerCase().includes(q) ||
-        (row.description ?? "").toLowerCase().includes(q),
+        (row.description ?? "").toLowerCase().includes(q) ||
+        (docTitles[row.id] ?? []).some((title) => title.toLowerCase().includes(q)),
     );
-  }, [rows, query]);
+  }, [rows, query, docTitles]);
 
   function openConsole() {
     router.push({
@@ -165,15 +175,24 @@ export default function KnowledgeScreen() {
             }
 
             return (
-              <RNView
-                style={[
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/knowledge/[kbId]",
+                    params: { kbId: item.id, name: item.name },
+                  })
+                }
+                style={({ pressed }) => [
                   styles.card,
                   {
                     backgroundColor: C.bgElevated,
                     borderColor: C.border,
                     boxShadow: `0px 1px 3px ${C.cardShadow}`,
                   },
+                  pressed && { backgroundColor: C.bgTertiary },
                 ]}
+                accessibilityRole="button"
+                accessibilityLabel={item.name}
               >
                 <RNView style={styles.cardRow}>
                   <AgentTile
@@ -200,7 +219,7 @@ export default function KnowledgeScreen() {
                     </RNView>
                   ) : null}
                 </RNView>
-              </RNView>
+              </Pressable>
             );
           }}
           ListFooterComponent={

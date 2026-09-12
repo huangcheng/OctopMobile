@@ -17,3 +17,16 @@ export function listKnowledgeDocuments(
     `/api/knowledge-bases/${encodeURIComponent(kbId)}/documents`,
   );
 }
+
+export type DocumentPreview = { id: string; filename: string; text: string };
+
+/** GET /api/knowledge-bases/{kb_id}/documents/{doc_id}/preview — extracted text. */
+export function previewDocument(
+  api: Pick<ApiClient, "apiRequest">,
+  kbId: string,
+  docId: string,
+): Promise<DocumentPreview> {
+  return api.apiRequest<DocumentPreview>(
+    `/api/knowledge-bases/${encodeURIComponent(kbId)}/documents/${encodeURIComponent(docId)}/preview`,
+  );
+}

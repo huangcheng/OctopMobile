@@ -8,6 +8,7 @@ export function SearchField(props: {
   value: string;
   onChangeText: (text: string) => void;
   placeholder: string;
+  testID?: string;
 }) {
   const C = useOctopTheme();
 
@@ -22,6 +23,7 @@ export function SearchField(props: {
         size={16}
       />
       <TextInput
+        testID={props.testID}
         style={[styles.input, { color: C.text }]}
         value={props.value}
         onChangeText={props.onChangeText}

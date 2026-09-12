@@ -5,6 +5,7 @@ import {
   Image,
   Modal,
   Pressable,
+  Share,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -19,16 +20,18 @@ import { EmptyState } from "@/src/components/EmptyState";
 import { ErrorBanner } from "@/src/components/ErrorBanner";
 import { HeaderGear } from "@/src/components/HeaderGear";
 import { ScreenHeader } from "@/src/components/ScreenHeader";
+import { SearchField } from "@/src/components/SearchField";
 import { SkeletonList } from "@/src/components/SkeletonList";
 import { AgentTile } from "@/src/components/AgentTile";
 import { ActionSheet } from "@/src/components/ActionSheet";
 import { useToast } from "@/src/components/Toast";
-import { listThreads, updateThread, deleteThread } from "@/src/api/threads";
+import { getThreadHistory, listThreads, updateThread, deleteThread } from "@/src/api/threads";
 import type { Agent, ThreadSummary } from "@/src/api/types";
 import { useAuth } from "@/src/features/auth/AuthContext";
 import { useSelectedAgent } from "@/src/features/agents/AgentContext";
 import { useI18n } from "@/src/i18n/I18nProvider";
 import { tileColor, tileInitial } from "@/src/utils/color";
+import { threadToMarkdown } from "@/src/utils/shareExport";
 import {
   formatRelativeTime,
   greetingKeyFor,
@@ -68,6 +71,7 @@ export default function ChatsScreen() {
   // Only user-initiated pull-to-refresh drives `refreshing`; silent focus
   // refreshes must not (iOS parks a ~70pt offset for the spinner otherwise).
   const [pulling, setPulling] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const refreshGen = useRef(0);
 
   const refresh = useCallback(async () => {
@@ -128,10 +132,21 @@ export default function ChatsScreen() {
     }, [refresh]),
   );
 
-  const filtered = useMemo(
-    () => (filterAgent ? rows.filter((row) => row.agent.agent_id === filterAgent) : rows),
-    [rows, filterAgent],
-  );
+  const filtered = useMemo(() => {
+    let list = filterAgent
+      ? rows.filter((row) => row.agent.agent_id === filterAgent)
+      : rows;
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      const untitled = t("chats.untitled");
+      list = list.filter(
+        (row) =>
+          threadTitle(row.thread, untitled).toLowerCase().includes(q) ||
+          row.agent.name.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  }, [rows, filterAgent, searchQuery, t]);
 
   const sections = useMemo(() => {
     const today: ThreadRow[] = [];
@@ -191,6 +206,18 @@ export default function ChatsScreen() {
       pathname: "/chat/new",
       params: { agentId, name: agent?.name ?? "" },
     });
+  }
+
+  async function shareThread(row: ThreadRow) {
+    const title = threadTitle(row.thread, t("chats.untitled"));
+    try {
+      const history = await getThreadHistory(api, row.agent.agent_id, row.thread.thread_id, {
+        limit: 500,
+      });
+      await Share.share({ message: threadToMarkdown(title, history.messages) });
+    } catch {
+      toast.show({ kind: "error", message: t("errors.actionFailed") });
+    }
   }
 
   async function togglePin(row: ThreadRow) {
@@ -272,6 +299,17 @@ export default function ChatsScreen() {
           </RNView>
         }
       />
+
+      {hasData ? (
+        <RNView style={styles.searchWrap}>
+          <SearchField
+            testID="chats-search"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder={t("chats.searchPlaceholder")}
+          />
+        </RNView>
+      ) : null}
 
       {hasData ? (
         <ScrollView
@@ -483,6 +521,12 @@ export default function ChatsScreen() {
                   },
                 },
                 {
+                  key: "share",
+                  label: t("chats.share"),
+                  icon: { ios: "square.and.arrow.up", android: "share", web: "share" },
+                  onPress: () => void shareThread(sheetRow),
+                },
+                {
                   key: "delete",
                   label: t("chats.delete"),
                   icon: { ios: "trash", android: "delete", web: "delete" },
@@ -559,6 +603,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 10,
+  },
+  searchWrap: {
+    paddingHorizontal: 20,
+    paddingBottom: 8,
   },
   greetingWrap: {
     paddingHorizontal: 16,

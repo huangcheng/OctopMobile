@@ -19,10 +19,10 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 | 19 | settings | `app/settings` | Done — server, language, proactive care, about |
 | 20 | conversation-dark | theme via `useOctopTheme` | Done — scheme-aware tokens |
 | 21 | about | `app/about` | Done (parallel session) |
-| 22 | knowledge-detail | `app/knowledge/[kbId]` — **designed, pending implementation** | Hero tile + name/meta + DOCUMENTS list + Manage-in-console CTA |
-| 23 | document-reader | `app/knowledge/[kbId]/[docId]` — **designed, pending implementation** | Nav title = doc name, meta line, reader card (md headings/bullets/dark code block) + Share Markdown CTA |
+| 22 | knowledge-detail | `app/knowledge/[kbId]` | Done — hero + DOCUMENTS rows + manage CTA; search matches base names **and doc titles** |
+| 23 | document-reader | `app/knowledge/[kbId]/[docId]` | Done — markdown reader + Share Markdown CTA (RN Share) |
 
-**Design deltas added 2026-09-12:** frame 03 gained a `Search Bar` ("Search conversations", client-side title filter); frame 07's action sheet gained `Action Share` → "Share as Markdown" (RN Share, history → markdown). Both pending implementation alongside 22/23.
+**Design deltas added 2026-09-12 (implemented):** frame 03 `Search Bar` → chats title search (`chats-search` testID, filters title + agent name); frame 07 `Share as Markdown` → long-press sheet action (history → `threadToMarkdown` → RN `Share`; builder unit-tested). Maestro: list/detail/reader flow passes (`knowledge-flow.yaml`); the sheet long-press itself didn't fire under Maestro on the shared sim — verify by hand once.
 
 **Tabs:** `PillTabBar` — Chats / Experts / Knowledge / Automation (`app/(tabs)/_layout.tsx`); icons are exact Ardot exports in `assets/icons/tab-{chat,bot,book,alarm}-{w,g}.png` (white = active, gray = idle).
 

@@ -1,0 +1,35 @@
+# Verify knowledge detail + reader + chats search after the v1.1 port.
+appId: host.exp.Exponent
+---
+- stopApp: host.exp.Exponent
+- openLink: "exp://localhost:8081"
+- waitForAnimationToEnd: { timeout: 10000 }
+- runFlow:
+    when:
+      visible: "Close"
+    commands:
+      - tapOn: "Close"
+- waitForAnimationToEnd: { timeout: 10000 }
+- runFlow:
+    when:
+      visible: "Open"
+    commands:
+      - tapOn: "Open"
+- extendedWaitUntil:
+    visible: "知识"
+    timeout: 90000
+- tapOn: "知识"
+- extendedWaitUntil:
+    visible: "我的知识库"
+    timeout: 30000
+- takeScreenshot: "k1-list"
+- tapOn: "个人"
+- extendedWaitUntil:
+    visible: "文档"
+    timeout: 30000
+- takeScreenshot: "k2-detail"
+- tapOn: "cessss.md"
+- extendedWaitUntil:
+    visible: "分享 Markdown"
+    timeout: 30000
+- takeScreenshot: "k3-reader"
