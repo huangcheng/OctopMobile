@@ -61,10 +61,13 @@ export default function ConsoleScreen() {
     };
   }, []);
 
-  // Runs before page scripts on every load of the seeded origin.
+  // Runs before page scripts on every load of the seeded origin. With no
+  // token (cleared on 401 / sign-out) it scrubs the dashboard's stored JWT
+  // instead — otherwise the webview's persisted localStorage would boot the
+  // console as the previous user.
   const seedScript = token
     ? `(function(){try{localStorage.setItem('auth_token','${token}');}catch(e){}})();`
-    : undefined;
+    : `(function(){try{localStorage.removeItem('auth_token');}catch(e){}})();`;
 
   function handleRequest(req: WebViewNavigation): boolean {
     if (!baseUrl || !uri) {
