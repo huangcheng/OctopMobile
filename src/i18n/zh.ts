@@ -108,14 +108,12 @@ export const zh: Record<keyof typeof en, string> = {
 
   "newChat.subtitle": "新对话",
   "newChat.welcome": "我是 {name}，今天想聊点什么？",
-  "newChat.tryAsking": "试着问问",
 
   "settings.title": "设置",
   "settings.server": "服务器",
   "settings.app": "应用",
   "settings.language": "语言",
   "settings.theme": "主题",
-  "settings.themeValue": "Elegant Rose",
   "palette.rose": "玫瑰",
   "palette.tech": "科技",
   "palette.indigo": "靛蓝",

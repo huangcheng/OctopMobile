@@ -386,13 +386,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 22,
   },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    letterSpacing: 1,
-    marginTop: 8,
-    marginBottom: 2,
-  },
   promptCard: {
     flexDirection: "row",
     alignItems: "center",

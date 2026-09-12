@@ -107,14 +107,12 @@ export const en = {
 
   "newChat.subtitle": "New conversation",
   "newChat.welcome": "I'm {name} — what can I help you with today?",
-  "newChat.tryAsking": "TRY ASKING",
 
   "settings.title": "Settings",
   "settings.server": "SERVER",
   "settings.app": "APP",
   "settings.language": "Language",
   "settings.theme": "Theme",
-  "settings.themeValue": "Elegant Rose",
   "palette.rose": "Rose",
   "palette.tech": "Tech",
   "palette.indigo": "Indigo",

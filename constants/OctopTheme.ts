@@ -242,7 +242,10 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 function toHex(n: number): string {
-  return Math.round(Math.min(255, Math.max(0, n))).toString(16).padStart(2, "0");
+  return Math.round(Math.min(255, Math.max(0, n)))
+    .toString(16)
+    .padStart(2, "0")
+    .toUpperCase();
 }
 
 /** Mix `hex` toward `target` by weight t (0..1). */

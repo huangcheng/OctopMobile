@@ -19,7 +19,9 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 | 19 | settings | `app/settings` | Done — server, language, proactive care, about |
 | 20 | conversation-dark | theme via `useOctopTheme` | Done — scheme-aware tokens |
 
-**Tabs:** `PillTabBar` — Chats / Experts / Knowledge / Automation (`app/(tabs)/_layout.tsx`).
+**Tabs:** `PillTabBar` — Chats / Experts / Knowledge / Automation (`app/(tabs)/_layout.tsx`); icons are exact Ardot exports in `assets/icons/tab-{chat,bot,book,alarm}-{w,g}.png` (white = active, gray = idle).
+
+**Known deviations (accepted, data-driven):** SKILLS chips on expert detail (pinned Octop API has no `skills` field); empty-state mascot uses the dashboard `octop-mascot-tasks.png`; Settings header keeps a back chevron.
 
 ## Design system in the Ardot file
 
@@ -27,7 +29,14 @@ Code tokens: `constants/OctopTheme.ts` (Elegant Rose Light + Dark via `useOctopT
 - **Components** — `PillTabBar`, `cp/EmptyState`, `cp/toggle-on|off`, `cp/toast-success|error|info` (spec: `components-toast.png`), `ic/*` icons.
 - **Patterns** — cards 16px radius + border + soft shadow; section labels 11–12px caps; expert tiles; status pills; FAB 56 rose; toasts 14px floating card + tinted icon disc + optional rose action, auto-dismiss 2.8s (`src/components/Toast.tsx`, `useToast()`).
 - **Type** — Inter (en), system CJK fallback (zh). Titles 28/20/17 SemiBold, body 16/15/14, meta 13/12/11, tab labels 10 caps.
-- **Assets** — `assets/images/pwa-512.png`, mascots under `assets/images/`.
+- **Assets** — `assets/images/pwa-512.png`, mascots under `assets/images/`; tab glyphs in `assets/icons/` (exported from Ardot nodes `ic/*`).
+
+## Beyond the frames (app-level additions)
+
+- **Brand palettes** — Settings ▸ Theme switches the 8 curated Octop dashboard palettes (rose/tech/indigo/teal/violet/emerald/amber/slate, `dashboard/src/styles/themePalettes.ts`). Only `rose` is in the Ardot file; the others derive the brand family via `applyPalette()` in `OctopTheme.ts` (rose returns the constitution base untouched). Persisted in SecureStore, live via `useOctopTheme()`.
+- **Code blocks** — fenced code renders as a dark one-dark card with lowlight highlighting (`src/components/CodeBlock.tsx`, wired through `src/components/markdownRules.tsx`); code surfaces use the `codeBg`/`codeText` tokens (dark in both schemes by design).
+- **Cron ids** — server emits `id`; the client contract and PATCH path use `cron_id` (`src/api/cron.ts` normalizes on every list/patch).
+- **Refresh** — pull-to-refresh drives `refreshing` only for user pulls; silent focus refreshes never toggle it (avoids a parked ~70pt spinner offset on iOS).
 
 ## Token sync notes
 
